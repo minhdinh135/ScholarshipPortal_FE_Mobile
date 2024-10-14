@@ -1,74 +1,3 @@
-// import React from "react";
-// import { UserContext } from "./UserContext";
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import LoginScreen from "./screens/LoginScreen";
-// import RegisterScreen from "./screens/RegisterScreen";
-// import HomeScreen from "./screens/HomeScreen";
-// import FriendsScreen from "./screens/FriendsScreen";
-// import ChatsScreen from "./screens/ChatsScreen";
-// import ChatMessagesScreen from "./screens/ChatMessagesScreen";
-// import ProfileScreen from "./screens/ProfileScreen";
-// import { Entypo, FontAwesome6 } from "@expo/vector-icons";
-
-// function Home() {
-//   const Stack = createNativeStackNavigator();
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-//       <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-//       <Stack.Screen name="Home" component={HomeScreen} />
-//       <Stack.Screen name="Friends" component={FriendsScreen} />
-//       <Stack.Screen name="Chats" component={ChatsScreen} />
-//       <Stack.Screen name="Messages" component={ChatMessagesScreen} />
-//       <Stack.Screen name="Profile" component={ProfileScreen} />
-//     </Stack.Navigator>
-//   )
-// }
-
-// export default function App() {
-//   const Tab = createBottomTabNavigator();
-
-//   return (
-//     <>
-//       <UserContext>
-//         <NavigationContainer>
-//           <Tab.Navigator>
-//             <Tab.Screen name="Home" component={Home}
-//               options={{
-//                 headerShown: false,
-//                 tabBarIcon: ({ focused }) => {
-//                   return (
-//                     <Entypo
-//                       name="home"
-//                       size={20}
-//                       color={focused ? "blue" : "gray"}
-//                     />
-//                   );
-//                 },
-//               }}
-//             />
-//             <Tab.Screen name="Profile" component={ProfileScreen}
-//               options={{
-//                 tabBarIcon: ({ focused }) => {
-//                   return (
-//                     <FontAwesome6
-//                       name="user-large"
-//                       size={20}
-//                       color={focused ? "blue" : "gray"}
-//                     />
-//                   )
-//                 }
-//               }}
-//             />
-//           </Tab.Navigator>
-//         </NavigationContainer>
-//       </UserContext>
-//     </>
-//   );
-// }
-
 import React from "react";
 import { useUser, UserContext } from "./UserContext";
 import { NavigationContainer } from "@react-navigation/native";
@@ -81,7 +10,9 @@ import FriendsScreen from "./screens/FriendsScreen";
 import ChatsScreen from "./screens/ChatsScreen";
 import ChatMessagesScreen from "./screens/ChatMessagesScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import TestScreen from "./screens/RealHome";
+
+import RealHome from "./screens/HomeScreen1";
+import TestScreen from "./screens/SearchScreen";
 import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 
 // Create stack and tab navigators
@@ -116,7 +47,7 @@ function MainTabs() {
     <Tab.Navigator>
       <Tab.Screen
         name="Test"
-        component={TestScreen}
+        component={RealHome}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="home" size={20} color={focused ? "blue" : "gray"} />
@@ -127,10 +58,10 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Home"
-        component={HomeStack}
+        component={TestScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="home" size={20} color={focused ? "blue" : "gray"} />
+            <Entypo name="magnifying-glass" size={20} color={focused ? "blue" : "gray"} />
           ),
           headerShown: false,
 
