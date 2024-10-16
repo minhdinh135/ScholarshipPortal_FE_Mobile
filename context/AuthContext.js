@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
-// http://10.0.2.2:5254/api/authentication/login
+import { jwtDecode } from 'jwt-decode'
+import { decode } from 'base-64';
+global.atob = decode;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -23,6 +25,9 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const token = data.token;
+        if (!token) {
+          throw new Error('No token received from server.');
+        }
         setUserToken(token);
         const decodedUserInfo = jwtDecode(token);
         setUserInfo(decodedUserInfo);
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     setUserToken(null);
     setUserInfo(null);
+    setIsLoggedIn(false);
     await AsyncStorage.removeItem('userToken');
     await AsyncStorage.removeItem('userInfo');
   };

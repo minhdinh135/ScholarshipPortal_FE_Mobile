@@ -5,16 +5,16 @@ import icons from "./icons";
 import dummyData from "./dummyData"
 
 export {
-    constants,
-    theme,
-    COLORS,
-    SIZES,
-    FONTS,
-    darkTheme,
-    lightTheme,
-    selectedTheme,
-    images,
-    icons,
-    dummyData,
+  constants,
+  theme,
+  COLORS,
+  SIZES,
+  FONTS,
+  darkTheme,
+  lightTheme,
+  selectedTheme,
+  images,
+  icons,
+  dummyData,
 }
 

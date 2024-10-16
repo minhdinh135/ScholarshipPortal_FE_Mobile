@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 
-import { IconLabel } from "../Card"
+import IconLabel from "./IconLabel"
 import { SIZES, COLORS, FONTS, icons } from "../../constants";
 
 const VerticalCourseCard = ({ containerStyle, course }) => {

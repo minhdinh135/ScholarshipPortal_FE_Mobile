@@ -18,25 +18,25 @@ const thumbnail_3 = require("../assets/images/thumbnail_3.png")
 const thumbnail_4 = require("../assets/images/thumbnail_4.png")
 
 export default {
-    bg,
-    bg_dark,
-    doc,
-    bg_1,
-    work,
+  bg,
+  bg_dark,
+  doc,
+  bg_1,
+  work,
 
-    featured_bg_image,
-    mobile_image,
-    pdf,
-    profile,
-    sketch,
-    start_learning,
+  featured_bg_image,
+  mobile_image,
+  pdf,
+  profile,
+  sketch,
+  start_learning,
 
-    student_1,
-    student_2,
-    student_3,
+  student_1,
+  student_2,
+  student_3,
 
-    thumbnail_1,
-    thumbnail_2,
-    thumbnail_3,
-    thumbnail_4,
+  thumbnail_1,
+  thumbnail_2,
+  thumbnail_3,
+  thumbnail_4,
 }

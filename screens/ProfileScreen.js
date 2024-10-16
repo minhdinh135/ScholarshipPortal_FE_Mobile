@@ -1,6 +1,5 @@
 import { AntDesign, Entypo, Feather, Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,

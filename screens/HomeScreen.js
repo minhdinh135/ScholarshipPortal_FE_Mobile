@@ -1,15 +1,9 @@
+import React from 'react'
 import { View, Text, ImageBackground, Image, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler'
 import { COLORS, FONTS, SIZES, icons, images, dummyData } from '../constants'
 import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, HorizontalCourseCard } from '../components/Card'
-import axios from 'axios'
-// import { jwtDecode } from "jwt-decode";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { decode } from "base-64";
 import { useAuth } from '../context/AuthContext'
-global.atob = decode;
 
 const Section = ({ containerStyle, title, onPress, children }) => {
   return (
