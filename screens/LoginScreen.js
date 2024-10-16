@@ -9,62 +9,26 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { useUser } from "../UserContext";
+import { useAuth } from "../context/AuthContext";
 
 const LoginScreen = () => {
-
-  const { setIsLoggedIn } = useUser();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
+  const { signIn, userToken, setIsLoggedIn } = useAuth();
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem("authToken");
+    if (userToken) {
+      setIsLoggedIn(true)
+    }
+  }, [userToken]);
 
-        if (token) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  const handleLogin = () => {
-    const user = {
-      email: email,
-      password: password,
-    };
-
-    axios
-      .post("http://10.0.2.2:5254/api/authentication/login", user)
-      .then((response) => {
-        if (response.status === 200 && response.data.token) {
-          const token = response.data.token;
-          AsyncStorage.setItem("authToken", token)
-            .then(() => {
-              console.log("Token saved successfully:", token);
-              setIsLoggedIn(true);
-            })
-            .catch((err) => console.log("Error saving token:", err));
-        } else {
-          Alert.alert("Login Error", "Invalid email or password");
-        }
-      })
-      .catch((error) => {
-        Alert.alert("Login Error", "Invalid email or password");
-        console.log("Login Error", error);
-      });
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Please enter both username and password');
+      return;
+    }
+    await signIn(email, password);
   };
 
   return (

@@ -1,19 +1,14 @@
 import React from "react";
-import { useUser, UserContext } from "./UserContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
-import HomeScreen from "./screens/HomeScreen";
-import FriendsScreen from "./screens/FriendsScreen";
-import ChatsScreen from "./screens/ChatsScreen";
-import ChatMessagesScreen from "./screens/ChatMessagesScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-
-import RealHome from "./screens/HomeScreen1";
+import HomeScreen from "./screens/HomeScreen";
 import TestScreen from "./screens/SearchScreen";
 import { Entypo, FontAwesome6 } from "@expo/vector-icons";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // Create stack and tab navigators
 const Stack = createNativeStackNavigator();
@@ -30,16 +25,16 @@ function AuthStack() {
 }
 
 // Main stack including Home, Friends, Chats, etc.
-function HomeStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Friends" component={FriendsScreen} />
-      <Stack.Screen name="Chats" component={ChatsScreen} />
-      <Stack.Screen name="Messages" component={ChatMessagesScreen} />
-    </Stack.Navigator>
-  );
-}
+// function HomeStack() {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen name="Home" component={HomeScreen} />
+//       <Stack.Screen name="Friends" component={FriendsScreen} />
+//       <Stack.Screen name="Chats" component={ChatsScreen} />
+//       <Stack.Screen name="Messages" component={ChatMessagesScreen} />
+//     </Stack.Navigator>
+//   );
+// }
 
 // Bottom tab navigator with just Home and Profile
 function MainTabs() {
@@ -47,7 +42,7 @@ function MainTabs() {
     <Tab.Navigator>
       <Tab.Screen
         name="Test"
-        component={RealHome}
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="home" size={20} color={focused ? "blue" : "gray"} />
@@ -81,7 +76,7 @@ function MainTabs() {
 }
 
 function AppContent() {
-  const { isLoggedIn } = useUser();
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
@@ -95,9 +90,9 @@ function AppContent() {
 export default function App() {
   return (
     <>
-      <UserContext>
+      <AuthProvider>
         <AppContent />
-      </UserContext>
+      </AuthProvider>
     </>
   );
 }

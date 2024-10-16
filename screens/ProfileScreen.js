@@ -12,73 +12,14 @@ import {
   Image,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { UserType } from '../UserContext';
-import { jwtDecode } from "jwt-decode";
-// import "core-js/stable/atob";
-import axios from 'axios';
-import { useUser } from '../UserContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Example() {
-  const { setIsLoggedIn } = useUser();
-  const [users, setUsers] = useState([]);
-  const { userId, setUserId } = useContext(UserType);
+  const { signOut, userInfo } = useAuth();
   const [form, setForm] = useState({
     emailNotifications: true,
     pushNotifications: false,
   });
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("authToken");
-      setIsLoggedIn(false);
-    } catch (error) {
-      console.log("Error logging out:", error);
-    }
-  };
-
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     const token = await AsyncStorage.getItem("authToken");
-  //     const decodedToken = jwtDecode(token);
-  //     setUserId(decodedToken.userId);
-
-  //     await axios
-  //       .get(`http://10.0.2.2:8000/user/${userId}`)
-  //       .then((response) => {
-  //         console.log("DATA: ", response);
-  //         setUsers(response.data);
-  //       })
-  //       .catch((error) => {
-  //         console.log("error retrieving users", error);
-  //       });
-  //   };
-
-  //   fetchUsers();
-  // }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = await AsyncStorage.getItem("authToken");
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          const userId = decodedToken.userId;
-          setUserId(userId);
-
-          // Fetch user details dynamically based on userId
-          const response = await axios.get(`http://10.0.2.2:8000/user/${userId}`);
-          console.log("DATA: ", response.data);
-          setUsers(response.data);
-        } else {
-          console.log("No token found.");
-        }
-      } catch (error) {
-        console.log("Error retrieving user data", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
@@ -110,15 +51,15 @@ export default function Example() {
                 <Image
                   alt=""
                   source={{
-                    uri: users.image
+                    uri: userInfo.image
                   }}
                   style={styles.profileAvatar} />
 
                 <View style={styles.profileBody}>
-                  <Text style={styles.profileName}>{users.name}</Text>
+                  <Text style={styles.profileName}>{userInfo.fullname}</Text>
 
                   <Text style={styles.profileHandle}>
-                    {users.email}
+                    {userInfo.email}
                   </Text>
                 </View>
 
@@ -305,7 +246,7 @@ export default function Example() {
                     // handle onPress
                   }}
                   style={styles.row}>
-                  <Text onPress={handleLogout} style={[styles.rowLabel, styles.rowLabelLogout]}>
+                  <Text onPress={signOut} style={[styles.rowLabel, styles.rowLabelLogout]}>
                     Log Out
                   </Text>
                 </Pressable>
