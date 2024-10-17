@@ -13,8 +13,10 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler'
 import { TextButton, CategoryCard } from '../components/Card'
 import { COLORS, FONTS, SIZES, icons, dummyData } from "../constants";
 
-const SearchScreen = () => {
+import { useNavigation } from '@react-navigation/native'
 
+const SearchScreen = () => {
+  const navigation = useNavigation();
   const scrollViewRef = React.useRef();
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((event) => {
@@ -88,6 +90,7 @@ const SearchScreen = () => {
                 marginTop: SIZES.radius,
                 marginLeft: (index + 1) % 2 == 0 ? SIZES.radius : SIZES.padding,
               }}
+              onPress={() => navigation.navigate("CourseListing")}
             />
           )}
         />

@@ -1,9 +1,13 @@
-import React from 'react'
-import { View, Text, ImageBackground, Image, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, ImageBackground, Image, ScrollView, ActivityIndicator } from 'react-native'
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler'
 import { COLORS, FONTS, SIZES, icons, images, dummyData } from '../constants'
 import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, HorizontalCourseCard } from '../components/Card'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
+import { useNavigation } from "@react-navigation/native";
+
+import { getScholarProgram } from '../api/apiService';
+import { HorizontalList } from '../components/List'
 
 const Section = ({ containerStyle, title, onPress, children }) => {
   return (
@@ -22,6 +26,7 @@ const Section = ({ containerStyle, title, onPress, children }) => {
           style={{
             flex: 1,
             // ...FONTS.h2
+            fontSize: 20, fontWeight: 'bold'
           }}
         >
           {title}
@@ -44,6 +49,16 @@ const Section = ({ containerStyle, title, onPress, children }) => {
 
 const HomeScreen = () => {
   const { userInfo } = useAuth();
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [scholarPrograms, setScholarPrograms] = useState([]);
+
+  useEffect(() => {
+    getScholarProgram().then((res) => {
+      setScholarPrograms(res);
+      setLoading(false);
+    })
+  }, [])
 
   function renderHeader() {
     return (
@@ -193,11 +208,13 @@ const HomeScreen = () => {
           }}
           renderItem={({ item, index }) => (
             <CategoryCard
+              sharedElementPrefix="Home"
               category={item}
               containerStyle={{
                 marginLeft: index == 0 ? SIZES.padding : SIZES.base,
                 marginRight: index == dummyData.categories.length - 1 ? SIZES.padding : 0
               }}
+              onPress={() => navigation.navigate("CourseListing", { category: item, sharedElementPrefix: "Home" })}
             />
           )}
         />
@@ -208,13 +225,14 @@ const HomeScreen = () => {
   function renderPopularCourses() {
     return (
       <Section
-        title="Popular Courses"
+        title="Popular Scholarship"
         containerStyle={{
           marginTop: 30
         }}
       >
         <FlatList
-          data={dummyData.courses_list_2}
+          // data={dummyData.courses_list_2}
+          data={scholarPrograms.data}
           listKey="Popular Courses"
           scrollEnabled={false}
           keyExtractor={item => `Popular Courses-${item.id}`}
@@ -223,7 +241,7 @@ const HomeScreen = () => {
             paddingHorizontal: SIZES.padding
           }}
           renderItem={({ item, index }) => (
-            <HorizontalCourseCard
+            <HorizontalList
               course={item}
               containerStyle={{
                 marginVertical: SIZES.padding,
@@ -268,7 +286,14 @@ const HomeScreen = () => {
           />
 
           {renderCategories()}
-          {renderPopularCourses()}
+          {loading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color={COLORS.primary} />
+              <Text style={{ marginTop: SIZES.radius, ...FONTS.h3 }}>Loading...</Text>
+            </View>
+          ) : (
+            renderPopularCourses()
+          )}
         </ScrollView>
       </View>
     </GestureHandlerRootView>
