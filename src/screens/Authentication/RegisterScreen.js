@@ -1,13 +1,19 @@
-import { Alert, KeyboardAvoidingView, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { COLORS, icons, SIZES } from '../../constants'
+import { Entypo } from '@expo/vector-icons'
+import Checkbox from 'expo-checkbox'
+import { useNavigation } from '@react-navigation/native'
+import axios from 'axios'
 
-const RegisterScreen = () => {
+const RegisterSreen = () => {
+
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [image, setImage] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(false);
   const navigation = useNavigation();
 
   const handleRegister = () => {
@@ -15,11 +21,10 @@ const RegisterScreen = () => {
       username: name,
       email: email,
       password: password,
-      // avatar: image,
       avatar: "",
       gender: "male",
-      phoneNumber: "0",
-      fullName: "test",
+      phoneNumber: phoneNumber,
+      fullName: name,
       address: "",
     }
 
@@ -31,7 +36,6 @@ const RegisterScreen = () => {
       setName("");
       setEmail("");
       setPassword("");
-      setImage("");
     }).catch((err) => {
       Alert.alert(
         "Registration failed",
@@ -45,141 +49,243 @@ const RegisterScreen = () => {
     <View
       style={{
         flex: 1,
-        backgroundColor: "white",
-        padding: 10,
-        alignItems: "center",
+        backgroundColor: COLORS.white,
+        padding: SIZES.padding,
+        // alignItems: "center",
       }}
     >
       <KeyboardAvoidingView>
         <View
-          style={{
-            marginTop: 100,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          style={{ marginVertical: 22 }}
         >
-          <Text style={{ color: "#4A55A2", fontSize: 17, fontWeight: "600" }}>
-            Register
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: 'bold',
+              marginVertical: 12,
+              color: COLORS.primary
+            }}
+          >
+            Create Account
           </Text>
-
-          <Text style={{ fontSize: 17, fontWeight: "600", marginTop: 15 }}>
-            Register To your Account
+          <Text
+            style={{
+              fontSize: 16,
+              color: COLORS.black
+            }}
+          >
+            Get your scholarship now!
           </Text>
         </View>
 
-        <View style={{ marginTop: 50 }}>
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Name
-            </Text>
-
-            <TextInput
-              value={name}
-              onChangeText={(text) => setName(text)}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Enter your name"
-            />
-          </View>
-
-          <View>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Email
-            </Text>
-
+        <View
+          style={{
+            marginBottom: 12
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '400',
+              marginVertical: 8,
+            }}
+          >
+            Email address
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
+          >
             <TextInput
               value={email}
               onChangeText={(text) => setEmail(text)}
+              placeholder='Enter your email address'
+              placeholderTextColor={COLORS.black}
+              keyboardType='default'
               style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="enter Your Email"
-            />
+                width: '100%'
+              }} />
           </View>
-
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Password
-            </Text>
-
-            <TextInput
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              secureTextEntry={true}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Password"
-            />
-          </View>
-
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Image
-            </Text>
-
-            <TextInput
-              value={image}
-              onChangeText={(text) => setImage(text)}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Image"
-            />
-          </View>
-
-          <Pressable
-            onPress={handleRegister}
+          <Text
             style={{
-              width: 200,
-              backgroundColor: "#4A55A2",
-              padding: 15,
-              marginTop: 50,
-              marginLeft: "auto",
-              marginRight: "auto",
-              borderRadius: 6,
+              fontSize: 16,
+              fontWeight: '400',
+              marginVertical: 8,
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 16,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Register
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={{ marginTop: 15 }}
+            Full name
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
           >
-            <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-              Already Have an account? Sign in
-            </Text>
+            <TextInput
+              value={name}
+              onChangeText={(text) => setName(text)}
+              placeholder='Enter your full name'
+              placeholderTextColor={COLORS.black}
+              keyboardType='default'
+              style={{
+                width: '100%'
+              }} />
+          </View>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '400',
+              marginVertical: 8,
+            }}
+          >
+            Mobile number
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
+          >
+            <TextInput
+              value={phoneNumber}
+              onChangeText={(number) => setPhoneNumber(number)}
+              placeholder='Enter your phone number'
+              placeholderTextColor={COLORS.black}
+              keyboardType='number-pad'
+              style={{
+                width: '100%'
+              }} />
+          </View>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '400',
+              marginVertical: 8,
+            }}
+          >
+            Password
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
+          >
+            <TextInput
+              value={password}
+              onChangeText={(pass) => setPassword(pass)}
+              placeholder='Enter your password'
+              placeholderTextColor={COLORS.black}
+              secureTextEntry={isShowPassword}
+              style={{
+                width: '100%'
+              }} />
+
+            <TouchableOpacity
+              style={{ position: 'absolute', right: 12 }}
+              onPress={() => setIsShowPassword(!isShowPassword)}
+            >
+              {isShowPassword ? (
+                <Entypo name='eye-with-line' size={24} color={COLORS.black} />
+              ) : (
+                <Entypo name='eye' size={24} color={COLORS.black} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginVertical: 6
+          }}
+        >
+          <Checkbox
+            style={{ marginRight: 8 }}
+            value={isChecked}
+            onValueChange={setIsChecked}
+            color={isChecked ? COLORS.primary : undefined}
+          />
+          <Text>I agree to the terms and conditions</Text>
+        </View>
+        <Pressable
+          onPress={handleRegister}
+          style={{
+            width: '100%',
+            backgroundColor: COLORS.primary,
+            padding: 15,
+            marginTop: 20,
+            marginLeft: "auto",
+            marginRight: "auto",
+            borderRadius: 6,
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: 16,
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Sign Up
+          </Text>
+        </Pressable>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}
+        >
+          <View style={{ flex: 1, height: 1, backgroundColor: COLORS.gray50, marginHorizontal: 10 }} />
+          <Text style={{ fontSize: 14 }}>Or sign up with</Text>
+          <View style={{ flex: 1, height: 1, backgroundColor: COLORS.gray50, marginHorizontal: 10 }} />
+
+        </View>
+        <TouchableOpacity style={styles.button}>
+          <Image
+            source={icons.google}
+            style={{
+              width: 24,
+              height: 24
+            }} />
+          <Text style={styles.btnTxt}>Google</Text>
+        </TouchableOpacity>
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+            Already have an account?
+          </Text>
+          <Pressable
+            onPress={() => navigation.navigate("Login")}
+          >
+            <Text style={{
+              fontSize: 16, color: COLORS.primary, fontWeight: 'bold', marginLeft: 6
+            }}>Login</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -187,6 +293,23 @@ const RegisterScreen = () => {
   )
 }
 
-export default RegisterScreen
+export default RegisterSreen;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    padding: 10,
+    borderColor: COLORS.gray90,
+    borderRadius: 25,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+    gap: 5
+  },
+  btnTxt: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.black
+  }
+})

@@ -12,6 +12,7 @@ import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import CourseListing from "./src/screens/List/CourseListing";
 import { Easing } from "react-native";
+import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
 
 // Create stack and tab navigators
 // const Stack = createNativeStackNavigator();
@@ -45,6 +46,7 @@ const options = {
 function AuthStack() {
   return (
     <Stack.Navigator>
+      <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
     </Stack.Navigator>

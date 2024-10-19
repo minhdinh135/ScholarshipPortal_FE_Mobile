@@ -16,6 +16,7 @@ const thumbnail_1 = require("../assets/images/thumbnail_1.png")
 const thumbnail_2 = require("../assets/images/thumbnail_2.png")
 const thumbnail_3 = require("../assets/images/thumbnail_3.png")
 const thumbnail_4 = require("../assets/images/thumbnail_4.png")
+const welcome = require("../assets/images/ScholarshipProgram.jpg")
 
 export default {
   bg,
@@ -39,4 +40,6 @@ export default {
   thumbnail_2,
   thumbnail_3,
   thumbnail_4,
+
+  welcome,
 }

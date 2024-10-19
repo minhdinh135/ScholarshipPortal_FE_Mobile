@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode'
 import { decode } from 'base-64';
@@ -8,8 +8,30 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
-  const [userInfo, setUserInfo] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); // To manage loading state
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Get the token from AsyncStorage when the app loads
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          const decodedUserInfo = jwtDecode(token);
+          setUserToken(token);
+          setUserInfo(decodedUserInfo);
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error('Failed to load token from storage:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const signIn = async (email, password) => {
     try {
@@ -31,7 +53,8 @@ export const AuthProvider = ({ children }) => {
         setUserToken(token);
         const decodedUserInfo = jwtDecode(token);
         setUserInfo(decodedUserInfo);
-        await AsyncStorage.setItem('userToken', token);
+        setIsLoggedIn(true);
+        await AsyncStorage.setItem('userToken', token); // Store the token in AsyncStorage
       } else {
         throw new Error(data.message);
       }
@@ -45,20 +68,14 @@ export const AuthProvider = ({ children }) => {
     setUserInfo(null);
     setIsLoggedIn(false);
     await AsyncStorage.removeItem('userToken');
-    await AsyncStorage.removeItem('userInfo');
   };
 
-  const autoSignIn = async () => {
-    const token = await AsyncStorage.getItem('userToken');
-    if (token) {
-      setUserToken(token);
-      const decodedUserInfo = jwtDecode(token);
-      setUserInfo(decodedUserInfo);
-    }
-  };
+  if (loading) {
+    return null; // Show a loading spinner or some placeholder while checking storage
+  }
 
   return (
-    <AuthContext.Provider value={{ userToken, userInfo, signIn, signOut, autoSignIn, isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ userToken, userInfo, signIn, signOut, isLoggedIn, setIsLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

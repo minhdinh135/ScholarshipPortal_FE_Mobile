@@ -1,33 +1,33 @@
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Alert
-} from "react-native";
-import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../context/AuthContext";
+import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { COLORS, icons, SIZES } from '../../constants'
+import { Entypo } from '@expo/vector-icons'
+import Checkbox from 'expo-checkbox'
+import { useNavigation } from '@react-navigation/native'
+import { useAuth } from '../../context/AuthContext'
 
 const LoginScreen = () => {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");  // Error state
   const navigation = useNavigation();
   const { signIn, userToken, setIsLoggedIn } = useAuth();
+  const [isChecked, setIsChecked] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   useEffect(() => {
     if (userToken) {
-      setIsLoggedIn(true)
+      setIsLoggedIn(true);
     }
   }, [userToken]);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Please enter both username and password');
+      setError('Please enter both email and password');
       return;
     }
+    setError('');
     await signIn(email, password);
   };
 
@@ -35,108 +35,193 @@ const LoginScreen = () => {
     <View
       style={{
         flex: 1,
-        backgroundColor: "white",
-        padding: 10,
-        alignItems: "center",
+        backgroundColor: COLORS.white,
+        padding: SIZES.padding,
       }}
     >
       <KeyboardAvoidingView>
-        <View
-          style={{
-            marginTop: 100,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#4A55A2", fontSize: 17, fontWeight: "600" }}>
-            Sign In
+        <View style={{ marginVertical: 30 }}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: 'bold',
+              marginVertical: 12,
+              color: COLORS.primary
+            }}
+          >
+            Welcome back
           </Text>
-
-          <Text style={{ fontSize: 17, fontWeight: "600", marginTop: 15 }}>
-            Sign In to Your Account
+          <Text
+            style={{
+              fontSize: 16,
+              color: COLORS.black
+            }}
+          >
+            Please log in to your account
           </Text>
         </View>
 
-        <View style={{ marginTop: 50 }}>
-          <View>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Email
-            </Text>
-
+        <View style={{ marginBottom: 20 }}>
+          <Text style={{ fontSize: 16, fontWeight: '400', marginVertical: 8 }}>
+            Email address
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
+          >
             <TextInput
               value={email}
               onChangeText={(text) => setEmail(text)}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Enter your email"
+              placeholder='Enter your email address'
+              placeholderTextColor={COLORS.black}
+              keyboardType='default'
+              style={{ width: '100%' }}
             />
           </View>
 
-          <View style={{ marginTop: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: "gray" }}>
-              Password
-            </Text>
-
+          <Text style={{ fontSize: 16, fontWeight: '400', marginVertical: 8 }}>
+            Password
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              height: 48,
+              borderColor: COLORS.black,
+              borderWidth: 1,
+              borderRadius: 8,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingLeft: SIZES.padding
+            }}
+          >
             <TextInput
               value={password}
               onChangeText={(text) => setPassword(text)}
-              secureTextEntry={true}
-              style={{
-                fontSize: email ? 18 : 18,
-                borderBottomColor: "gray",
-                borderBottomWidth: 1,
-                marginVertical: 10,
-                width: 300,
-              }}
-              placeholderTextColor={"black"}
-              placeholder="Password"
+              placeholder='Enter your password'
+              placeholderTextColor={COLORS.black}
+              secureTextEntry={!isShowPassword}
+              style={{ width: '100%' }}
             />
+            <TouchableOpacity
+              style={{ position: 'absolute', right: 12 }}
+              onPress={() => setIsShowPassword(!isShowPassword)}
+            >
+              {isShowPassword ? (
+                <Entypo name='eye-with-line' size={24} color={COLORS.black} />
+              ) : (
+                <Entypo name='eye' size={24} color={COLORS.black} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Conditionally render error message */}
+        {error ? (
+          <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
+        ) : null}
+
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginVertical: 6,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Checkbox
+              style={{ marginRight: 8 }}
+              value={isChecked}
+              onValueChange={setIsChecked}
+              color={isChecked ? COLORS.primary : undefined}
+            />
+            <Text>Remember me</Text>
           </View>
 
           <Pressable
-            onPress={handleLogin}
+            onPress={() => navigation.navigate('ForgotPassword')}
+            style={{ alignSelf: 'flex-end' }}
+          >
+            <Text style={{ color: COLORS.primary }}>Forgot password?</Text>
+          </Pressable>
+        </View>
+
+        <Pressable
+          onPress={handleLogin}
+          style={{
+            width: '100%',
+            backgroundColor: COLORS.primary,
+            padding: 15,
+            marginTop: 20,
+            borderRadius: 6,
+          }}
+        >
+          <Text
             style={{
-              width: 200,
-              backgroundColor: "#4A55A2",
-              padding: 15,
-              marginTop: 50,
-              marginLeft: "auto",
-              marginRight: "auto",
-              borderRadius: 6,
+              color: "white",
+              fontSize: 16,
+              fontWeight: "bold",
+              textAlign: "center",
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                fontSize: 16,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              Login
-            </Text>
-          </Pressable>
+            Login
+          </Text>
+        </Pressable>
 
-          <Pressable
-            onPress={() => navigation.navigate("Register")}
-            style={{ marginTop: 15 }}
-          >
-            <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
-              Dont't have an account? Sign Up
-            </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+          <View style={{ flex: 1, height: 1, backgroundColor: COLORS.gray50, marginHorizontal: 10 }} />
+          <Text style={{ fontSize: 14 }}>Or login with</Text>
+          <View style={{ flex: 1, height: 1, backgroundColor: COLORS.gray50, marginHorizontal: 10 }} />
+        </View>
+
+        <TouchableOpacity style={styles.button}>
+          <Image
+            source={icons.google}
+            style={{ width: 24, height: 24 }}
+          />
+          <Text style={styles.btnTxt}>Google</Text>
+        </TouchableOpacity>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+            Don't have an account?
+          </Text>
+          <Pressable onPress={() => navigation.navigate("Register")}>
+            <Text style={{
+              fontSize: 16, color: COLORS.primary, fontWeight: 'bold', marginLeft: 6
+            }}>Sign Up</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
     </View>
   );
-};
+}
 
 export default LoginScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    padding: 10,
+    borderColor: COLORS.gray90,
+    borderRadius: 25,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+    gap: 5,
+  },
+  btnTxt: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.black,
+  },
+});
