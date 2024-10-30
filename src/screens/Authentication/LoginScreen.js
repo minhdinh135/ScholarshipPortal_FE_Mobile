@@ -10,7 +10,7 @@ const LoginScreen = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");  // Error state
+  const [error, setError] = useState("");
   const navigation = useNavigation();
   const { signIn, userToken, setIsLoggedIn } = useAuth();
   const [isChecked, setIsChecked] = useState(false);

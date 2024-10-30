@@ -3,16 +3,21 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
 // import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Entypo, FontAwesome6 } from "@expo/vector-icons";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
+import { Easing } from "react-native";
+
+import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
 import LoginScreen from "./src/screens/Authentication/LoginScreen";
 import RegisterScreen from "./src/screens/Authentication/RegisterScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
-import { Entypo, FontAwesome6 } from "@expo/vector-icons";
-import { AuthProvider, useAuth } from "./src/context/AuthContext";
-import CourseListing from "./src/screens/List/CourseListing";
-import { Easing } from "react-native";
-import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
+import ScholarshipListing from "./src/screens/List/ScholarshipListing";
+import ScholarshipDetail from "./src/screens/List/ScholarshipDetail";
+
+import UserList from "./src/components/Chat/UserList";
+import Chat from "./src/components/Chat/Chat";
 
 // Create stack and tab navigators
 // const Stack = createNativeStackNavigator();
@@ -55,18 +60,29 @@ function AuthStack() {
 
 function HomeStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator defaultScreenOptions={HomeScreen}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CourseListing" component={CourseListing} options={() => options} />
+      <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
+      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }
 
 function SearchStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator defaultScreenOptions={SearchScreen}>
       <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CourseListing" component={CourseListing} options={() => options} />
+      <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
+      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  )
+}
+
+function ChatStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="UserListScreen" component={UserList} options={{ headerShown: false }} />
+      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
     </Stack.Navigator>
   )
 }
@@ -92,7 +108,6 @@ function MainTabs() {
             <Entypo name="magnifying-glass" size={20} color={focused ? "blue" : "gray"} />
           ),
           headerShown: false,
-
         }}
       />
       <Tab.Screen
@@ -102,6 +117,16 @@ function MainTabs() {
           tabBarIcon: ({ focused }) => (
             <FontAwesome6 name="user-large" size={20} color={focused ? "blue" : "gray"} />
           ),
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <FontAwesome6 name="user-large" size={20} color={focused ? "blue" : "gray"} />
+          ),
+          headerShown: false
         }}
       />
     </Tab.Navigator>

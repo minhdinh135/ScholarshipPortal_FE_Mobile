@@ -4,13 +4,14 @@ import { View, Text, Image, ImageBackground, TouchableOpacity } from "react-nati
 import { IconLabel } from "../Card";
 import { SIZES, FONTS, COLORS, icons } from "../../constants";
 
-const HorizontalList = ({ containerStyle, course }) => {
+const HorizontalList = ({ containerStyle, course, onPress }) => {
   return (
     <TouchableOpacity
       style={{
         flexDirection: 'row',
         ...containerStyle
       }}
+      onPress={onPress}
     >
       <ImageBackground
         // source={course.imageUrl}

@@ -90,7 +90,7 @@ const SearchScreen = () => {
                 marginTop: SIZES.radius,
                 marginLeft: (index + 1) % 2 == 0 ? SIZES.radius : SIZES.padding,
               }}
-              onPress={() => navigation.navigate("CourseListing")}
+              onPress={() => navigation.navigate("ScholarshipListing")}
             />
           )}
         />

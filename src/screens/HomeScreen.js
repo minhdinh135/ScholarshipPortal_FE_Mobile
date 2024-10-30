@@ -214,7 +214,7 @@ const HomeScreen = () => {
                 marginLeft: index == 0 ? SIZES.padding : SIZES.base,
                 marginRight: index == dummyData.categories.length - 1 ? SIZES.padding : 0
               }}
-              onPress={() => navigation.navigate("CourseListing", { category: item, sharedElementPrefix: "Home" })}
+              onPress={() => navigation.navigate("ScholarshipListing", { category: item, sharedElementPrefix: "Home" })}
             />
           )}
         />

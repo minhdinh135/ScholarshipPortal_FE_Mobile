@@ -165,11 +165,11 @@ const created_within = [
 const course_details_tabs = [
   {
     id: 0,
-    label: "Chapters",
+    label: "Description",
   },
   {
     id: 1,
-    label: "Files",
+    label: "Feedbacks",
   },
   {
     id: 2,

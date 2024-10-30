@@ -4,7 +4,7 @@ import { COLORS, icons, SIZES } from '../../constants'
 import { Entypo } from '@expo/vector-icons'
 import Checkbox from 'expo-checkbox'
 import { useNavigation } from '@react-navigation/native'
-import axios from 'axios'
+import { useAuth } from '../../context/AuthContext'
 
 const RegisterSreen = () => {
 
@@ -15,34 +15,32 @@ const RegisterSreen = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
   const navigation = useNavigation();
+  const { signUp } = useAuth();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const user = {
       username: name,
       email: email,
-      password: password,
-      avatar: "",
-      gender: "male",
       phoneNumber: phoneNumber,
-      fullName: name,
+      password: password,
       address: "",
+      avatarUrl: "",
+      loginWithGoogle: false,
+      status: "ACTIVE",
+      roleId: 5
     }
 
-    axios.post("http://10.0.2.2:5254/api/authentication/register", user).then((response) => {
-      Alert.alert(
-        "Registration successful",
-        "You have been registered!"
-      );
-      setName("");
-      setEmail("");
-      setPassword("");
-    }).catch((err) => {
-      Alert.alert(
-        "Registration failed",
-        "Something went wrong when register!"
-      )
-      console.log("Registration failed", err);
-    })
+    try {
+      await signUp(user).then(
+        Alert.alert("Registration successful", "You have been registered!"));
+      // Clear form fields after successful registration
+      // setName("");
+      // setEmail("");
+      // setPassword("");
+    } catch (error) {
+      Alert.alert("Registration failed", "Something went wrong when registering!");
+      console.log("Registration failed", error);
+    }
   }
 
   return (

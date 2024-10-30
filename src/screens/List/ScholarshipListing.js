@@ -19,7 +19,7 @@ import { getScholarProgram } from '../../api/apiService';
 
 const HEADER_HEIGHT = 250;
 
-const CourseListing = ({ navigation, route }) => {
+const ScholarshipListing = ({ navigation, route }) => {
 
   const [scholarPrograms, setScholarPrograms] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
@@ -249,6 +249,7 @@ const CourseListing = ({ navigation, route }) => {
               marginVertical: SIZES.padding,
               marginTop: index == 0 ? SIZES.radius : SIZES.padding
             }}
+            onPress={() => navigation.navigate("ScholarDetail", { selectedScholarship: item })}
           />
         )}
         ItemSeparatorComponent={() => (
@@ -282,4 +283,16 @@ const CourseListing = ({ navigation, route }) => {
   )
 }
 
-export default CourseListing;
+// ScholarshipListing.sharedElements = (route, otherRoute, showing) => {
+//   const { category, sharedElementPrefix } = route.params;
+//   return [
+//     {
+//       id: `${sharedElementPrefix}-CategoryCard-Bg-${category?.id}`
+//     },
+//     {
+//       id: `${sharedElementPrefix}-CategoryCard-Title-${category?.id}`
+//     }
+//   ]
+// }
+
+export default ScholarshipListing;
