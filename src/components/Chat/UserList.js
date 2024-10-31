@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { getAccounts } from '../../api/accountApi';
 
@@ -11,9 +9,6 @@ const UserListScreen = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      // const userCollection = collection(db, 'users');
-      // const userSnapshot = await getDocs(userCollection);
-      // setUsers(userSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       getAccounts().then((res) => setUsers(res))
     };
     fetchUsers();

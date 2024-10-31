@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, Avatar } from 'react-native-gifted-chat';
 import { sendMessage, subscribeToMessages, createChatRoom } from '../../services/ChatService';
 import { useAuth } from '../../context/AuthContext';
+import { COLORS } from '../../constants';
 
 const ChatScreen = ({ route }) => {
   const { userInfo } = useAuth();
@@ -26,10 +27,44 @@ const ChatScreen = ({ route }) => {
       user: {
         _id: userInfo.id,
         name: userInfo.username,
-        avatar: 'https://placeimg.com/140/140/any', // Placeholder avatar
+        avatar: 'https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj', // Placeholder avatar
       },
     });
   }, [chatId]);
+
+  const renderBubble = (props) => (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        right: {
+          backgroundColor: COLORS.primary, // Customize right bubble color
+          padding: 5,
+          borderRadius: 15,
+        },
+        left: {
+          backgroundColor: COLORS.gray10, // Customize left bubble color
+          padding: 5,
+          borderRadius: 15,
+        },
+      }}
+      textStyle={{
+        right: {
+          color: COLORS.primary3, // Customize text color for right bubbles
+        },
+        left: {
+          color: COLORS.black, // Customize text color for left bubbles
+        },
+      }}
+    />
+  );
+
+  const renderAvatar = (props) => {
+    // Show avatar only for messages from the other user (left side)
+    if (props.currentMessage.user._id !== userInfo.id) {
+      return <Avatar {...props} />;
+    }
+    return null; // Hide avatar for messages from the current user
+  };
 
   return (
     <GiftedChat
@@ -39,6 +74,11 @@ const ChatScreen = ({ route }) => {
         _id: userInfo.id,
         name: userInfo.username,
       }}
+      messagesContainerStyle={{
+        backgroundColor: COLORS.white
+      }}
+      renderBubble={renderBubble}
+      renderAvatar={renderAvatar}
     />
   );
 };

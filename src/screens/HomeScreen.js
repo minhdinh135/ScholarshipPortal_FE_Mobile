@@ -6,7 +6,7 @@ import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, 
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from "@react-navigation/native";
 
-import { getScholarProgram } from '../api/apiService';
+import { getScholarProgram } from '../api/scholarshipProgramApi';
 import { HorizontalList } from '../components/List'
 
 const Section = ({ containerStyle, title, onPress, children }) => {

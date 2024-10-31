@@ -15,7 +15,7 @@ import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, images, icons, dummyData } from '../../constants';
 import { SharedElement } from 'react-navigation-shared-element';
 
-import { getScholarProgram } from '../../api/apiService';
+import { getScholarProgram } from '../../api/scholarshipProgramApi';
 
 const HEADER_HEIGHT = 250;
 
