@@ -16,6 +16,7 @@ import ScholarshipListing from "./src/screens/List/ScholarshipListing";
 import ScholarshipDetail from "./src/screens/List/ScholarshipDetail";
 import UserList from "./src/components/Chat/UserList";
 import Chat from "./src/components/Chat/Chat";
+import MultiStepForm from "./src/screens/Applicant/MultiStepForm";
 
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
@@ -61,6 +62,7 @@ function HomeStack() {
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
       <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
+      <Stack.Screen name="MultiStep" component={MultiStepForm} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

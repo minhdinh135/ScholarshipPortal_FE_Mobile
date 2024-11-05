@@ -195,8 +195,8 @@ const ScholarshipDetail = ({ navigation, route }) => {
         padding: SIZES.padding,
         backgroundColor: COLORS.white,
       }}>
-        <Text style={{ fontSize: 24 }}>{selectedScholarship?.name}</Text>
-        <Text style={{ color: COLORS.gray60, marginTop: 5 }}>Ho Chi Minh City, Vietnam</Text>
+        <Text style={{ ...FONTS.h2 }}>{selectedScholarship?.name}</Text>
+        <Text style={{ color: COLORS.gray60, marginTop: 5, ...FONTS.body3 }}>Ho Chi Minh City, Vietnam</Text>
         {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
           <Text style={{ ...FONTS.body3, color: COLORS.black }}>
             {`Rating: ${selectedScholarship?.rating} / 5`}
@@ -214,7 +214,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
               justifyContent: 'center',
               marginRight: 10,
             }}
-            onPress={() => {/* Add apply action here */ }}
+            onPress={() => navigation.navigate("MultiStep")}
           >
             <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Apply Now</Text>
           </TouchableOpacity>

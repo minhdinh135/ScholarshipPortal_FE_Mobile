@@ -22,7 +22,7 @@ const TextButton = ({
       <Text
         style={{
           color: COLORS.white,
-          ...FONTS.h2,
+          ...FONTS.h4,
           ...labelStyle,
         }}
       >
