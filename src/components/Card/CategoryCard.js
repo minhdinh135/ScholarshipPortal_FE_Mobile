@@ -65,8 +65,8 @@ const CategoryCard = ({ sharedElementPrefix, category, containerStyle, onPress }
             style={{
               position: 'absolute',
               color: COLORS.white,
-              fontSize: 20, fontWeight: 'bold',
-              // ...FONTS.h2
+              // fontSize: 20, fontWeight: 'bold',
+              ...FONTS.h2
             }}
           >
             {category?.title}

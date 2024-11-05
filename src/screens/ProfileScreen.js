@@ -50,12 +50,13 @@ export default function Example() {
                 <Image
                   alt=""
                   source={{
-                    uri: userInfo.image
+                    // uri: userInfo.image
+                    uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj"
                   }}
                   style={styles.profileAvatar} />
 
                 <View style={styles.profileBody}>
-                  <Text style={styles.profileName}>{userInfo.fullname}</Text>
+                  <Text style={styles.profileName}>{userInfo.username}</Text>
 
                   <Text style={styles.profileHandle}>
                     {userInfo.email}

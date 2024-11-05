@@ -57,7 +57,7 @@ const HorizontalCourseCard = ({ containerStyle, course }) => {
       >
         <Text
           style={{
-            // ...FONTS.h3,
+            ...FONTS.h3,
             fontSize: 18
           }}
         >
@@ -73,7 +73,7 @@ const HorizontalCourseCard = ({ containerStyle, course }) => {
         >
           <Text
             style={{
-              // ...FONTS.h4
+              ...FONTS.h4
             }}
           >
             By {course.instructor}
@@ -90,7 +90,7 @@ const HorizontalCourseCard = ({ containerStyle, course }) => {
               height: 15
             }}
             labelStyle={{
-              // ...FONTS.body4
+              ...FONTS.body4
             }}
           />
         </View>
@@ -104,7 +104,7 @@ const HorizontalCourseCard = ({ containerStyle, course }) => {
         >
           <Text
             style={{
-              // ...FONTS.h2,
+              ...FONTS.h2,
               color: COLORS.primary
             }}
           >
@@ -125,7 +125,7 @@ const HorizontalCourseCard = ({ containerStyle, course }) => {
             labelStyle={{
               marginLeft: 5,
               color: COLORS.black,
-              // ...FONTS.h3
+              ...FONTS.h3
             }}
           />
         </View>

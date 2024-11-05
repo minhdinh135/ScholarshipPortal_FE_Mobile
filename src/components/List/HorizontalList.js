@@ -59,7 +59,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
       >
         <Text
           style={{
-            // ...FONTS.h3,
+            ...FONTS.h3,
             fontSize: 18
           }}
         >
@@ -75,7 +75,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
         >
           <Text
             style={{
-              // ...FONTS.h4
+              ...FONTS.h4
             }}
           >
             By {course.name}
@@ -92,7 +92,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
               height: 15
             }}
             labelStyle={{
-              // ...FONTS.body4
+              ...FONTS.body4
             }}
           />
         </View>
@@ -106,7 +106,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
         >
           <Text
             style={{
-              // ...FONTS.h2,
+              ...FONTS.h2,
               color: COLORS.primary
             }}
           >
@@ -127,7 +127,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
             labelStyle={{
               marginLeft: 5,
               color: COLORS.black,
-              // ...FONTS.h3
+              ...FONTS.h3
             }}
           />
         </View>

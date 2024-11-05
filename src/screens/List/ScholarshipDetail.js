@@ -1,11 +1,13 @@
 import React from 'react'
-import { View, Text, ImageBackground, TouchableOpacity, Animated, Keyboard } from 'react-native'
+import { View, Text, ImageBackground, TouchableOpacity, Animated } from 'react-native'
 import {
   IconButton,
   LineDivider
 } from "../../components/Card";
-import { COLORS, FONTS, SIZES, icons, constants, dummyData } from '../../constants';
+import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { interpolate } from 'react-native-reanimated';
+
+import Description from '../../components/ScholarshipProgram/Description';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -95,7 +97,7 @@ const Tabs = ({ scrollX, onTabPress }) => {
           >
             <Text
               style={{
-                // ...FONTS.h3,
+                ...FONTS.h3,
                 fontSize: SIZES.height > 800 ? 18 : 17
               }}
             >
@@ -187,6 +189,55 @@ const ScholarshipDetail = ({ navigation, route }) => {
     )
   }
 
+  function renderScholarshipInfo() {
+    return (
+      <View style={{
+        padding: SIZES.padding,
+        backgroundColor: COLORS.white,
+      }}>
+        <Text style={{ fontSize: 24 }}>{selectedScholarship?.name}</Text>
+        <Text style={{ color: COLORS.gray60, marginTop: 5 }}>Ho Chi Minh City, Vietnam</Text>
+        {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+          <Text style={{ ...FONTS.body3, color: COLORS.black }}>
+            {`Rating: ${selectedScholarship?.rating} / 5`}
+          </Text>
+        </View> */}
+
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              height: 50,
+              backgroundColor: COLORS.primary,
+              borderRadius: SIZES.radius,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 10,
+            }}
+            onPress={() => {/* Add apply action here */ }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Apply Now</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              height: 50,
+              borderColor: COLORS.primary,
+              borderWidth: 1,
+              borderRadius: SIZES.radius,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onPress={() => {/* Add view more action here */ }}
+          >
+            <Text style={{ color: COLORS.primary, ...FONTS.h3 }}>View More</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   function renderTop() {
     return (
       <View
@@ -198,7 +249,8 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          source={selectedScholarship?.imageUrl}
+          // source={selectedScholarship?.imageUrl}
+          src="https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg"
           style={{
             width: '100%',
             height: '100%',
@@ -206,7 +258,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
             justifyContent: 'center'
           }}
         >
-          <IconButton
+          {/* <IconButton
             icon={icons.play}
             iconStyle={{
               width: 25,
@@ -222,7 +274,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
               borderRadius: 30,
               backgroundColor: COLORS.primary
             }}
-          />
+          /> */}
         </ImageBackground>
       </View>
     )
@@ -237,7 +289,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
       >
         <View
           style={{
-            height: 60
+            height: 50
           }}
         >
           <Tabs
@@ -280,7 +332,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
                   width: SIZES.width
                 }}
               >
-                {index == 0 && <Text>Description</Text>}
+                {index == 0 && <Description />}
                 {index == 1 && <Text>Feedbacks</Text>}
                 {index == 2 && <Text>Discussions</Text>}
               </View>
@@ -300,6 +352,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
     >
       {renderHeader()}
       {renderTop()}
+      {renderScholarshipInfo()}
       {renderContent()}
     </View>
   )

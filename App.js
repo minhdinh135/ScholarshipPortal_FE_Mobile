@@ -1,11 +1,10 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
-import { Easing } from "react-native";
+import { Easing, Text } from "react-native";
 
 import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
 import LoginScreen from "./src/screens/Authentication/LoginScreen";
@@ -15,12 +14,12 @@ import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import ScholarshipListing from "./src/screens/List/ScholarshipListing";
 import ScholarshipDetail from "./src/screens/List/ScholarshipDetail";
-
 import UserList from "./src/components/Chat/UserList";
 import Chat from "./src/components/Chat/Chat";
 
-// Create stack and tab navigators
-// const Stack = createNativeStackNavigator();
+import { COLORS } from "./src/constants";
+import { useFonts } from "expo-font";
+
 const Tab = createBottomTabNavigator();
 const Stack = createSharedElementStackNavigator();
 
@@ -45,8 +44,6 @@ const options = {
     }
   }
 }
-
-// Authentication stack for Login/Register
 
 function AuthStack() {
   return (
@@ -95,7 +92,10 @@ function MainTabs() {
         component={HomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="home" size={20} color={focused ? "blue" : "gray"} />
+            <Entypo name="home" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Home</Text>
           ),
           headerShown: false,
         }}
@@ -105,7 +105,23 @@ function MainTabs() {
         component={SearchStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="magnifying-glass" size={20} color={focused ? "blue" : "gray"} />
+            <Entypo name="magnifying-glass" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Search</Text>
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Entypo name="chat" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Chat</Text>
           ),
           headerShown: false,
         }}
@@ -115,18 +131,11 @@ function MainTabs() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="user-large" size={20} color={focused ? "blue" : "gray"} />
+            <FontAwesome6 name="user-large" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
-        }}
-      />
-      <Tab.Screen
-        name="Chat"
-        component={ChatStack}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="user-large" size={20} color={focused ? "blue" : "gray"} />
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Profile</Text>
           ),
-          headerShown: false
         }}
       />
     </Tab.Navigator>
@@ -146,6 +155,17 @@ function AppContent() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    'Roboto-Black': require('./src/assets/fonts/Roboto-Black.ttf'),
+    'Roboto-Bold': require('./src/assets/fonts/Roboto-Bold.ttf'),
+    'Roboto-Regular': require('./src/assets/fonts/Roboto-Regular.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    // return <AppLoading />;
+    return undefined;
+  }
+
   return (
     <>
       <AuthProvider>

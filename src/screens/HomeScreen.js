@@ -25,7 +25,7 @@ const Section = ({ containerStyle, title, onPress, children }) => {
         <Text
           style={{
             flex: 1,
-            // ...FONTS.h2
+            ...FONTS.h2,
             fontSize: 20, fontWeight: 'bold'
           }}
         >
@@ -78,13 +78,13 @@ const HomeScreen = () => {
         >
           <Text
             style={{
-              // ...FONTS.h2 
+              ...FONTS.h2 
             }}>
             Hello, {userInfo.username}
           </Text>
           <Text style={{
             color: COLORS.gray50,
-            // ...FONTS.body3
+            ...FONTS.body3
           }}>
             Thursday, 10th October 2024
           </Text>
@@ -119,7 +119,7 @@ const HomeScreen = () => {
           <Text
             style={{
               color: COLORS.white,
-              // ...FONTS.body2
+              ...FONTS.body2
             }}
           >
             HOW TO
@@ -127,7 +127,7 @@ const HomeScreen = () => {
           <Text
             style={{
               color: COLORS.white,
-              // ...FONTS.h2
+              ...FONTS.h2
             }}
           >
             Finding a scholarship for you
@@ -136,7 +136,7 @@ const HomeScreen = () => {
             style={{
               marginTop: SIZES.radius,
               color: COLORS.white,
-              // ...FONTS.body4
+              ...FONTS.body4
             }}
           >
             By ScholarFinder

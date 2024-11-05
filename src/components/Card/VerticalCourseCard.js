@@ -56,7 +56,7 @@ const VerticalCourseCard = ({ containerStyle, course }) => {
           <Text
             style={{
               flex: 1,
-              // ...FONTS.h3,
+              ...FONTS.h3,
               fontSize: 18
             }}
           >
