@@ -214,7 +214,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
               justifyContent: 'center',
               marginRight: 10,
             }}
-            onPress={() => navigation.navigate("MultiStep")}
+            onPress={() => navigation.navigate("MultiStep", { selectedScholarship: selectedScholarship })}
           >
             <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Apply Now</Text>
           </TouchableOpacity>

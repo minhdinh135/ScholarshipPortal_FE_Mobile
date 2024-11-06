@@ -1,75 +1,208 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
+import * as DocumentPicker from "expo-document-picker";
+import { useAuth } from "../../context/AuthContext";
+import { postApplication } from "../../api/applicantApi";
 
-const StepOne = ({ formData, setFormData }) => (
-  <View style={styles.cardContent}>
-    <Text style={styles.title}>Personal Information</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Full Name"
-      placeholderTextColor={COLORS.gray50}
-      value={formData.name}
-      onChangeText={(text) => setFormData({ ...formData, name: text })}
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="Email Address"
-      placeholderTextColor={COLORS.gray50}
-      value={formData.email}
-      onChangeText={(text) => setFormData({ ...formData, email: text })}
-      keyboardType="email-address"
-    />
-  </View>
-);
+const StepOne = ({ formData, setFormData, errors }) => {
+  return (
+    <View style={styles.cardContent}>
+      <Text style={styles.title}>Personal Information</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Full Name"
+        placeholderTextColor={COLORS.gray50}
+        value={formData.name}
+        onChangeText={(text) => setFormData({ ...formData, name: text })}
+      />
+      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Email Address"
+        placeholderTextColor={COLORS.gray50}
+        value={formData.email}
+        onChangeText={(text) => setFormData({ ...formData, email: text })}
+        keyboardType="email-address"
+      />
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        placeholderTextColor={COLORS.gray50}
+        value={formData.phone}
+        onChangeText={(text) => setFormData({ ...formData, phone: text })}
+        keyboardType="number-pad"
+      />
+      {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+    </View>
+  )
+};
 
-const StepTwo = ({ formData, setFormData }) => (
-  <View style={styles.cardContent}>
-    <Text style={styles.title}>Academic Information</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="School Name"
-      placeholderTextColor={COLORS.gray50}
-      value={formData.school}
-      onChangeText={(text) => setFormData({ ...formData, school: text })}
-    />
-    <TextInput
-      style={styles.input}
-      placeholder="Major"
-      placeholderTextColor={COLORS.gray50}
-      value={formData.major}
-      onChangeText={(text) => setFormData({ ...formData, major: text })}
-    />
-  </View>
-);
+const StepTwo = ({ formData, setFormData, errors }) => {
+  const uploadFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+      });
 
-const StepThree = ({ formData, setFormData }) => (
-  <View style={styles.cardContent}>
-    <Text style={styles.title}>Additional Information</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Why are you applying for this scholarship?"
-      placeholderTextColor={COLORS.gray50}
-      value={formData.reason}
-      onChangeText={(text) => setFormData({ ...formData, reason: text })}
-      multiline
-    />
-  </View>
-);
+      if (result) {
+        console.log("File selected:", result);
 
-const MultiStepForm = ({ navigation }) => {
+        const { uri, name, mimeType, size } = result.assets[0];
+
+        const files = new FormData();
+        files.append("files", {
+          uri: uri,
+          name: name,
+          type: mimeType,
+          size: size
+        });
+
+        const response = await fetch("http://10.0.2.2:5254/api/file-upload", {
+          method: "POST",
+          body: files,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        });
+
+        const responseText = await response.text();
+        console.log("Raw Response:", responseText);
+
+        try {
+          const responseJson = JSON.parse(responseText);
+          console.log("Parsed JSON Response:", responseJson);
+
+          if (response.ok) {
+            Alert.alert("Upload Success", "File uploaded successfully.");
+            setFormData({ ...formData, file: responseJson.data[0] });
+          } else {
+            console.error("Upload error:", responseJson);
+            Alert.alert("Upload Error", "Failed to upload file.");
+          }
+        } catch (error) {
+          console.error("Failed to parse response:", error);
+          Alert.alert("Response Error", "The response is not valid JSON.");
+        }
+      }
+    } catch (error) {
+      console.error("File upload error:", error);
+      Alert.alert("Error", "There was a problem selecting or uploading the file.");
+    }
+  };
+
+  return (
+    <View style={styles.cardContent}>
+      <Text style={styles.title}>Upload Document</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="School Name"
+        placeholderTextColor={COLORS.gray50}
+        value={formData.school}
+        onChangeText={(text) => setFormData({ ...formData, school: text })}
+      />
+      {errors.school && <Text style={styles.errorText}>{errors.school}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Major"
+        placeholderTextColor={COLORS.gray50}
+        value={formData.major}
+        onChangeText={(text) => setFormData({ ...formData, major: text })}
+      />
+      {errors.major && <Text style={styles.errorText}>{errors.major}</Text>}
+      <TouchableOpacity style={styles.uploadButton} onPress={() => uploadFile()}>
+        <Text style={styles.buttonText}>Upload File</Text>
+      </TouchableOpacity>
+      {formData.file && <Text style={styles.fileText}>File: {formData.file.name}</Text>}
+      {errors.file && <Text style={styles.errorText}>{errors.file}</Text>}
+    </View>)
+};
+
+const StepThree = ({ formData }) => {
+  return (
+    <View style={styles.cardContent}>
+      <Text style={styles.title}>Check Information</Text>
+      <Text style={styles.summaryText}>Name: {formData.name}</Text>
+      <Text style={styles.summaryText}>Email: {formData.email}</Text>
+      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
+      <Text style={styles.summaryText}>School: {formData.school}</Text>
+      <Text style={styles.summaryText}>Major: {formData.major}</Text>
+      {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>}
+      <TouchableOpacity style={styles.uploadButton} onPress={() => console.log("FORM: ", formData)}>
+        <Text style={styles.buttonText}>Upload File</Text>
+      </TouchableOpacity>
+    </View>
+  )
+};
+
+const MultiStepForm = ({ navigation, route }) => {
+  const { userInfo } = useAuth();
+  const { selectedScholarship } = route.params;
   const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     school: "",
     major: "",
-    reason: "",
+    file: null,
   });
 
-  const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, 3));
+  const validateStepOne = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Valid email is required";
+    if (!formData.phone) newErrors.phone = "Phone number is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStepTwo = () => {
+    const newErrors = {};
+    if (!formData.school) newErrors.school = "School name is required";
+    if (!formData.major) newErrors.major = "Major is required";
+    if (!formData.file) newErrors.file = "Document is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateAndNextStep = () => {
+    const isValid = step === 1 ? validateStepOne() : validateStepTwo();
+    if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 3));
+  };
+
+  // const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, 3));
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
+
+  const submitForm = async () => {
+    try {
+      const applicationData = {
+        applicantId: userInfo.id,
+        scholarshipProgramId: selectedScholarship.id,
+        appliedDate: new Date().toISOString(),
+        status: "PENDING",
+        documents: [{
+          name: "Test",
+          type: "CV",
+          fileUrl: formData.file
+        }]
+      }
+      await postApplication(applicationData).then((res) => console.log(res));
+      Alert.alert("Success", "Form submitted successfully!");
+    } catch (error) {
+      console.log("Form submission error:", error);
+    }
+  };
+
+  const handleSubmitConfirmation = () => {
+    Alert.alert("Confirm Submission", "Are you sure you want to submit?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Yes", onPress: submitForm },
+    ]);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -102,8 +235,8 @@ const MultiStepForm = ({ navigation }) => {
       {renderProgressBar()}
 
       <View style={styles.card}>
-        {step === 1 && <StepOne formData={formData} setFormData={setFormData} />}
-        {step === 2 && <StepTwo formData={formData} setFormData={setFormData} />}
+        {step === 1 && <StepOne formData={formData} setFormData={setFormData} errors={errors} />}
+        {step === 2 && <StepTwo formData={formData} setFormData={setFormData} errors={errors} />}
         {step === 3 && <StepThree formData={formData} setFormData={setFormData} />}
 
         <View style={styles.buttonContainer}>
@@ -112,7 +245,7 @@ const MultiStepForm = ({ navigation }) => {
               <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={styles.nextButton} onPress={nextStep}>
+          <TouchableOpacity style={styles.nextButton} onPress={step === 3 ? handleSubmitConfirmation : validateAndNextStep}>
             <Text style={styles.buttonText}>{step === 3 ? "Submit" : "Next"}</Text>
           </TouchableOpacity>
         </View>
@@ -213,6 +346,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLORS.white,
     ...FONTS.h3,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+  },
+  summaryText: {
+    color: COLORS.black,
+    fontSize: 16,
+    marginVertical: SIZES.base / 2,
+  },
+  uploadButton: {
+    padding: SIZES.base,
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.radius,
+    alignItems: "center",
+    marginVertical: SIZES.base,
   },
 });
 
