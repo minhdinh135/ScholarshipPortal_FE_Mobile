@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
@@ -115,7 +115,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       <TouchableOpacity style={styles.uploadButton} onPress={() => uploadFile()}>
         <Text style={styles.buttonText}>Upload File</Text>
       </TouchableOpacity>
-      {formData.file && <Text style={styles.fileText}>File: {formData.file.name}</Text>}
+      {formData.file && <Text style={styles.fileText}>File: {formData.file}</Text>}
       {errors.file && <Text style={styles.errorText}>{errors.file}</Text>}
     </View>)
 };
@@ -130,9 +130,6 @@ const StepThree = ({ formData }) => {
       <Text style={styles.summaryText}>School: {formData.school}</Text>
       <Text style={styles.summaryText}>Major: {formData.major}</Text>
       {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>}
-      <TouchableOpacity style={styles.uploadButton} onPress={() => console.log("FORM: ", formData)}>
-        <Text style={styles.buttonText}>Upload File</Text>
-      </TouchableOpacity>
     </View>
   )
 };
