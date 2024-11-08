@@ -274,7 +274,6 @@ const ScholarshipListing = ({ navigation, route }) => {
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={{ marginTop: SIZES.radius, ...FONTS.h3 }}>Loading...</Text>
         </View>
       ) : (
         renderResult()

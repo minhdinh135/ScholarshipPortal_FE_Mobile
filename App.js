@@ -20,6 +20,7 @@ import MultiStepForm from "./src/screens/Applicant/MultiStepForm";
 
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
+import NotificationScreen from "./src/screens/Profile/NotificationScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createSharedElementStackNavigator();
@@ -60,6 +61,7 @@ function HomeStack() {
   return (
     <Stack.Navigator defaultScreenOptions={HomeScreen}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
       <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} options={{ headerShown: false }} />
@@ -164,7 +166,6 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    // return <AppLoading />;
     return undefined;
   }
 

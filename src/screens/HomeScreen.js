@@ -26,7 +26,6 @@ const Section = ({ containerStyle, title, onPress, children }) => {
           style={{
             flex: 1,
             ...FONTS.h2,
-            fontSize: 20, fontWeight: 'bold'
           }}
         >
           {title}
@@ -78,7 +77,7 @@ const HomeScreen = () => {
         >
           <Text
             style={{
-              ...FONTS.h2 
+              ...FONTS.h2
             }}>
             Hello, {userInfo.username}
           </Text>
@@ -95,6 +94,7 @@ const HomeScreen = () => {
           iconStyle={{
             tintColor: COLORS.black
           }}
+          onPress={() => navigation.navigate("NotificationScreen")}
         />
 
       </View>
@@ -289,7 +289,6 @@ const HomeScreen = () => {
           {loading ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <ActivityIndicator size="large" color={COLORS.primary} />
-              <Text style={{ marginTop: SIZES.radius, ...FONTS.h3 }}>Loading...</Text>
             </View>
           ) : (
             renderPopularCourses()

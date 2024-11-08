@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
@@ -72,8 +72,8 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         console.log("Raw Response:", responseText);
 
         try {
+
           const responseJson = JSON.parse(responseText);
-          console.log("Parsed JSON Response:", responseJson);
 
           if (response.ok) {
             Alert.alert("Upload Success", "File uploaded successfully.");
