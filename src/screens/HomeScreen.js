@@ -5,6 +5,7 @@ import { COLORS, FONTS, SIZES, icons, images, dummyData } from '../constants'
 import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, HorizontalCourseCard } from '../components/Card'
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from "@react-navigation/native";
+import moment from "moment"
 
 import { getScholarProgram } from '../api/scholarshipProgramApi';
 import { HorizontalList } from '../components/List'
@@ -52,6 +53,8 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [scholarPrograms, setScholarPrograms] = useState([]);
 
+  const currentDate = moment().format('dddd, Do MMMM YYYY');
+
   useEffect(() => {
     getScholarProgram().then((res) => {
       setScholarPrograms(res);
@@ -85,7 +88,7 @@ const HomeScreen = () => {
             color: COLORS.gray50,
             ...FONTS.body3
           }}>
-            Thursday, 10th October 2024
+            {currentDate}
           </Text>
         </View>
 

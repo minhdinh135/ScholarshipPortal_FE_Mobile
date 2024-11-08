@@ -95,9 +95,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding,
   },
   emptyImage: {
-    width: SIZES.width * 0.5,
-    height: SIZES.height * 0.5,
-    marginVertical: -80,
+    width: SIZES.width * 0.7,
+    height: SIZES.height * 0.7,
+    marginVertical: -120,
   },
   emptyText: {
     ...FONTS.h1,
