@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import { useFocusEffect } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
@@ -41,6 +41,8 @@ const StepOne = ({ formData, setFormData, errors }) => {
 };
 
 const StepTwo = ({ formData, setFormData, errors }) => {
+  const [imagePreview, setImagePreview] = useState(null);
+
   const uploadFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -48,36 +50,37 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       });
 
       if (result) {
-        console.log("File selected:", result);
-
         const { uri, name, mimeType, size } = result.assets[0];
-
+        const isImage = mimeType.startsWith("image/");
         const files = new FormData();
         files.append("files", {
           uri: uri,
           name: name,
           type: mimeType,
-          size: size
+          size: size,
         });
 
         const response = await fetch("http://10.0.2.2:5254/api/file-upload", {
           method: "POST",
           body: files,
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
 
         const responseText = await response.text();
         console.log("Raw Response:", responseText);
 
         try {
-
           const responseJson = JSON.parse(responseText);
 
           if (response.ok) {
             Alert.alert("Upload Success", "File uploaded successfully.");
             setFormData({ ...formData, file: responseJson.data[0] });
+
+            if (isImage) {
+              setImagePreview(formData.file);
+            }
           } else {
             console.error("Upload error:", responseJson);
             Alert.alert("Upload Error", "Failed to upload file.");
@@ -112,12 +115,23 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         onChangeText={(text) => setFormData({ ...formData, major: text })}
       />
       {errors.major && <Text style={styles.errorText}>{errors.major}</Text>}
-      <TouchableOpacity style={styles.uploadButton} onPress={() => uploadFile()}>
+      <TouchableOpacity style={styles.uploadButton} onPress={uploadFile}>
         <Text style={styles.buttonText}>Upload File</Text>
       </TouchableOpacity>
-      {formData.file && <Text style={styles.fileText}>File: {formData.file}</Text>}
-      {errors.file && <Text style={styles.errorText}>{errors.file}</Text>}
-    </View>)
+
+      {/* Show preview if the file is an image */}
+      {imagePreview && (
+        <Image
+          source={{ uri: imagePreview }}
+          style={styles.imagePreview}
+          resizeMode="contain"
+        />
+      )}
+
+      {/* {formData.file && <Text style={styles.fileText}>File: {formData.file}</Text>}
+      {errors.file && <Text style={styles.errorText}>{errors.file}</Text>} */}
+    </View>
+  );
 };
 
 const StepThree = ({ formData }) => {
@@ -359,6 +373,12 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     alignItems: "center",
     marginVertical: SIZES.base,
+  },
+  imagePreview: {
+    width: "100%",
+    height: 200,
+    marginVertical: SIZES.base,
+    borderRadius: SIZES.radius,
   },
 });
 

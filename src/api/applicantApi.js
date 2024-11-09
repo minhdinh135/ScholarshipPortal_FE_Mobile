@@ -1,5 +1,20 @@
 const URL = "http://10.0.2.2:5254/api/applications";
 
+export const getApplicationById = async (id) => {
+  try {
+    const res = await fetch(`${URL}/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching the scholarship programs: ", error);
+  }
+};
+
 export const postApplication = async (applicationData) => {
   try {
     const res = await fetch(URL, {
@@ -20,4 +35,3 @@ export const postApplication = async (applicationData) => {
     console.error("Error posting the application: ", error);
   }
 };
-
