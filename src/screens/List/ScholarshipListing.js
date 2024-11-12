@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -12,17 +12,27 @@ import Animated, {
 } from 'react-native-reanimated';
 import { IconButton, LineDivider } from '../../components/Card'
 import { HorizontalList } from '../../components/List';
-import { COLORS, FONTS, SIZES, images, icons, dummyData } from '../../constants';
+import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import { SharedElement } from 'react-navigation-shared-element';
 
 import { getScholarProgram } from '../../api/scholarshipProgramApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HEADER_HEIGHT = 250;
 
 const ScholarshipListing = ({ navigation, route }) => {
 
   const [scholarPrograms, setScholarPrograms] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    PageIndex: 1,
+    PageSize: 5,
+    SortBy: '',
+    IsDescending: false,
+    IsPaging: true,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
 
   const flatListRef = React.useRef();
   const headerSharedValue = useSharedValue(80);
@@ -38,12 +48,52 @@ const ScholarshipListing = ({ navigation, route }) => {
     navigation.goBack()
   }
 
-  useEffect(() => {
-    getScholarProgram().then((res) => {
-      setScholarPrograms(res);
-      setLoading(false); // Set loading to false when data is loaded
+  useFocusEffect(
+    useCallback(() => {
+      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
+      return () =>
+        navigation.getParent().setOptions({
+          tabBarStyle: { display: 'flex' },
+        });
+    }, [navigation])
+  );
+
+  const fetchPrograms = useCallback(() => {
+    setLoading(true);
+    getScholarProgram({
+      PageIndex: pagination?.PageIndex,
+      PageSize: pagination?.PageSize,
+      SortBy: pagination?.SortBy,
+      IsDescending: pagination?.IsDescending,
+      IsPaging: pagination?.IsPaging,
+    }).then((res) => {
+      setScholarPrograms(res.data.items);
+      setPagination((prev) => ({
+        ...prev,
+        hasNextPage: res.data.hasNextPage,
+        hasPreviousPage: res.data.hasPreviousPage,
+        totalPages: res.data.totalPages,
+        PageIndex: res.data.pageIndex,
+      }));
+      setLoading(false);
     });
-  }, []);
+  }, [pagination.PageIndex, pagination.PageSize, pagination.SortBy, pagination.IsDescending, pagination.IsPaging]);
+
+  useEffect(() => {
+    fetchPrograms();
+  }, [fetchPrograms]);
+
+  function loadNextPage() {
+    if (pagination.hasNextPage) {
+      setPagination((prev) => ({ ...prev, PageIndex: prev.PageIndex + 1 }));
+    }
+  }
+
+  function loadPreviousPage() {
+    if (pagination.hasPreviousPage) {
+      setPagination((prev) => ({ ...prev, PageIndex: prev.PageIndex - 1 }));
+    }
+  }
 
   function renderHeader() {
     const inputRange = [0, HEADER_HEIGHT - 50]
@@ -197,47 +247,39 @@ const ScholarshipListing = ({ navigation, route }) => {
   }
 
   function renderResult() {
+    if (scholarPrograms.length === 0) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: COLORS.gray50, textAlign: 'center', ...FONTS.h2 }}>
+            No scholarships available yet
+          </Text>
+        </View>
+      );
+    }
+
     return (
       <Animated.FlatList
         ref={flatListRef}
-        data={scholarPrograms.data}
-        keyExtractor={item => `Result-${item.id}`}
-        contentContainerStyle={{
-          paddingHorizontal: SIZES.padding
-        }}
+        data={scholarPrograms}
+        keyExtractor={(item) => `Result-${item.id}`}
+        contentContainerStyle={{ paddingHorizontal: SIZES.padding }}
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         keyboardDismissMode="on-drag"
         onScroll={onScroll}
         ListHeaderComponent={
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: 40,
-              marginBottom: SIZES.base
-            }}
-          >
-            <Text
-              style={{
-                flex: 1,
-              }}
-            >
-              {scholarPrograms.data.length} results
-            </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 40, marginBottom: SIZES.base }}>
+            <Text style={{ flex: 1 }}>{scholarPrograms.length} results</Text>
             <IconButton
               icon={icons.filter}
-              iconStyle={{
-                width: 20,
-                height: 20
-              }}
+              iconStyle={{ width: 20, height: 20 }}
               containerStyle={{
                 width: 40,
                 height: 40,
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 10,
-                backgroundColor: COLORS.primary
+                backgroundColor: COLORS.primary,
               }}
             />
           </View>
@@ -247,29 +289,32 @@ const ScholarshipListing = ({ navigation, route }) => {
             course={item}
             containerStyle={{
               marginVertical: SIZES.padding,
-              marginTop: index == 0 ? SIZES.radius : SIZES.padding
+              marginTop: index === 0 ? SIZES.radius : SIZES.padding,
             }}
-            onPress={() => navigation.navigate("ScholarDetail", { selectedScholarship: item })}
+            onPress={() => navigation.navigate('ScholarDetail', { selectedScholarship: item })}
           />
         )}
-        ItemSeparatorComponent={() => (
-          <LineDivider
-            lineStyle={{
-              backgroundColor: COLORS.gray20
-            }}
-          />
-        )}
+        ItemSeparatorComponent={() => <LineDivider lineStyle={{ backgroundColor: COLORS.gray20 }} />}
+        ListFooterComponent={
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
+            {pagination.hasPreviousPage && (
+              <Text onPress={loadPreviousPage} style={{ color: COLORS.primary }}>
+                Previous
+              </Text>
+            )}
+            {pagination.hasNextPage && (
+              <Text onPress={loadNextPage} style={{ color: COLORS.primary }}>
+                Next
+              </Text>
+            )}
+          </View>
+        }
       />
-    )
+    );
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.white
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: COLORS.white }}>
       {renderHeader()}
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -279,7 +324,8 @@ const ScholarshipListing = ({ navigation, route }) => {
         renderResult()
       )}
     </View>
-  )
+  );
+
 }
 
 // ScholarshipListing.sharedElements = (route, otherRoute, showing) => {

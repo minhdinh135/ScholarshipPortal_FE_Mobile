@@ -12,7 +12,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
-  const { signIn, userToken, setIsLoggedIn } = useAuth();
+  const { signIn, signInWithGoogle, userToken, setIsLoggedIn } = useAuth();
   const [isChecked, setIsChecked] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
 
@@ -182,7 +182,7 @@ const LoginScreen = () => {
           <View style={{ flex: 1, height: 1, backgroundColor: COLORS.gray50, marginHorizontal: 10 }} />
         </View>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={signInWithGoogle}>
           <Image
             source={icons.google}
             style={{ width: 24, height: 24 }}

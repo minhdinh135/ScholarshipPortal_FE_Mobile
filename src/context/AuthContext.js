@@ -97,6 +97,45 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const response = await fetch('http://10.0.2.2:5254/api/authentication/auth-google');
+      const data = await response.json();
+      const authUrl = data.url;
+
+      // Start the Google OAuth session
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, 'myapp://redirect');
+
+      if (result.type === 'success' && result.url) {
+        const redirectUrl = result.url;
+        const code = new URL(redirectUrl).searchParams.get("code");
+
+        if (code) {
+          // Retrieve token using the authorization code
+          const tokenResponse = await fetch(`http://10.0.2.2:5254/api/authentication/google/callback?code=${code}`);
+
+          if (tokenResponse.ok) {
+            const tokenData = await tokenResponse.json();
+            const token = tokenData.token;
+            if (token) {
+              setUserToken(token);
+              const decodedUserInfo = jwtDecode(token);
+              setUserInfo(decodedUserInfo);
+              setIsLoggedIn(true);
+              await AsyncStorage.setItem('userToken', token);
+              Alert.alert('Login successful');
+            }
+          } else {
+            Alert.alert('Error in Google login callback');
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      Alert.alert("Google login failed");
+    }
+  };
+
   const signOut = async () => {
     setUserToken(null);
     setUserInfo(null);
@@ -113,7 +152,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ userToken, userInfo, signIn, signUp, signOut, isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ userToken, userInfo, signIn, signInWithGoogle, signUp, signOut, isLoggedIn, setIsLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );

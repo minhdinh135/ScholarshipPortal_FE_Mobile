@@ -22,15 +22,15 @@ const NotificationScreen = ({ navigation }) => {
       });
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-      return () =>
-        navigation.getParent().setOptions({
-          tabBarStyle: { display: 'flex' },
-        });
-    }, [navigation])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
+  //     return () =>
+  //       navigation.getParent().setOptions({
+  //         tabBarStyle: { display: 'flex' },
+  //       });
+  //   }, [navigation])
+  // );
 
   const renderNotification = ({ item }) => (
     <View style={styles.notificationItem}>

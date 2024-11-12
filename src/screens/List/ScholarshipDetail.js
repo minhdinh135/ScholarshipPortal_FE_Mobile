@@ -127,7 +127,8 @@ const ScholarshipDetail = ({ navigation, route }) => {
       <>
         <View
           style={{
-            flex: 1
+            flex: 1,
+            marginTop: 10
           }}
         >
           <IconButton

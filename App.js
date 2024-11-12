@@ -17,10 +17,12 @@ import ScholarshipDetail from "./src/screens/List/ScholarshipDetail";
 import UserList from "./src/components/Chat/UserList";
 import Chat from "./src/components/Chat/Chat";
 import MultiStepForm from "./src/screens/Applicant/MultiStepForm";
+import NotificationScreen from "./src/screens/Profile/NotificationScreen";
+
+import PaymentScreen from "./src/screens/Payment/PaymentScreen"
 
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
-import NotificationScreen from "./src/screens/Profile/NotificationScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createSharedElementStackNavigator();
@@ -61,10 +63,12 @@ function HomeStack() {
   return (
     <Stack.Navigator defaultScreenOptions={HomeScreen}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ headerShown: false }} />
+      {/* <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ headerShown: false }} /> */}
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
-      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
+      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false, tabBarStyle: { display: 'none' } }} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} options={{ headerShown: false }} />
+      <Stack.Screen name="UserListScreen" component={UserList} options={{ headerShown: false }} />
+      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
     </Stack.Navigator>
   )
 }
@@ -119,13 +123,26 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Chat"
-        component={ChatStack}
+        component={PaymentScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="chat" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Chat</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Pay</Text>
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <FontAwesome6 name="bell" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Notification</Text>
           ),
           headerShown: false,
         }}
@@ -138,7 +155,7 @@ function MainTabs() {
             <FontAwesome6 name="user-large" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Profile</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Me</Text>
           ),
         }}
       />

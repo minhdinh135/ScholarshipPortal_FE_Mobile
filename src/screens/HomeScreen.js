@@ -57,7 +57,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     getScholarProgram().then((res) => {
-      setScholarPrograms(res);
+      setScholarPrograms(res.data.items);
       setLoading(false);
     })
   }, [])
@@ -93,11 +93,12 @@ const HomeScreen = () => {
         </View>
 
         <IconButton
-          icon={icons.notification}
+          icon={icons.chat}
           iconStyle={{
             tintColor: COLORS.black
           }}
-          onPress={() => navigation.navigate("NotificationScreen")}
+          // onPress={() => navigation.navigate("NotificationScreen")}
+          onPress={() => navigation.navigate("UserListScreen")}
         />
 
       </View>
@@ -235,7 +236,7 @@ const HomeScreen = () => {
       >
         <FlatList
           // data={dummyData.courses_list_2}
-          data={scholarPrograms.data}
+          data={scholarPrograms}
           listKey="Popular Courses"
           scrollEnabled={false}
           keyExtractor={item => `Popular Courses-${item.id}`}
