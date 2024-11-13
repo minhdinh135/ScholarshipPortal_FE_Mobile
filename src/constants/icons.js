@@ -3,6 +3,7 @@ const animation = require("../assets/icons/animation.png")
 const back = require("../assets/icons/back.png")
 const call = require("../assets/icons/call.png")
 const camera = require("../assets/icons/camera.png")
+const chat = require("../assets/icons/chat.png")
 const checkbox_off = require("../assets/icons/checkbox_off.png")
 const checkbox_off_dark = require("../assets/icons/checkbox_off_dark.png")
 const checkbox_on = require("../assets/icons/checkbox_on.png")
@@ -57,6 +58,7 @@ export default {
   back,
   call,
   camera,
+  chat,
   checkbox_off,
   checkbox_off_dark,
   checkbox_on,
