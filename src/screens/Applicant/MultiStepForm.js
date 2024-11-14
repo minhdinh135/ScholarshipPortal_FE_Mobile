@@ -101,7 +101,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       <Text style={styles.title}>Upload Document</Text>
       <TextInput
         style={styles.input}
-        placeholder="School Name"
+        placeholder="File Name"
         placeholderTextColor={COLORS.gray50}
         value={formData.school}
         onChangeText={(text) => setFormData({ ...formData, school: text })}
@@ -109,7 +109,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       {errors.school && <Text style={styles.errorText}>{errors.school}</Text>}
       <TextInput
         style={styles.input}
-        placeholder="Major"
+        placeholder="Type"
         placeholderTextColor={COLORS.gray50}
         value={formData.major}
         onChangeText={(text) => setFormData({ ...formData, major: text })}
@@ -141,8 +141,8 @@ const StepThree = ({ formData }) => {
       <Text style={styles.summaryText}>Name: {formData.name}</Text>
       <Text style={styles.summaryText}>Email: {formData.email}</Text>
       <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
-      <Text style={styles.summaryText}>School: {formData.school}</Text>
-      <Text style={styles.summaryText}>Major: {formData.major}</Text>
+      <Text style={styles.summaryText}>File name: {formData.school}</Text>
+      <Text style={styles.summaryText}>Type: {formData.major}</Text>
       {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>}
     </View>
   )
@@ -196,8 +196,8 @@ const MultiStepForm = ({ navigation, route }) => {
         appliedDate: new Date().toISOString(),
         status: "PENDING",
         documents: [{
-          name: "Test",
-          type: "CV",
+          name: formData.school,
+          type: formData.major,
           fileUrl: formData.file
         }]
       }
