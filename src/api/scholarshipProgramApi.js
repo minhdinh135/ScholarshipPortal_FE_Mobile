@@ -3,10 +3,10 @@ const URL = "http://10.0.2.2:5254/api/scholarship-programs";
 export const getScholarProgram = async (params = {}) => {
   const {
     PageIndex = 1,
-    PageSize = 5,
+    PageSize = 3,
     SortBy = '',
     IsDescending = false,
-    IsPaging = false
+    IsPaging = true
   } = params;
 
   try {

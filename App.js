@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo, FontAwesome6 } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
-import { Easing, Text } from "react-native";
+import { Easing, Text, View } from "react-native";
 
 import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
 import LoginScreen from "./src/screens/Authentication/LoginScreen";
@@ -12,17 +12,21 @@ import RegisterScreen from "./src/screens/Authentication/RegisterScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
-import ScholarshipListing from "./src/screens/List/ScholarshipListing";
-import ScholarshipDetail from "./src/screens/List/ScholarshipDetail";
+import ScholarshipListing from "./src/screens/Scholarship/ScholarshipListing";
+import ScholarshipDetail from "./src/screens/Scholarship/ScholarshipDetail";
 import UserList from "./src/components/Chat/UserList";
 import Chat from "./src/components/Chat/Chat";
 import MultiStepForm from "./src/screens/Applicant/MultiStepForm";
 import NotificationScreen from "./src/screens/Profile/NotificationScreen";
-
+import ServiceList from "./src/screens/Service/ServiceList";
+import ServiceDetail from "./src/screens/Service/ServiceDetail";
+import ServiceForm from "./src/components/Service/ServiceForm";
 import PaymentScreen from "./src/screens/Payment/PaymentScreen"
 
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
+import { getNotification } from "./src/api/notificationApi";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createSharedElementStackNavigator();
@@ -83,16 +87,34 @@ function SearchStack() {
   )
 }
 
-function ChatStack() {
+function ServiceStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="UserListScreen" component={UserList} options={{ headerShown: false }} />
-      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
+      <Stack.Screen name="ServiceListScreen" component={ServiceList} />
+      <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
+      <Stack.Screen name="ServiceForm" component={ServiceForm} />
     </Stack.Navigator>
   )
 }
 
 function MainTabs() {
+
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { userInfo } = useAuth();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await getNotification(userInfo.id);
+        const unreadNotifications = response?.data?.filter(notification => !notification.isRead) || [];
+        setUnreadCount(unreadNotifications.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -100,10 +122,10 @@ function MainTabs() {
         component={HomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="home" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+            <Entypo name="home" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Home</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Home</Text>
           ),
           headerShown: false,
         }}
@@ -113,36 +135,68 @@ function MainTabs() {
         component={SearchStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="magnifying-glass" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+            <Entypo name="magnifying-glass" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Search</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Search</Text>
           ),
           headerShown: false,
         }}
       />
       <Tab.Screen
         name="Chat"
-        component={PaymentScreen}
+        component={ServiceStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Entypo name="chat" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+            <Entypo name="chat" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Pay</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Services</Text>
           ),
           headerShown: false,
         }}
       />
+      {/* <Tab.Screen
+        name="Notifications"
+        component={NotificationScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <FontAwesome6 name="bell" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
+          ),
+          tabBarLabel: ({ focused }) => (
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Notifications</Text>
+          ),
+          headerShown: false,
+        }}
+      /> */}
       <Tab.Screen
         name="Notifications"
         component={NotificationScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="bell" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+            <View>
+              <FontAwesome6 name="bell" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
+              {unreadCount > 0 && (
+                <View style={{
+                  position: 'absolute',
+                  right: -6,
+                  top: -4,
+                  backgroundColor: 'red',
+                  borderRadius: 8,
+                  width: 16,
+                  height: 16,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
+                    {unreadCount}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Notification</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Notifications</Text>
           ),
           headerShown: false,
         }}
@@ -152,10 +206,10 @@ function MainTabs() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="user-large" size={20} color={focused ? COLORS.primary : COLORS.gray30} />
+            <FontAwesome6 name="user-large" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30 }}>Me</Text>
+            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Me</Text>
           ),
         }}
       />

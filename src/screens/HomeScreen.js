@@ -9,6 +9,8 @@ import moment from "moment"
 
 import { getScholarProgram } from '../api/scholarshipProgramApi';
 import { HorizontalList } from '../components/List'
+import UniversityList from '../components/University/UniversityList';
+import { getUniversity } from '../api/universityApi'
 
 const Section = ({ containerStyle, title, onPress, children }) => {
   return (
@@ -52,13 +54,17 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [scholarPrograms, setScholarPrograms] = useState([]);
-
+  const [universities, setUniversities] = useState([]);
   const currentDate = moment().format('dddd, Do MMMM YYYY');
 
   useEffect(() => {
     getScholarProgram().then((res) => {
       setScholarPrograms(res.data.items);
       setLoading(false);
+    })
+    getUniversity().then((res) => {
+      setUniversities(res.data);
+      setLoading(false)
     })
   }, [])
 
@@ -231,11 +237,10 @@ const HomeScreen = () => {
       <Section
         title="Popular Scholarship"
         containerStyle={{
-          marginTop: 30
+          marginTop: 40
         }}
       >
         <FlatList
-          // data={dummyData.courses_list_2}
           data={scholarPrograms}
           listKey="Popular Courses"
           scrollEnabled={false}
@@ -265,12 +270,52 @@ const HomeScreen = () => {
     )
   }
 
+  function renderUniversities() {
+    return (
+      <Section
+        title="Recommend Schools"
+        containerStyle={{
+          marginBottom: 30
+        }}
+      >
+        <FlatList
+          data={universities.slice(0, 3)}
+          listKey="Popular Courses"
+          scrollEnabled={false}
+          keyExtractor={item => `Popular Courses-${item.id}`}
+          contentContainerStyle={{
+            marginTop: SIZES.radius,
+            paddingHorizontal: SIZES.padding
+          }}
+          renderItem={({ item, index }) => (
+            <UniversityList
+              university={item}
+              containerStyle={{
+                marginVertical: SIZES.padding,
+                marginTop: index == 0 ? SIZES.radius : SIZES.padding
+              }}
+
+            />
+          )}
+          ItemSeparatorComponent={() => (
+            <LineDivider
+              lineStyle={{
+                backgroundColor: COLORS.gray20
+              }}
+            />
+          )}
+        />
+      </Section>
+    )
+  }
+
   return (
     <GestureHandlerRootView>
       <View
         style={{
           // flex: 1,
           backgroundColor: COLORS.white,
+          // marginBottom: 100
         }}
       >
         {renderHeader()}
@@ -296,6 +341,14 @@ const HomeScreen = () => {
             </View>
           ) : (
             renderPopularCourses()
+          )}
+
+          {loading ? (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            </View>
+          ) : (
+            renderUniversities()
           )}
         </ScrollView>
       </View>

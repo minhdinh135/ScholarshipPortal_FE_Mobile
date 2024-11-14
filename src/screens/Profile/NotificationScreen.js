@@ -1,11 +1,11 @@
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getNotification } from '../../api/notificationApi';
 import { COLORS, SIZES, FONTS } from '../../constants';
-import { useFocusEffect } from '@react-navigation/native';
+import moment from 'moment';
 
-const NotificationScreen = ({ navigation }) => {
+const NotificationScreen = () => {
   const { userInfo } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const NotificationScreen = ({ navigation }) => {
   useEffect(() => {
     getNotification(userInfo?.id)
       .then((res) => {
-        setNotifications(res.data.items || []);
+        setNotifications(res.data || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -22,20 +22,15 @@ const NotificationScreen = ({ navigation }) => {
       });
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-  //     return () =>
-  //       navigation.getParent().setOptions({
-  //         tabBarStyle: { display: 'flex' },
-  //       });
-  //   }, [navigation])
-  // );
-
   const renderNotification = ({ item }) => (
     <View style={styles.notificationItem}>
-      <Text style={styles.notificationTitle}>{item.title}</Text>
-      <Text style={styles.notificationBody}>{item.body}</Text>
+      {!item.isRead && <View style={styles.unreadDot} />}
+      <Text style={[styles.notificationTitle, !item.isRead && styles.unreadTitle]}>
+        {item.message}
+      </Text>
+      <Text style={styles.notificationBody}>
+        {moment(item.createdAt).format('MMM DD, YYYY')}
+      </Text>
     </View>
   );
 
@@ -79,7 +74,7 @@ const styles = StyleSheet.create({
     ...FONTS.h2,
     color: COLORS.black,
     textAlign: 'center',
-    paddingVertical: SIZES.padding * 0.5
+    paddingVertical: SIZES.padding * 0.5,
   },
   loadingContainer: {
     flex: 1,
@@ -109,22 +104,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding,
   },
   notificationItem: {
-    backgroundColor: COLORS.gray10,
-    padding: SIZES.padding,
+    backgroundColor: COLORS.white,
+    padding: 20,
     borderRadius: SIZES.radius,
     marginVertical: SIZES.base,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
   },
   notificationTitle: {
     ...FONTS.h3,
     color: COLORS.primary3,
     marginBottom: 5,
+    paddingRight: 20
   },
   notificationBody: {
     ...FONTS.body4,
     color: COLORS.gray70,
+  },
+  unreadDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    backgroundColor: COLORS.primary,
+    position: 'absolute',
+    right: 10,
+    top: '80%',
+    transform: [{ translateY: -5 }],
+  },
+  unreadTitle: {
+    fontWeight: 'bold',
   },
 });
