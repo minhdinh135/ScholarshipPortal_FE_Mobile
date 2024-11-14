@@ -9,7 +9,7 @@ import { Easing, Text, View } from "react-native";
 import WelcomeScreen from "./src/screens/Authentication/WelcomeScreen";
 import LoginScreen from "./src/screens/Authentication/LoginScreen";
 import RegisterScreen from "./src/screens/Authentication/RegisterScreen";
-import ProfileScreen from "./src/screens/ProfileScreen";
+import ProfileScreen from "./src/screens/Profile/ProfileScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import SearchScreen from "./src/screens/SearchScreen";
 import ScholarshipListing from "./src/screens/Scholarship/ScholarshipListing";
@@ -22,6 +22,8 @@ import ServiceList from "./src/screens/Service/ServiceList";
 import ServiceDetail from "./src/screens/Service/ServiceDetail";
 import ServiceForm from "./src/components/Service/ServiceForm";
 import PaymentScreen from "./src/screens/Payment/PaymentScreen"
+
+import HistoryScreen from "./src/screens/Profile/HistoryScreen";
 
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
@@ -67,7 +69,6 @@ function HomeStack() {
   return (
     <Stack.Navigator defaultScreenOptions={HomeScreen}>
       <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-      {/* <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ headerShown: false }} /> */}
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
       <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false, tabBarStyle: { display: 'none' } }} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} options={{ headerShown: false }} />
@@ -93,6 +94,15 @@ function ServiceStack() {
       <Stack.Screen name="ServiceListScreen" component={ServiceList} />
       <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
       <Stack.Screen name="ServiceForm" component={ServiceForm} />
+    </Stack.Navigator>
+  )
+}
+
+function ProfileStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
     </Stack.Navigator>
   )
 }
@@ -156,19 +166,6 @@ function MainTabs() {
           headerShown: false,
         }}
       />
-      {/* <Tab.Screen
-        name="Notifications"
-        component={NotificationScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <FontAwesome6 name="bell" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
-          ),
-          tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Notifications</Text>
-          ),
-          headerShown: false,
-        }}
-      /> */}
       <Tab.Screen
         name="Notifications"
         component={NotificationScreen}
@@ -179,8 +176,8 @@ function MainTabs() {
               {unreadCount > 0 && (
                 <View style={{
                   position: 'absolute',
-                  right: -6,
-                  top: -4,
+                  right: -5,
+                  top: -3,
                   backgroundColor: 'red',
                   borderRadius: 8,
                   width: 16,
@@ -203,7 +200,7 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileStack}
         options={{
           tabBarIcon: ({ focused }) => (
             <FontAwesome6 name="user-large" size={22} color={focused ? COLORS.primary : COLORS.gray30} />

@@ -10,7 +10,7 @@ import Animated, {
   runOnJS,
   withDelay,
 } from 'react-native-reanimated';
-import { IconButton, LineDivider } from '../../components/Card'
+import { FilterModal, IconButton, LineDivider } from '../../components/Card'
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import { SharedElement } from 'react-navigation-shared-element';
@@ -41,6 +41,10 @@ const ScholarshipListing = ({ navigation, route }) => {
   const onScroll = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
   })
+
+  const filterModalSharedValue1 = useSharedValue(SIZES.height);
+  const filterModalSharedValue2 = useSharedValue(SIZES.height);
+
 
   const { category, sharedElementPrefix } = route.params;
 
@@ -281,6 +285,14 @@ const ScholarshipListing = ({ navigation, route }) => {
                 borderRadius: 10,
                 backgroundColor: COLORS.primary,
               }}
+              onPress={() => {
+                filterModalSharedValue1.value = withTiming(0, {
+                  duration: 100
+                })
+                filterModalSharedValue2.value = withDelay(100, withTiming(0, {
+                  duration: 500
+                }))
+              }}
             />
           </View>
         }
@@ -323,6 +335,12 @@ const ScholarshipListing = ({ navigation, route }) => {
       ) : (
         renderResult()
       )}
+
+      <FilterModal
+        filterModalSharedValue1={filterModalSharedValue1}
+        filterModalSharedValue2={filterModalSharedValue2}
+      />
+
     </View>
   );
 
