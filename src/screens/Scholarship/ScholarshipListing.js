@@ -14,9 +14,7 @@ import { FilterModal, IconButton, LineDivider } from '../../components/Card'
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import { SharedElement } from 'react-navigation-shared-element';
-
 import { getScholarProgram } from '../../api/scholarshipProgramApi';
-import { useFocusEffect } from '@react-navigation/native';
 
 const HEADER_HEIGHT = 250;
 
@@ -51,16 +49,6 @@ const ScholarshipListing = ({ navigation, route }) => {
   function backHandler() {
     navigation.goBack()
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-      return () =>
-        navigation.getParent().setOptions({
-          tabBarStyle: { display: 'flex' },
-        });
-    }, [navigation])
-  );
 
   const fetchPrograms = useCallback(() => {
     setLoading(true);

@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
-import { useFocusEffect } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
 import { postApplication } from "../../api/applicantApi";
@@ -214,16 +213,6 @@ const MultiStepForm = ({ navigation, route }) => {
       { text: "Yes", onPress: submitForm },
     ]);
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-      return () =>
-        navigation.getParent().setOptions({
-          tabBarStyle: { display: 'flex' },
-        });
-    }, [navigation])
-  );
 
   const renderProgressBar = () => (
     <View style={styles.progressContainer}>

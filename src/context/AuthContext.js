@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Alert, View } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from 'expo-web-browser';
+
 import { jwtDecode } from 'jwt-decode';
 import { decode } from 'base-64';
 global.atob = decode;
@@ -104,7 +106,7 @@ export const AuthProvider = ({ children }) => {
       const authUrl = data.url;
 
       // Start the Google OAuth session
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, 'myapp://redirect');
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, 'http://10.0.2.2:5254/api/authentication/google/callback?code=4%2F0AeanS0aePJ3jir-6FFp5fqB_oU2iKhkotkEdDizVjv3WaIgaftD6aoBT--c1N-a3X1GZ3g&scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=consent');
 
       if (result.type === 'success' && result.url) {
         const redirectUrl = result.url;

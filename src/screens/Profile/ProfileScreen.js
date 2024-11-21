@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useAuth } from '../../context/AuthContext';
+import { COLORS, FONTS } from '../../constants';
 
-export default function Example() {
+const SettingsScreen = ({ navigation }) => {
   const { signOut, userInfo } = useAuth();
   const [form, setForm] = useState({
     emailNotifications: true,
@@ -21,7 +22,7 @@ export default function Example() {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f8f8' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={styles.container}>
         {/* <View style={styles.header}>
           <View style={[styles.headerAction, { alignItems: 'flex-end' }]}>
@@ -36,6 +37,15 @@ export default function Example() {
             </Pressable>
           </View>
         </View> */}
+        <View
+          style={{
+            marginTop: 36,
+            flexDirection: 'row',
+            justifyContent: 'center'
+          }}
+        >
+          <Text style={{ ...FONTS.h2 }}>Settings</Text>
+        </View>
 
         <ScrollView contentContainerStyle={styles.content}>
           <View style={[styles.section, { paddingTop: 4 }]}>
@@ -72,19 +82,36 @@ export default function Example() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Section 1</Text>
+            <Text style={styles.sectionTitle}>Account</Text>
 
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    navigation.navigate("EditProfileScreen")
                   }}
-                  style={styles.row}>
+                  style={styles.row}
+                >
                   <AntDesign style={{ marginRight: "8px", color: "#243666" }} name="profile" size={20} color="black" />
                   <Text style={styles.rowLabel}>Edit Profile</Text>
                   <View style={styles.rowSpacer} />
 
+                  <FeatherIcon
+                    color="#bcbcbc"
+                    name="chevron-right"
+                    size={19} />
+                </Pressable>
+              </View>
+
+              <View style={styles.rowWrapper}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("ChangePasswordScreen")
+                  }}
+                  style={styles.row}>
+                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="shield-outline" size={20} color="black" />
+                  <Text style={styles.rowLabel}>Change Password</Text>
+                  <View style={styles.rowSpacer} />
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -135,7 +162,7 @@ export default function Example() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Section 2</Text>
+            <Text style={styles.sectionTitle}>Settings</Text>
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <View style={styles.row}>
@@ -173,7 +200,7 @@ export default function Example() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Section 3</Text>
+            <Text style={styles.sectionTitle}>Support</Text>
 
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
@@ -262,6 +289,8 @@ export default function Example() {
   );
 }
 
+export default SettingsScreen;
+
 const styles = StyleSheet.create({
   container: {
     padding: 0,
@@ -315,14 +344,14 @@ const styles = StyleSheet.create({
   },
   sectionBody: {
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    elevation: 2,
+    elevation: 3,
   },
   /** Profile */
   profile: {
@@ -336,7 +365,7 @@ const styles = StyleSheet.create({
   profileAvatar: {
     width: 60,
     height: 60,
-    borderRadius: 9999,
+    borderRadius: 100,
     marginRight: 12,
   },
   profileBody: {
@@ -373,9 +402,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
   },
   rowLabel: {
-    fontSize: 16,
     letterSpacing: 0.24,
-    color: '#243666',
+    marginLeft: 8,
+    color: COLORS.primary3,
+    ...FONTS.body3
   },
   rowSpacer: {
     flexGrow: 1,

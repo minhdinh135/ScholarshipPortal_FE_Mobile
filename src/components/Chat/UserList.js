@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { getAccounts } from '../../api/accountApi';
 import { COLORS, FONTS, SIZES } from '../../constants';
 
@@ -14,16 +14,6 @@ const UserListScreen = () => {
     };
     fetchUsers();
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-      return () =>
-        navigation.getParent().setOptions({
-          tabBarStyle: { display: 'flex' },
-        });
-    }, [navigation])
-  );
 
   function renderHeader() {
     return (

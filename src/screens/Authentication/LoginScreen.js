@@ -1,6 +1,6 @@
 import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { COLORS, icons, SIZES } from '../../constants'
+import { COLORS, FONTS, icons, SIZES } from '../../constants'
 import { Entypo } from '@expo/vector-icons'
 import Checkbox from 'expo-checkbox'
 import { useNavigation } from '@react-navigation/native'
@@ -43,18 +43,17 @@ const LoginScreen = () => {
         <View style={{ marginVertical: 30 }}>
           <Text
             style={{
-              fontSize: 30,
-              fontWeight: 'bold',
               marginVertical: 12,
-              color: COLORS.primary
+              color: COLORS.primary,
+              ...FONTS.largeTitle
             }}
           >
             Welcome back
           </Text>
           <Text
             style={{
-              fontSize: 16,
-              color: COLORS.black
+              color: COLORS.gray60,
+              ...FONTS.body3
             }}
           >
             Please log in to your account
@@ -62,7 +61,7 @@ const LoginScreen = () => {
         </View>
 
         <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 16, fontWeight: '400', marginVertical: 8 }}>
+          <Text style={{ marginVertical: 8, ...FONTS.body3 }}>
             Email address
           </Text>
           <View
@@ -87,7 +86,7 @@ const LoginScreen = () => {
             />
           </View>
 
-          <Text style={{ fontSize: 16, fontWeight: '400', marginVertical: 8 }}>
+          <Text style={{ marginVertical: 8, ...FONTS.body3 }}>
             Password
           </Text>
           <View

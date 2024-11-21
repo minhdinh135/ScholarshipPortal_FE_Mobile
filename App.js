@@ -28,7 +28,9 @@ import HistoryScreen from "./src/screens/Profile/HistoryScreen";
 import { COLORS } from "./src/constants";
 import { useFonts } from "expo-font";
 import { getNotification } from "./src/api/notificationApi";
-
+import { subscribeToNotifications } from "./src/services/NotificationService"
+import EditProfileScreen from "./src/screens/Profile/EditProfileScreen";
+import ChangePasswordScreen from "./src/screens/Profile/ChangePasswordScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createSharedElementStackNavigator();
@@ -65,50 +67,7 @@ function AuthStack() {
   );
 }
 
-function HomeStack() {
-  return (
-    <Stack.Navigator defaultScreenOptions={HomeScreen}>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
-      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false, tabBarStyle: { display: 'none' } }} />
-      <Stack.Screen name="MultiStep" component={MultiStepForm} options={{ headerShown: false }} />
-      <Stack.Screen name="UserListScreen" component={UserList} options={{ headerShown: false }} />
-      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
-    </Stack.Navigator>
-  )
-}
-
-function SearchStack() {
-  return (
-    <Stack.Navigator defaultScreenOptions={SearchScreen}>
-      <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
-      <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  )
-}
-
-function ServiceStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ServiceListScreen" component={ServiceList} />
-      <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
-      <Stack.Screen name="ServiceForm" component={ServiceForm} />
-    </Stack.Navigator>
-  )
-}
-
-function ProfileStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
-    </Stack.Navigator>
-  )
-}
-
-function MainTabs() {
-
+function HomeTabs() {
   const [unreadCount, setUnreadCount] = useState(0);
   const { userInfo } = useAuth();
 
@@ -125,11 +84,20 @@ function MainTabs() {
     fetchNotifications();
   }, []);
 
+  // useEffect(() => {
+  //   if (userInfo?.id) {
+  //     const unsubscribe = subscribeToNotifications(userInfo.id, (unreadNotifications) => {
+  //       setUnreadCount(unreadNotifications.length);
+  //     });
+  //     return () => unsubscribe();
+  //   }
+  // }, [userInfo]);
+
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
-        name="Home"
-        component={HomeStack}
+        name="HomeTab"
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="home" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
@@ -137,12 +105,11 @@ function MainTabs() {
           tabBarLabel: ({ focused }) => (
             <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Home</Text>
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
         name="Search"
-        component={SearchStack}
+        component={SearchScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="magnifying-glass" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
@@ -150,12 +117,11 @@ function MainTabs() {
           tabBarLabel: ({ focused }) => (
             <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Search</Text>
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
-        name="Chat"
-        component={ServiceStack}
+        name="Service"
+        component={ServiceList}
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo name="chat" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
@@ -163,7 +129,6 @@ function MainTabs() {
           tabBarLabel: ({ focused }) => (
             <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Services</Text>
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -195,12 +160,11 @@ function MainTabs() {
           tabBarLabel: ({ focused }) => (
             <Text style={{ color: focused ? COLORS.primary : COLORS.gray30, fontSize: 12 }}>Notifications</Text>
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileStack}
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <FontAwesome6 name="user-large" size={22} color={focused ? COLORS.primary : COLORS.gray30} />
@@ -214,14 +178,32 @@ function MainTabs() {
   );
 }
 
+function MainTabs() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen name="MultiStep" component={MultiStepForm} />
+        <Stack.Screen name="UserListScreen" component={UserList} />
+        <Stack.Screen name="ChatScreen" component={Chat} />
+        <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} options={() => options} />
+        <Stack.Screen name="ScholarDetail" component={ScholarshipDetail} />
+        <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
+        <Stack.Screen name="ServiceForm" component={ServiceForm} />
+        <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+        <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
+
 function AppContent() {
   const { isLoggedIn } = useAuth();
 
   return (
     <>
-      <NavigationContainer>
-        {isLoggedIn ? <MainTabs /> : <AuthStack />}
-      </NavigationContainer>
+      {isLoggedIn ? <MainTabs /> : <AuthStack />}
     </>
   );
 }

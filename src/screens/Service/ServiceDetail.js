@@ -1,14 +1,11 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { View, Text, ImageBackground, TouchableOpacity, Animated } from 'react-native'
 import {
   IconButton,
   LineDivider
 } from "../../components/Card";
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
-import { interpolate } from 'react-native-reanimated';
-
 import Description from '../../components/ScholarshipProgram/Description';
-import { useFocusEffect } from '@react-navigation/native';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -122,17 +119,6 @@ const ServiceDetail = ({ navigation, route }) => {
       offset: tabIndex * SIZES.width
     })
   })
-
-  useFocusEffect(
-    useCallback(() => {
-      navigation.getParent().setOptions({ tabBarStyle: { display: 'none' } });
-      return () =>
-        navigation.getParent().setOptions({
-          tabBarStyle: { display: 'flex' },
-        });
-    }, [navigation])
-  );
-
 
   function renderHeaderComponent() {
     return (
