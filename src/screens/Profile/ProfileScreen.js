@@ -44,7 +44,7 @@ const SettingsScreen = ({ navigation }) => {
             justifyContent: 'center'
           }}
         >
-          <Text style={{ ...FONTS.h2 }}>Settings</Text>
+          <Text style={{ ...FONTS.h2, marginBottom: 5 }}>Settings</Text>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
