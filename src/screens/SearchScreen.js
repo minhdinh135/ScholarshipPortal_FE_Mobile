@@ -83,6 +83,7 @@ const SearchScreen = () => {
           }}
           renderItem={({ item, index }) => (
             <CategoryCard
+              sharedElementPrefix="Home"
               category={item}
               containerStyle={{
                 height: 130,
@@ -90,7 +91,7 @@ const SearchScreen = () => {
                 marginTop: SIZES.radius,
                 marginLeft: (index + 1) % 2 == 0 ? SIZES.radius : SIZES.padding,
               }}
-              onPress={() => navigation.navigate("ScholarshipListing")}
+              onPress={() => navigation.navigate("ScholarshipListing", { category: item, sharedElementPrefix: "Home" })}
             />
           )}
         />
@@ -183,10 +184,8 @@ const SearchScreen = () => {
             }
           }}
         >
-          {/* {renderSearchBar()} */}
           {renderTopSearch()}
           {renderBrowseCategory()}
-          {/* {renderSearchBar()} */}
         </Animated.ScrollView>
 
         {renderSearchBar()}

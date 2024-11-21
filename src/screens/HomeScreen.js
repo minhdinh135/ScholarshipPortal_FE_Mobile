@@ -6,7 +6,6 @@ import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, 
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment"
-
 import { getScholarProgram } from '../api/scholarshipProgramApi';
 import { HorizontalList } from '../components/List'
 import UniversityList from '../components/University/UniversityList';
@@ -58,15 +57,19 @@ const HomeScreen = () => {
   const currentDate = moment().format('dddd, Do MMMM YYYY');
 
   useEffect(() => {
-    getScholarProgram().then((res) => {
-      setScholarPrograms(res.data.items);
-      setLoading(false);
-    })
-    getUniversity().then((res) => {
-      setUniversities(res.data);
-      setLoading(false)
-    })
-  }, [])
+    setLoading(true);
+    Promise.all([getScholarProgram(), getUniversity()])
+      .then(([scholarResponse, universityResponse]) => {
+        setScholarPrograms(scholarResponse.data.items);
+        setUniversities(universityResponse.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   function renderHeader() {
     return (
@@ -88,6 +91,7 @@ const HomeScreen = () => {
             style={{
               ...FONTS.h2
             }}>
+
             Hello, {userInfo.username}
           </Text>
           <Text style={{
@@ -103,7 +107,6 @@ const HomeScreen = () => {
           iconStyle={{
             tintColor: COLORS.black
           }}
-          // onPress={() => navigation.navigate("NotificationScreen")}
           onPress={() => navigation.navigate("UserListScreen")}
         />
 
@@ -313,9 +316,7 @@ const HomeScreen = () => {
     <GestureHandlerRootView>
       <View
         style={{
-          // flex: 1,
           backgroundColor: COLORS.white,
-          // marginBottom: 100
         }}
       >
         {renderHeader()}
@@ -335,6 +336,7 @@ const HomeScreen = () => {
           />
 
           {renderCategories()}
+
           {loading ? (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <ActivityIndicator size="large" color={COLORS.primary} />
@@ -356,4 +358,4 @@ const HomeScreen = () => {
   )
 }
 
-export default HomeScreen
+export default HomeScreen;
