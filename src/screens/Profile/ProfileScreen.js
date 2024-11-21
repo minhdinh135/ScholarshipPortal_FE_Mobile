@@ -269,11 +269,9 @@ const SettingsScreen = ({ navigation }) => {
                   { alignItems: 'center' },
                 ]}>
                 <Pressable
-                  onPress={() => {
-                    // handle onPress
-                  }}
+                  onPress={signOut}
                   style={styles.row}>
-                  <Text onPress={signOut} style={[styles.rowLabel, styles.rowLabelLogout]}>
+                  <Text style={[styles.rowLabel, styles.rowLabelLogout]}>
                     Log Out
                   </Text>
                 </Pressable>
@@ -425,7 +423,7 @@ const styles = StyleSheet.create({
   rowLabelLogout: {
     width: '100%',
     textAlign: 'center',
-    fontWeight: '600',
-    color: '#dc2626',
+    ...FONTS.h3,
+    color: 'red',
   },
 });

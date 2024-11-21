@@ -7,7 +7,6 @@ import * as DocumentPicker from "expo-document-picker";
 import { changeAvatar } from '../../api/accountApi';
 
 const EditProfileScreen = ({ navigation }) => {
-
   const { userInfo } = useAuth();
 
   const uploadFile = async () => {
