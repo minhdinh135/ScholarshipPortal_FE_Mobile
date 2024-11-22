@@ -1,4 +1,4 @@
-const URL = "http://10.0.2.2:5254/api/services"
+const URL = "https://ssap-backend.azurewebsites.net/api/services"
 
 export const getServices = async (params = {}) => {
   const {

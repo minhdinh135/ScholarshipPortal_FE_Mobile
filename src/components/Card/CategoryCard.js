@@ -52,8 +52,8 @@ const CategoryCard = ({ sharedElementPrefix, category, containerStyle, onPress }
       <View
         style={{
           position: 'absolute',
-          bottom: 25,
-          left: 5
+          bottom: 35,
+          left: 10
         }}
       >
         <SharedElement

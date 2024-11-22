@@ -1,4 +1,4 @@
-const URL = "http://10.0.2.2:5254/api/scholarship-programs";
+const URL = "https://ssap-backend.azurewebsites.net/api/scholarship-programs";
 
 export const getScholarProgram = async (params = {}) => {
   const {

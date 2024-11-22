@@ -291,7 +291,7 @@ const ScholarshipListing = ({ navigation, route }) => {
               marginVertical: SIZES.padding,
               marginTop: index === 0 ? SIZES.radius : SIZES.padding,
             }}
-            onPress={() => navigation.navigate('ScholarDetail', { selectedScholarship: item })}
+            onPress={() => navigation.navigate('ScholarshipDetail', { selectedScholarship: item })}
           />
         )}
         ItemSeparatorComponent={() => <LineDivider lineStyle={{ backgroundColor: COLORS.gray20 }} />}

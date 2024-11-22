@@ -1,4 +1,4 @@
-const URL = "http://10.0.2.2:5254/api/applications";
+const URL = "https://ssap-backend.azurewebsites.net/api/applications";
 
 export const getApplicationById = async (id) => {
   try {

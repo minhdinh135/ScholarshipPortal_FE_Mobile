@@ -13,7 +13,7 @@
 //   const createInvoice = async () => {
 //     console.log("XẪ: ");
 //     try {
-//       const response = await axios.post('http://10.0.2.2:5254/api/payments/create-invoice', { accountId: "13", amount });
+//       const response = await axios.post('https://ssap-backend.azurewebsites.net/api/payments/create-invoice', { accountId: "13", amount });
 //       console.log("XXXÂXẪ: ", response.data);
 //       const { error: paymentError } = await presentPaymentSheet();
 //       if (response.data && response.data.data) {
@@ -73,7 +73,7 @@ const PaymentScreen = () => {
   const createInvoice = async () => {
     console.log("Creating invoice...", amount);
     try {
-      const response = await axios.post('http://10.0.2.2:5254/pay', {
+      const response = await axios.post('https://ssap-backend.azurewebsites.net/pay', {
         // accountId: "13",
         amount: amount
       });
@@ -116,7 +116,7 @@ const PaymentScreen = () => {
   };
 
   return (
-    <StripeProvider publishableKey={process.env.VITE_STRIPE_PUBLISHABLE_KEY}>
+    <StripeProvider publishableKey="pk_test_51QCMb308u8J7LaJOAREpbPlmyfVpd22yS6ltclWgXSrdsB5OxGxSdo6zlhm54FdxUaRoX0zsKvlVdVSrjVessc0I00xFufsjzu">
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Button title="Pay Now" onPress={createInvoice} />
       </View>

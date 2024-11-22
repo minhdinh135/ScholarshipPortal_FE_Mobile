@@ -1,4 +1,4 @@
-const URL = "http://10.0.2.2:5254/api/notifications"
+const URL = "https://ssap-backend.azurewebsites.net/api/notifications"
 
 export const getNotification = async (id) => {
   try {
