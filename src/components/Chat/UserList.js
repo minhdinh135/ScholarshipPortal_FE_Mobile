@@ -15,47 +15,12 @@ const UserListScreen = () => {
     fetchUsers();
   }, []);
 
-  function renderHeader() {
-    return (
-      <View
-        style={{
-          marginTop: 40,
-          marginBottom: 10,
-          paddingHorizontal: SIZES.padding,
-          alignItems: 'center'
-        }}
-      >
-        <View
-          style={{
-            flex: 1
-          }}
-        >
-          Chat
-        </View>
-      </View>
-    )
-  }
-
-  function renderList() {
-    return (
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.userCard}
-            onPress={() => navigation.navigate('ChatScreen', { otherUserId: item.id })}>
-            <Text style={styles.username}>{item.username}</Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.listContainer}
-      />
-    )
-  }
-
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>User List</Text> */}
+
+      <Text style={styles.title}>
+        Chat List
+      </Text>
 
       <FlatList
         data={users}
@@ -69,6 +34,7 @@ const UserListScreen = () => {
         )}
         contentContainerStyle={styles.listContainer}
       />
+
     </View>
   );
 };
@@ -76,15 +42,15 @@ const UserListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
-    marginBottom: 10,
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SIZES.base,
     backgroundColor: COLORS.white
   },
   title: {
-    marginVertical: 16,
+    ...FONTS.h2,
+    color: COLORS.black,
     textAlign: 'center',
-    ...FONTS.h2
+    paddingVertical: SIZES.padding * 0.5,
+    marginTop: 20
   },
   listContainer: {
     paddingBottom: 16,

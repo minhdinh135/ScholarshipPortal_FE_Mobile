@@ -60,51 +60,104 @@
 
 // export default PaymentScreen;
 
+// import React, { useState } from 'react';
+// import { View, Button, Alert } from 'react-native';
+// import axios from 'axios';
+// import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
+
+// const PaymentScreen = () => {
+//   const [amount, setAmount] = useState(100);
+//   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+//   // Function to create payment intent
+//   const createInvoice = async () => {
+//     console.log("Creating invoice...", amount);
+//     try {
+//       const response = await axios.post(`${process.env.BASE_URL}/api/payments/stripe-checkout`, {
+//         senderId: 13,
+//         receiverId: 12,
+//         amount: amount,
+//         description: "Test Mobile Payment"
+//       });
+
+//       if (response.data && response.data.clientSecret) {
+//         const { clientSecret } = response.data;
+
+//         // Initialize the Payment Sheet with the client secret
+//         const { error: initError } = await initPaymentSheet({
+//           paymentIntentClientSecret: clientSecret,
+//         });
+
+//         if (initError) {
+//           console.log("Error initializing payment sheet:", initError);
+//           Alert.alert("Error", "Failed to initialize payment sheet.");
+//           return;
+//         }
+
+//         // Present the Payment Sheet to the user
+//         const { error, paymentIntent } = await presentPaymentSheet();
+
+//         if (error) {
+//           console.log("Payment failed:", error);
+//           Alert.alert("Payment Failed", "Something went wrong with the payment.");
+//         } else {
+//           // Check if payment was successful
+//           if (paymentIntent.status === 'succeeded') {
+//             Alert.alert("Payment Successful", "Thank you for your payment!");
+//           } else {
+//             Alert.alert("Payment Failed", "Your payment did not go through.");
+//           }
+//         }
+//       } else {
+//         Alert.alert("Error", "Failed to create invoice.");
+//       }
+//     } catch (error) {
+//       console.error("Error creating invoice:", error);
+//       Alert.alert("Error", "Something went wrong.");
+//     }
+//   };
+
+//   return (
+//     <StripeProvider publishableKey={process.env.VITE_STRIPE_PUBLISHABLE_KEY}>
+//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//         <Button title="Pay Now" onPress={createInvoice} />
+//       </View>
+//     </StripeProvider>
+//   );
+// };
+
+// export default PaymentScreen;
+
 import React, { useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import axios from 'axios';
-import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import * as WebBrowser from 'expo-web-browser';
 
 const PaymentScreen = () => {
   const [amount, setAmount] = useState(100);
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   // Function to create payment intent
   const createInvoice = async () => {
     console.log("Creating invoice...", amount);
     try {
-      const response = await axios.post('https://ssap-backend.azurewebsites.net/pay', {
-        // accountId: "13",
-        amount: amount
-      });
+      const response = await axios.post(`${process.env.BASE_URL}/api/payments/stripe-checkout`, {
+        senderId: 13,
+        receiverId: 12,
+        amount: amount,
+        description: "Test Mobile Payment"
+      })
 
-      if (response.data && response.data.clientSecret) {
-        const { clientSecret } = response.data;
+      if (response.data && response.data.data.sessionUrl) {
+        const { sessionUrl } = response.data.data;
 
-        // Initialize the Payment Sheet with the client secret
-        const { error: initError } = await initPaymentSheet({
-          paymentIntentClientSecret: clientSecret,
-        });
+        // Open the checkout URL in a web browser
+        const result = await WebBrowser.openBrowserAsync(sessionUrl);
 
-        if (initError) {
-          console.log("Error initializing payment sheet:", initError);
-          Alert.alert("Error", "Failed to initialize payment sheet.");
-          return;
-        }
-
-        // Present the Payment Sheet to the user
-        const { error, paymentIntent } = await presentPaymentSheet();
-
-        if (error) {
-          console.log("Payment failed:", error);
-          Alert.alert("Payment Failed", "Something went wrong with the payment.");
+        if (result.type === 'cancel') {
+          Alert.alert("Payment Cancelled", "You cancelled the payment.");
         } else {
-          // Check if payment was successful
-          if (paymentIntent.status === 'succeeded') {
-            Alert.alert("Payment Successful", "Thank you for your payment!");
-          } else {
-            Alert.alert("Payment Failed", "Your payment did not go through.");
-          }
+          Alert.alert("Payment Successful", "Thank you for your payment!");
         }
       } else {
         Alert.alert("Error", "Failed to create invoice.");
@@ -116,7 +169,7 @@ const PaymentScreen = () => {
   };
 
   return (
-    <StripeProvider publishableKey="pk_test_51QCMb308u8J7LaJOAREpbPlmyfVpd22yS6ltclWgXSrdsB5OxGxSdo6zlhm54FdxUaRoX0zsKvlVdVSrjVessc0I00xFufsjzu">
+    <StripeProvider publishableKey={process.env.VITE_STRIPE_PUBLISHABLE_KEY}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Button title="Pay Now" onPress={createInvoice} />
       </View>

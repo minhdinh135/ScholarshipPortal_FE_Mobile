@@ -22,7 +22,7 @@ export function MainStack() {
       <Stack.Screen name="Home" component={HomeTabs} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} />
       <Stack.Screen name="UserListScreen" component={UserList} />
-      <Stack.Screen name="ChatScreen" component={Chat} />
+      <Stack.Screen name="ChatScreen" component={Chat} options={{headerShown: true}} />
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} />
       <Stack.Screen name="ScholarshipDetail" component={ScholarshipDetail} />
       <Stack.Screen name="ServiceDetail" component={ServiceDetail} />

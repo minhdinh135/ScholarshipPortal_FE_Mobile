@@ -1,4 +1,4 @@
-const URL = "https://ssap-backend.azurewebsites.net/api/applications";
+const URL = `${process.env.BASE_URL}/api/applications`;
 
 export const getApplicationById = async (id) => {
   try {

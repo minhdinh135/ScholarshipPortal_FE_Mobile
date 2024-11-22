@@ -3,6 +3,7 @@ import { Bubble, GiftedChat, Avatar } from 'react-native-gifted-chat';
 import { sendMessage, subscribeToMessages, createChatRoom } from '../../services/ChatService';
 import { useAuth } from '../../context/AuthContext';
 import { COLORS } from '../../constants';
+import { Text, View } from 'react-native';
 
 const ChatScreen = ({ route }) => {
   const { userInfo } = useAuth();
@@ -67,19 +68,21 @@ const ChatScreen = ({ route }) => {
   };
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: userInfo.id,
-        name: userInfo.username,
-      }}
-      messagesContainerStyle={{
-        backgroundColor: COLORS.white
-      }}
-      renderBubble={renderBubble}
-      renderAvatar={renderAvatar}
-    />
+    <View style={{ flex: 1, marginBottom: 50 }}>
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: userInfo.id,
+          name: userInfo.username,
+        }}
+        messagesContainerStyle={{
+          backgroundColor: COLORS.white
+        }}
+        renderBubble={renderBubble}
+        renderAvatar={renderAvatar}
+      />
+    </View>
   );
 };
 
