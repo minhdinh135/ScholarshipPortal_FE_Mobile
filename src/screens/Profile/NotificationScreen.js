@@ -2,7 +2,7 @@ import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image } from 'reac
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getNotification } from '../../api/notificationApi';
-import { COLORS, SIZES, FONTS } from '../../constants';
+import { COLORS, SIZES, FONTS, images } from '../../constants';
 import moment from 'moment';
 
 const NotificationScreen = () => {
@@ -44,7 +44,7 @@ const NotificationScreen = () => {
       ) : notifications.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Image
-            source={{ uri: 'https://raw.githubusercontent.com/webdevcody/thumbnail-critique/22e8204eab91855ea5069e876b294ba5d2706200/public/void.png' }}
+            source={images.nothing_here}
             style={styles.emptyImage}
             resizeMode="contain"
           />
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
     paddingTop: SIZES.padding,
+    justifyContent: 'center'
   },
   screenTitle: {
     ...FONTS.h2,

@@ -1,6 +1,6 @@
-const URL = `${process.env.BASE_URL}/api/applications`;
+const URL = `${process.env.BASE_URL}/api/applicants`;
 
-export const getApplicationById = async (id) => {
+export const getApplicantById = async (id) => {
   try {
     const res = await fetch(`${URL}/${id}`);
 
@@ -11,27 +11,6 @@ export const getApplicationById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
-  }
-};
-
-export const postApplication = async (applicationData) => {
-  try {
-    const res = await fetch(URL, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(applicationData),
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error("Error posting the application: ", error);
+    console.error("Error fetching applicants: ", error);
   }
 };

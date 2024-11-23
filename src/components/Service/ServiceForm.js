@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { COLORS, SIZES, FONTS } from "../../constants";
 import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
-import { postApplication } from "../../api/applicantApi";
+import { postApplication } from "../../api/applicationApi";
 
 const StepOne = ({ formData, setFormData, errors }) => {
   return (

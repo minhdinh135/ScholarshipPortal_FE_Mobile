@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { COLORS, SIZES, FONTS } from "../../constants";
 import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
-import { postApplication } from "../../api/applicantApi";
+import { postApplication } from "../../api/applicationApi";
 
 const StepOne = ({ formData, setFormData, errors }) => {
   return (
@@ -142,7 +142,7 @@ const StepThree = ({ formData }) => {
       <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
       <Text style={styles.summaryText}>File name: {formData.school}</Text>
       <Text style={styles.summaryText}>Type: {formData.major}</Text>
-      {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>}
+      {/* {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>} */}
     </View>
   )
 };

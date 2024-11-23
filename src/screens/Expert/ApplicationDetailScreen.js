@@ -2,9 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SIZES } from '../../constants';
+import { updateApplication } from '../../api/applicationApi';
 
 const DetailsScreen = ({ route }) => {
   const { application } = route.params;
+
+  console.log(application.applicant.id);
+
 
   const renderStatusIcon = (status) => {
     switch (status) {
@@ -19,12 +23,28 @@ const DetailsScreen = ({ route }) => {
     }
   };
 
+  const handleApproved = async (id) => {
+    try {
+      updateApplication(id, "Approved");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleRejected = async (id) => {
+    try {
+      updateApplication(id, "Rejected");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <ScrollView style={styles.container}>
       {/* Applicant Information Section */}
       <View style={styles.section}>
         <Text style={styles.title}>{application.name}</Text>
-        <Text style={styles.position}>Position: {application.position}</Text>
+        <Text style={styles.position}>Email: {application.email}</Text>
         <View style={styles.statusContainer}>
           {renderStatusIcon(application.status)}
           <Text
@@ -33,8 +53,8 @@ const DetailsScreen = ({ route }) => {
               application.status === 'Approved'
                 ? styles.statusApprovedText
                 : application.status === 'Pending'
-                ? styles.statusPendingText
-                : styles.statusDisapprovedText,
+                  ? styles.statusPendingText
+                  : styles.statusDisapprovedText,
             ]}
           >
             {application.status}
@@ -75,10 +95,10 @@ const DetailsScreen = ({ route }) => {
 
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleApproved(application.applicant.id)}>
           <Text style={styles.actionButtonText}>Approve</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleRejected(application.applicant.id)}>
           <Text style={styles.actionButtonText}>Reject</Text>
         </TouchableOpacity>
       </View>
