@@ -131,12 +131,18 @@ const DetailsScreen = ({ route }) => {
 
       {/* Fixed Action Buttons */}
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => updateStatus('Approved')} disabled={loading}>
-          <Text style={styles.actionButtonText}>Approve</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.rejectButton} onPress={() => updateStatus('Rejected')} disabled={loading}>
-          <Text style={styles.actionButtonText}>Reject</Text>
-        </TouchableOpacity>
+        {application.status === 'Submitted' ? (
+          <>
+            <TouchableOpacity style={styles.actionButton} onPress={() => updateStatus('Approved')} disabled={loading}>
+              <Text style={styles.actionButtonText}>Approve</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.rejectButton} onPress={() => updateStatus('Rejected')} disabled={loading}>
+              <Text style={styles.actionButtonText}>Reject</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={styles.handledMessage}>You already handled this application.</Text>
+        )}
       </View>
     </View>
   );
@@ -217,7 +223,8 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: SIZES.padding,
     paddingVertical: SIZES.base,
     borderTopWidth: 1,
@@ -244,5 +251,10 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     ...FONTS.body2,
     fontWeight: 'bold',
+  },
+  handledMessage: {
+    color: COLORS.gray50,
+    ...FONTS.body3,
+    textAlign: 'center',
   },
 });

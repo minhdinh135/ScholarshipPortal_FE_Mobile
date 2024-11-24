@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { COLORS, FONTS, SIZES, icons, images } from "../../constants";
 import { getApplicationByExpertId } from "../../api/expertApi";
-import { getApplicationById } from "../../api/applicationApi";
+import { getAccountById } from "../../api/accountApi";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { FilterModal, IconButton } from "../../components/Card";
@@ -21,46 +21,17 @@ import {
   withDelay,
 } from 'react-native-reanimated';
 import { useFocusEffect } from "@react-navigation/native";
-import { getAccountById } from "../../api/accountApi";
 
 const ApplicationManagementScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("All");
 
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
-
-  // useEffect(() => {
-  //   const fetchApplications = async () => {
-  //     try {
-  //       const res = await getApplicationByExpertId(userInfo.id);
-  //       const applicationsData = res.data || [];
-
-  //       // Fetch applicant details for each application
-  //       const applicationsWithApplicants = await Promise.all(
-  //         applicationsData.map(async (application) => {
-  //           try {
-  //             const applicantRes = await getApplicationById(application.id);
-  //             return { ...application, applicant: applicantRes };
-  //           } catch (error) {
-  //             console.error(`Error fetching applicant details for application ${application.id}:`, error);
-  //             return { ...application, applicant: null };
-  //           }
-  //         })
-  //       );
-
-  //       setApplications(applicationsWithApplicants);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       console.log(err);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchApplications();
-  // }, [userInfo.id]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -73,17 +44,17 @@ const ApplicationManagementScreen = ({ navigation }) => {
           const applicationsWithApplicants = await Promise.all(
             applicationsData.map(async (application) => {
               try {
-                // const applicantRes = await getApplicationById(application.id);
-                const applicantRes = await getAccountById(application.id)
+                const applicantRes = await getAccountById(application.id);
                 return { ...application, applicant: applicantRes };
               } catch (error) {
-                console.error(`Error fetching applicant details for application ${application.id}:`, error);
+                console.error(Error`fetching`);
                 return { ...application, applicant: null };
               }
             })
           );
 
           setApplications(applicationsWithApplicants);
+          setFilteredApplications(applicationsWithApplicants); // Initialize filtered list
           setLoading(false);
         } catch (err) {
           console.log(err);
@@ -94,8 +65,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
       fetchApplications();
     }, [userInfo.id])
   );
-
-  // console.log("xx: ", applications[0].applicant);
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -112,6 +81,16 @@ const ApplicationManagementScreen = ({ navigation }) => {
     }
   };
 
+  const applyFilter = (status) => {
+    setActiveFilter(status);
+    if (status === "All") {
+      setFilteredApplications(applications);
+    } else {
+      const filtered = applications.filter((application) => application.status === status);
+      setFilteredApplications(filtered);
+    }
+  };
+
   const renderApplication = ({ item }) => {
     const statusStyle = getStatusStyle(item.status);
     return (
@@ -121,10 +100,8 @@ const ApplicationManagementScreen = ({ navigation }) => {
       >
         <View style={styles.applicationInfo}>
           <Text style={styles.applicationName}>{item.applicant.username.toUpperCase()}</Text>
-          <Text style={styles.position}>{item.position}</Text>
-          <Text style={styles.date}>Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}</Text>
-          {/* <Text style={styles.applicantName}>Applicant: {item.applicant?.firstName} {item.applicant?.lastName}</Text> */}
           <Text style={styles.applicantEmail}>Email: {item.applicant?.email}</Text>
+          <Text style={styles.date}>Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}</Text>
         </View>
         <View style={[styles.statusBadge, statusStyle]}></View>
       </TouchableOpacity>
@@ -176,23 +153,58 @@ const ApplicationManagementScreen = ({ navigation }) => {
         />
       </View>
 
+      {/* Filter Buttons */}
+      <View>
+        <FlatList
+          horizontal
+          data={["All", "Approved", "Rejected", "Submitted"]}
+          keyExtractor={(item) => item}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            marginBottom: 20,
+          }}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                activeFilter === item && styles.activeFilterButton,
+                {
+                  marginLeft: index === 0 ? 0 : SIZES.radius,
+                  marginRight: index === 3 ? SIZES.padding : 0,
+                },
+              ]}
+              onPress={() => applyFilter(item)}
+            >
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === item && styles.activeFilterButtonText,
+                ]}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
       {/* Application List */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
-      ) : applications.length === 0 ? (
+      ) : filteredApplications.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Image
             source={images.empty_file}
             style={styles.emptyImage}
             resizeMode="contain"
           />
-          <Text style={styles.emptyText}>No assigned applications yet</Text>
+          <Text style={styles.emptyText}>No applications found</Text>
         </View>
       ) : (
         <FlatList
-          data={applications}
+          data={filteredApplications}
           keyExtractor={(item) => item.id}
           renderItem={renderApplication}
           contentContainerStyle={styles.listContainer}
@@ -203,7 +215,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
         filterModalSharedValue1={filterModalSharedValue1}
         filterModalSharedValue2={filterModalSharedValue2}
       />
-
     </View>
   );
 };
@@ -277,7 +288,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   listContainer: {
-    paddingBottom: SIZES.large,
+    paddingBottom: SIZES.padding,
   },
   applicationCard: {
     flexDirection: "row",
@@ -329,10 +340,32 @@ const styles = StyleSheet.create({
   statusBadge: {
     width: 10,
     height: 10,
-    borderRadius: 5,  // Makes the status a circle (dot)
-    backgroundColor: "transparent", // default for no status
+    borderRadius: 5,
+    backgroundColor: "transparent",
     alignSelf: "center",
   },
+  filterButton: {
+    backgroundColor: COLORS.gray10,
+    paddingVertical: SIZES.radius,
+    paddingHorizontal: SIZES.padding,
+    borderRadius: SIZES.radius,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 40,
+  },
+  activeFilterButton: {
+    backgroundColor: COLORS.primary,
+  },
+  filterButtonText: {
+    color: COLORS.gray50,
+    ...FONTS.body4,
+    marginBottom: -4
+  },
+  activeFilterButtonText: {
+    color: COLORS.white,
+    ...FONTS.body4,
+  },
+
 });
 
 export default ApplicationManagementScreen;

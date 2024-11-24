@@ -73,7 +73,7 @@
 //   const createInvoice = async () => {
 //     console.log("Creating invoice...", amount);
 //     try {
-//       const response = await axios.post(`${process.env.BASE_URL}/api/payments/stripe-checkout`, {
+//       const response = await axios.post(`https://ssap-backend.azurewebsites.net/api/payments/stripe-checkout`, {
 //         senderId: 13,
 //         receiverId: 12,
 //         amount: amount,
@@ -141,7 +141,7 @@ const PaymentScreen = () => {
   const createInvoice = async () => {
     console.log("Creating invoice...", amount);
     try {
-      const response = await axios.post(`${process.env.BASE_URL}/api/payments/stripe-checkout`, {
+      const response = await axios.post(`https://ssap-backend.azurewebsites.net/api/payments/stripe-checkout`, {
         senderId: 13,
         receiverId: 12,
         amount: amount,
