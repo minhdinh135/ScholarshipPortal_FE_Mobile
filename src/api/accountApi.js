@@ -11,7 +11,22 @@ export const getAccounts = async () => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
+    console.error("Error fetching accounts: ", error);
+  }
+};
+
+export const getAccountById = async (id) => {
+  try {
+    const res = await fetch(`${URL}/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching the account by id: ", error);
   }
 };
 

@@ -20,6 +20,8 @@ import {
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
+import { useFocusEffect } from "@react-navigation/native";
+import { getAccountById } from "../../api/accountApi";
 
 const ApplicationManagementScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
@@ -30,35 +32,70 @@ const ApplicationManagementScreen = ({ navigation }) => {
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const res = await getApplicationByExpertId(userInfo.id);
-        const applicationsData = res.data || [];
-        
-        // Fetch applicant details for each application
-        const applicationsWithApplicants = await Promise.all(
-          applicationsData.map(async (application) => {
-            try {
-              const applicantRes = await getApplicationById(application.id);
-              return { ...application, applicant: applicantRes };
-            } catch (error) {
-              console.error(`Error fetching applicant details for application ${application.id}:`, error);
-              return { ...application, applicant: null };
-            }
-          })
-        );
+  // useEffect(() => {
+  //   const fetchApplications = async () => {
+  //     try {
+  //       const res = await getApplicationByExpertId(userInfo.id);
+  //       const applicationsData = res.data || [];
 
-        setApplications(applicationsWithApplicants);
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    };
+  //       // Fetch applicant details for each application
+  //       const applicationsWithApplicants = await Promise.all(
+  //         applicationsData.map(async (application) => {
+  //           try {
+  //             const applicantRes = await getApplicationById(application.id);
+  //             return { ...application, applicant: applicantRes };
+  //           } catch (error) {
+  //             console.error(`Error fetching applicant details for application ${application.id}:`, error);
+  //             return { ...application, applicant: null };
+  //           }
+  //         })
+  //       );
 
-    fetchApplications();
-  }, [userInfo.id]);
+  //       setApplications(applicationsWithApplicants);
+  //       setLoading(false);
+  //     } catch (err) {
+  //       console.log(err);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchApplications();
+  // }, [userInfo.id]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchApplications = async () => {
+        setLoading(true);
+        try {
+          const res = await getApplicationByExpertId(userInfo.id);
+          const applicationsData = res.data || [];
+
+          const applicationsWithApplicants = await Promise.all(
+            applicationsData.map(async (application) => {
+              try {
+                // const applicantRes = await getApplicationById(application.id);
+                const applicantRes = await getAccountById(application.id)
+                return { ...application, applicant: applicantRes };
+              } catch (error) {
+                console.error(`Error fetching applicant details for application ${application.id}:`, error);
+                return { ...application, applicant: null };
+              }
+            })
+          );
+
+          setApplications(applicationsWithApplicants);
+          setLoading(false);
+        } catch (err) {
+          console.log(err);
+          setLoading(false);
+        }
+      };
+
+      fetchApplications();
+    }, [userInfo.id])
+  );
+
+  // console.log("xx: ", applications[0].applicant);
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -83,10 +120,10 @@ const ApplicationManagementScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("ApplicationDetailScreen", { application: item })}
       >
         <View style={styles.applicationInfo}>
-          <Text style={styles.applicationName}>{item.name}</Text>
+          <Text style={styles.applicationName}>{item.applicant.username.toUpperCase()}</Text>
           <Text style={styles.position}>{item.position}</Text>
           <Text style={styles.date}>Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}</Text>
-          <Text style={styles.applicantName}>Applicant: {item.applicant?.firstName} {item.applicant?.lastName}</Text>
+          {/* <Text style={styles.applicantName}>Applicant: {item.applicant?.firstName} {item.applicant?.lastName}</Text> */}
           <Text style={styles.applicantEmail}>Email: {item.applicant?.email}</Text>
         </View>
         <View style={[styles.statusBadge, statusStyle]}></View>

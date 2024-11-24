@@ -22,3 +22,23 @@ export const subscribeToNotifications = (userId, callback) => {
     callback(unreadNotifications);
   });
 };
+
+// import messaging from '@react-native-firebase/messaging';
+
+// const getToken = async () => {
+//   const token = await messaging().getToken();
+//   console.log('FCM Token:', token);
+//   // Send this token to your backend
+// };
+
+// useEffect(() => {
+//   getToken();
+// }, []);
+
+// useEffect(() => {
+//   const unsubscribe = messaging().onMessage(async remoteMessage => {
+//     console.log('A new FCM message arrived!', remoteMessage);
+//   });
+
+//   return unsubscribe; // Clean up the listener
+// }, []);
