@@ -1,4 +1,4 @@
-const URL = `https://ssap-backend.azurewebsites.net/api/experts`;
+const URL = `${process.env.BASE_URL}/api/experts`;
 
 export const getApplicationByExpertId = async (id) => {
   try {
