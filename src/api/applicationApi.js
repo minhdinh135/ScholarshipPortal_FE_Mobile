@@ -1,8 +1,10 @@
-const URL = `${process.env.BASE_URL}/api/applications`;
+// const BASE_URL = `${process.env.BASE_URL}/api/applications`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/applications` 
 
 export const getApplicationById = async (id) => {
   try {
-    const res = await fetch(`${URL}/${id}`);
+    const res = await fetch(`${BASE_URL}/${id}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -17,7 +19,7 @@ export const getApplicationById = async (id) => {
 
 export const postApplication = async (applicationData) => {
   try {
-    const res = await fetch(URL, {
+    const res = await fetch(BASE_URL, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +40,7 @@ export const postApplication = async (applicationData) => {
 
 export const updateApplication = async (id, status) => {
   try {
-    const res = await fetch(`${URL}/${id}`, {
+    const res = await fetch(`${BASE_URL}/${id}`, {
       method: 'PUT',
       headers: {
         "Content-Type": "application/json",

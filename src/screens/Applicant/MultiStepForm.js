@@ -59,7 +59,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           size: size,
         });
 
-        const response = await fetch(`${process.env.BASE_URL}/api/file-upload`, {
+        const response = await fetch(`http://10.0.2.2:5254/api/file-upload`, {
           method: "POST",
           body: files,
           headers: {

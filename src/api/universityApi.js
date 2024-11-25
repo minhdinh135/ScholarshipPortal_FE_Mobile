@@ -1,8 +1,10 @@
-const URL = `${process.env.BASE_URL}/api/universities`
+// const BASE_URL = `${process.env.BASE_URL}/api/universities`
+import { URL } from ".";
+const BASE_URL = `${URL}/api/universities`
 
 export const getUniversity = async () => {
   try {
-    const res = await fetch(URL);
+    const res = await fetch(BASE_URL);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -11,7 +13,7 @@ export const getUniversity = async () => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
+    console.error("Error fetching the universities: ", error);
   }
 };
 

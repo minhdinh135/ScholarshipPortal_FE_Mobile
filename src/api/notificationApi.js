@@ -1,8 +1,10 @@
-const URL = `${process.env.BASE_URL}/api/notifications`;
+// const BASE_URL = `${process.env.BASE_URL}/api/notifications`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/notifications` 
 
 export const getNotification = async (id) => {
   try {
-    const res = await fetch(`${URL}/get-all-by-id/${id}`);
+    const res = await fetch(`${BASE_URL}/get-all-by-id/${id}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);

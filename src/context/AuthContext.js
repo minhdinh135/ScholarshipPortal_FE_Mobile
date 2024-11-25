@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
   const signUp = async (user) => {
     try {
-      const response = await fetch(`${process.env.BASE_URL}/api/authentication/register`, {
+      const response = await fetch(`http://10.0.2.2:5254/api/authentication/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const response = await fetch(`${process.env.BASE_URL}/api/authentication/login`, {
+      const response = await fetch(`http://10.0.2.2:5254/api/authentication/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,12 +101,12 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = async () => {
     try {
-      const response = await fetch(`${process.env.BASE_URL}/api/authentication/auth-google`);
+      const response = await fetch(`http://10.0.2.2:5254/api/authentication/auth-google`);
       const data = await response.json();
       const authUrl = data.url;
 
       // Start the Google OAuth session
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, `${process.env.BASE_URL}/api/authentication/google/callback?code=4%2F0AeanS0aePJ3jir-6FFp5fqB_oU2iKhkotkEdDizVjv3WaIgaftD6aoBT--c1N-a3X1GZ3g&scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=consent`);
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, `http://10.0.2.2:5254/api/authentication/google/callback?code=4%2F0AeanS0aePJ3jir-6FFp5fqB_oU2iKhkotkEdDizVjv3WaIgaftD6aoBT--c1N-a3X1GZ3g&scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=consent`);
 
       if (result.type === 'success' && result.url) {
         const redirectUrl = result.url;
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
 
         if (code) {
           // Retrieve token using the authorization code
-          const tokenResponse = await fetch(`${process.env.BASE_URL}/api/authentication/google/callback?code=${code}`);
+          const tokenResponse = await fetch(`http://10.0.2.2:5254/api/authentication/google/callback?code=${code}`);
 
           if (tokenResponse.ok) {
             const tokenData = await tokenResponse.json();

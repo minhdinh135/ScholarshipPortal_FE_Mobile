@@ -1,8 +1,10 @@
-const URL = `${process.env.BASE_URL}/api/accounts`;
+// const BASE_URL = `${process.env.BASE_URL}/api/accounts`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/accounts` 
 
 export const getAccounts = async () => {
   try {
-    const res = await fetch(URL);
+    const res = await fetch(BASE_URL);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -17,7 +19,7 @@ export const getAccounts = async () => {
 
 export const getAccountById = async (id) => {
   try {
-    const res = await fetch(`${URL}/${id}`);
+    const res = await fetch(`${BASE_URL}/${id}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -32,7 +34,7 @@ export const getAccountById = async (id) => {
 
 export const changePassword = async (id, email, oldPassword, newPassword) => {
   try {
-    const res = await fetch(`${URL}/${id}/change-password`, {
+    const res = await fetch(`${BASE_URL}/${id}/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +55,7 @@ export const changePassword = async (id, email, oldPassword, newPassword) => {
 
 export const changeAvatar = async (id, files) => {
   try {
-    const res = await fetch(`${URL}/${id}/change-avatar`, {
+    const res = await fetch(`${BASE_URL}/${id}/change-avatar`, {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data',

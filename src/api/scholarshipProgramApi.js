@@ -1,4 +1,6 @@
-const URL = `${process.env.BASE_URL}/api/scholarship-programs`;
+// const BASE_URL = `${process.env.BASE_URL}/api/scholarship-programs`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/scholarship-programs`
 
 export const getScholarProgram = async (params = {}) => {
   const {
@@ -18,7 +20,7 @@ export const getScholarProgram = async (params = {}) => {
       IsPaging: IsPaging.toString()
     });
 
-    const res = await fetch(`${URL}?${queryParams.toString()}`);
+    const res = await fetch(`${BASE_URL}?${queryParams.toString()}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -33,7 +35,7 @@ export const getScholarProgram = async (params = {}) => {
 
 export const getScholarProgramById = async (id) => {
   try {
-    const res = await fetch(`${URL}/${id}`);
+    const res = await fetch(`${BASE_URL}/${id}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);

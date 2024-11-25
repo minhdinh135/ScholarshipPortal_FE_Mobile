@@ -1,4 +1,6 @@
-const URL = `${process.env.BASE_URL}/api/services`;
+// const BASE_URL = `${process.env.BASE_URL}/api/services`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/services`  
 
 export const getServices = async (params = {}) => {
   const {
@@ -18,7 +20,7 @@ export const getServices = async (params = {}) => {
       IsPaging: IsPaging.toString()
     });
 
-    const res = await fetch(`${URL}?${queryParams.toString()}`);
+    const res = await fetch(`${BASE_URL}?${queryParams.toString()}`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);

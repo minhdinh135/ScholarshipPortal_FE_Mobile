@@ -1,8 +1,10 @@
-const URL = `${process.env.BASE_URL}/api/experts`;
+// const BASE_URL = `${process.env.BASE_URL}/api/experts`;
+import { URL } from ".";
+const BASE_URL = `${URL}/api/experts` 
 
 export const getApplicationByExpertId = async (id) => {
   try {
-    const res = await fetch(`${URL}/${id}/assigned-applications`);
+    const res = await fetch(`${BASE_URL}/${id}/assigned-applications`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -17,7 +19,7 @@ export const getApplicationByExpertId = async (id) => {
 
 export const reviewApplication = async () => {
   try {
-    const res = await fetch(`${URL}/reviews/result`);
+    const res = await fetch(`${BASE_URL}/reviews/result`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
