@@ -1,7 +1,6 @@
-// src/navigation/MainTabs.js
 import React from "react";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
-import { HomeTabs } from "./Tabs"; // Import the tabs for the home screens
+import { HomeTabs } from "./Tabs";
 import MultiStepForm from "../screens/Applicant/MultiStepForm";
 import UserList from "../components/Chat/UserList";
 import Chat from "../components/Chat/Chat";
@@ -22,10 +21,10 @@ export function MainStack() {
       <Stack.Screen name="Home" component={HomeTabs} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} />
       <Stack.Screen name="UserListScreen" component={UserList} />
-      <Stack.Screen name="ChatScreen" component={Chat} options={{headerShown: true}} />
+      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} />
       <Stack.Screen name="ScholarshipDetail" component={ScholarshipDetail} />
-      <Stack.Screen name="ServiceDetail" component={ServiceDetail} />
+      <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
       <Stack.Screen name="ServiceForm" component={ServiceForm} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
