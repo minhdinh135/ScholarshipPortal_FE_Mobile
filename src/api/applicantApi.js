@@ -1,6 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/applicants`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/applicants` 
+const BASE_URL = `${process.env.BASE_URL}/api/applicants`;
 
 export const getApplicantById = async (id) => {
   try {

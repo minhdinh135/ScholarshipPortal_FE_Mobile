@@ -1,14 +1,12 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/services`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/services`  
+const BASE_URL = `${process.env.BASE_URL}/api/services`;
 
 export const getServices = async (params = {}) => {
   const {
     PageIndex = 1,
     PageSize = 3,
-    SortBy = '',
+    SortBy = "",
     IsDescending = false,
-    IsPaging = true
+    IsPaging = true,
   } = params;
 
   try {
@@ -17,7 +15,7 @@ export const getServices = async (params = {}) => {
       PageSize: PageSize.toString(),
       SortBy,
       IsDescending: IsDescending.toString(),
-      IsPaging: IsPaging.toString()
+      IsPaging: IsPaging.toString(),
     });
 
     const res = await fetch(`${BASE_URL}?${queryParams.toString()}`);
@@ -32,4 +30,3 @@ export const getServices = async (params = {}) => {
     console.error("Error fetching the scholarship programs: ", error);
   }
 };
-

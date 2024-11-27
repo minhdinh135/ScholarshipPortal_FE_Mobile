@@ -1,6 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/universities`
-import { URL } from ".";
-const BASE_URL = `${URL}/api/universities`
+const BASE_URL = `${process.env.BASE_URL}/api/universities`;
 
 export const getUniversity = async () => {
   try {
@@ -16,4 +14,3 @@ export const getUniversity = async () => {
     console.error("Error fetching the universities: ", error);
   }
 };
-
