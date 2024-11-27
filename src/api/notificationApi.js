@@ -1,6 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/notifications`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/notifications` 
+const BASE_URL = `${process.env.BASE_URL}/api/notifications`;
 
 export const getNotification = async (id) => {
   try {
@@ -16,3 +14,4 @@ export const getNotification = async (id) => {
     console.error("Error fetching the notifications: ", error);
   }
 };
+

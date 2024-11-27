@@ -8,6 +8,8 @@ import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { interpolate } from 'react-native-reanimated';
 
 import Description from '../../components/ScholarshipProgram/Description';
+import Feedback from '../../components/ScholarshipProgram/Feedback';
+import Discussion from '../../components/ScholarshipProgram/Discussion';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -333,9 +335,9 @@ const ScholarshipDetail = ({ navigation, route }) => {
                   width: SIZES.width
                 }}
               >
-                {index == 0 && <Description />}
-                {index == 1 && <Text>Feedbacks</Text>}
-                {index == 2 && <Text>Discussions</Text>}
+                {index == 0 && <Description item={selectedScholarship} />}
+                {index == 1 && <Feedback />}
+                {index == 2 && <Discussion />}
               </View>
             )
           }}

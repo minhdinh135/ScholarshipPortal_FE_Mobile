@@ -114,21 +114,27 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         onChangeText={(text) => setFormData({ ...formData, major: text })}
       />
       {errors.major && <Text style={styles.errorText}>{errors.major}</Text>}
-      <TouchableOpacity style={styles.uploadButton} onPress={uploadFile}>
-        <Text style={styles.buttonText}>Upload File</Text>
-      </TouchableOpacity>
-
-      {/* Show preview if the file is an image */}
-      {imagePreview && (
-        <Image
-          source={{ uri: imagePreview }}
-          style={styles.imagePreview}
-          resizeMode="contain"
-        />
+      {formData.file && (
+        <View style={{ marginVertical: 16 }}>
+          {formData.file.endsWith(".jpg") || formData.file.endsWith(".png") || formData.file.endsWith(".jpeg") ? (
+            <Image
+              source={{ uri: formData.file }}
+              style={{ width: 200, height: 200, borderRadius: 8 }}
+            />
+          ) : (
+            <Text>Uploaded file: {formData.file}</Text>
+          )}
+        </View>
       )}
-
-      {/* {formData.file && <Text style={styles.fileText}>File: {formData.file}</Text>}
-      {errors.file && <Text style={styles.errorText}>{errors.file}</Text>} */}
+      {formData.file ? (
+        <></>
+      ) : (
+        <>
+          <TouchableOpacity style={styles.uploadButton} onPress={uploadFile}>
+            <Text style={styles.buttonText}>Upload File</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -142,7 +148,18 @@ const StepThree = ({ formData }) => {
       <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
       <Text style={styles.summaryText}>File name: {formData.school}</Text>
       <Text style={styles.summaryText}>Type: {formData.major}</Text>
-      {/* {formData.file && <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>} */}
+      {formData.file && (
+        <View style={{ marginVertical: 16 }}>
+          {formData.file.endsWith(".jpg") || formData.file.endsWith(".png") || formData.file.endsWith(".jpeg") ? (
+            <Image
+              source={{ uri: formData.file }}
+              style={{ width: 200, height: 200, borderRadius: 8 }}
+            />
+          ) : (
+            <Text>Uploaded file: {formData.file}</Text>
+          )}
+        </View>
+      )}
     </View>
   )
 };
@@ -153,9 +170,9 @@ const MultiStepForm = ({ navigation, route }) => {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    name: userInfo.username,
+    email: userInfo.email,
+    phone: "0931239847",
     school: "",
     major: "",
     file: null,
@@ -193,7 +210,7 @@ const MultiStepForm = ({ navigation, route }) => {
         applicantId: userInfo.id,
         scholarshipProgramId: selectedScholarship.id,
         appliedDate: new Date().toISOString(),
-        status: "PENDING",
+        status: "Submitted",
         documents: [{
           name: formData.school,
           type: formData.major,
@@ -201,7 +218,10 @@ const MultiStepForm = ({ navigation, route }) => {
         }]
       }
       await postApplication(applicationData).then((res) => console.log(res));
-      Alert.alert("Success", "Form submitted successfully!");
+      Alert.alert("Success", "Form submitted successfully!", [{
+        text: "OK",
+        onPress: () => navigation.goBack(),
+      }]);
     } catch (error) {
       console.log("Form submission error:", error);
     }

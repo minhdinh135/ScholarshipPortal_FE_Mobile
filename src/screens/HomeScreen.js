@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ImageBackground, Image, ScrollView, ActivityIndicator } from 'react-native'
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler'
 import { COLORS, FONTS, SIZES, icons, images, dummyData } from '../constants'
-import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard, HorizontalCourseCard } from '../components/Card'
+import { IconButton, TextButton, VerticalCourseCard, LineDivider, CategoryCard } from '../components/Card'
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment"
@@ -259,6 +259,7 @@ const HomeScreen = () => {
                 marginVertical: SIZES.padding,
                 marginTop: index == 0 ? SIZES.radius : SIZES.padding
               }}
+              onPress={() => navigation.navigate('ScholarshipDetail', { selectedScholarship: item })}
             />
           )}
           ItemSeparatorComponent={() => (

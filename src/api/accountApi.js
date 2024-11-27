@@ -1,6 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/accounts`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/accounts` 
+const BASE_URL = `${process.env.BASE_URL}/api/accounts`;
 
 export const getAccounts = async () => {
   try {
@@ -35,11 +33,15 @@ export const getAccountById = async (id) => {
 export const changePassword = async (id, email, oldPassword, newPassword) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}/change-password`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: email, oldPassword: oldPassword, newPassword: newPassword }),
+      body: JSON.stringify({
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      }),
     });
 
     if (!res.ok) {
@@ -56,9 +58,9 @@ export const changePassword = async (id, email, oldPassword, newPassword) => {
 export const changeAvatar = async (id, files) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}/change-avatar`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
       body: files,
     });
