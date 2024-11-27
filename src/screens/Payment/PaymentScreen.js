@@ -128,11 +128,13 @@
 
 // export default PaymentScreen;
 
-import React, { useState } from 'react';
-import { View, Button, Alert } from 'react-native';
-import axios from 'axios';
-import { StripeProvider } from '@stripe/stripe-react-native';
-import * as WebBrowser from 'expo-web-browser';
+import React, { useState } from "react";
+import { View, Button, Alert } from "react-native";
+import axios from "axios";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import * as WebBrowser from "expo-web-browser";
+
+const BASE_URL = process.env.BASE_URL;
 
 const PaymentScreen = () => {
   const [amount, setAmount] = useState(100);
@@ -141,12 +143,15 @@ const PaymentScreen = () => {
   const createInvoice = async () => {
     console.log("Creating invoice...", amount);
     try {
-      const response = await axios.post(`http://10.0.2.2:5254/api/payments/stripe-checkout`, {
-        senderId: 13,
-        receiverId: 12,
-        amount: amount,
-        description: "Test Mobile Payment"
-      })
+      const response = await axios.post(
+        `${BASE_URL}/api/payments/stripe-checkout`,
+        {
+          senderId: 13,
+          receiverId: 12,
+          amount: amount,
+          description: "Test Mobile Payment",
+        },
+      );
 
       if (response.data && response.data.data.sessionUrl) {
         const { sessionUrl } = response.data.data;
@@ -154,7 +159,7 @@ const PaymentScreen = () => {
         // Open the checkout URL in a web browser
         const result = await WebBrowser.openBrowserAsync(sessionUrl);
 
-        if (result.type === 'cancel') {
+        if (result.type === "cancel") {
           Alert.alert("Payment Cancelled", "You cancelled the payment.");
         } else {
           Alert.alert("Payment Successful", "Thank you for your payment!");
@@ -170,7 +175,7 @@ const PaymentScreen = () => {
 
   return (
     <StripeProvider publishableKey={process.env.VITE_STRIPE_PUBLISHABLE_KEY}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Button title="Pay Now" onPress={createInvoice} />
       </View>
     </StripeProvider>
