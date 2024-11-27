@@ -1,7 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/accounts`;
-
-import { URL } from ".";
-const BASE_URL = `${URL}/api/accounts`;
+const BASE_URL = `${process.env.BASE_URL}/api/accounts`;
 
 export const getAccounts = async () => {
   try {

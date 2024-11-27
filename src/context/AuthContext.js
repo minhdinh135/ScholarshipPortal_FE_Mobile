@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { decode } from "base-64";
 global.atob = decode;
 
+const BASE_URL = process.env.BASE_URL;
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -37,16 +38,13 @@ export const AuthProvider = ({ children }) => {
 
   const signUp = async (user) => {
     try {
-      const response = await fetch(
-        `http://10.0.2.2:5254/api/authentication/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(user),
+      const response = await fetch(`${BASE_URL}/api/authentication/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(user),
+      });
 
       const data = await response.json();
 
@@ -73,16 +71,13 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const response = await fetch(
-        `http://10.0.2.2:5254/api/authentication/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
+      const response = await fetch(`${BASE_URL}/api/authentication/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
@@ -107,7 +102,7 @@ export const AuthProvider = ({ children }) => {
   const signInWithGoogle = async () => {
     try {
       const response = await fetch(
-        `http://10.0.2.2:5254/api/authentication/auth-google`,
+        `${BASE_URL}/api/authentication/auth-google`,
       );
       const data = await response.json();
       const authUrl = data.url;
@@ -115,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       // Start the Google OAuth session
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
-        `http://10.0.2.2:5254/api/authentication/google/callback?code=4%2F0AeanS0aePJ3jir-6FFp5fqB_oU2iKhkotkEdDizVjv3WaIgaftD6aoBT--c1N-a3X1GZ3g&scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=consent`,
+        `${BASE_URL}/api/authentication/google/callback?code=4%2F0AeanS0aePJ3jir-6FFp5fqB_oU2iKhkotkEdDizVjv3WaIgaftD6aoBT--c1N-a3X1GZ3g&scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=consent`,
       );
 
       if (result.type === "success" && result.url) {
@@ -125,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         if (code) {
           // Retrieve token using the authorization code
           const tokenResponse = await fetch(
-            `http://10.0.2.2:5254/api/authentication/google/callback?code=${code}`,
+            `${BASE_URL}/api/authentication/google/callback?code=${code}`,
           );
 
           if (tokenResponse.ok) {
