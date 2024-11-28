@@ -12,6 +12,7 @@ import PaymentScreen from "../screens/Payment/PaymentScreen";
 import HistoryScreen from "../screens/Profile/HistoryScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
 import ChangePasswordScreen from "../screens/Profile/ChangePasswordScreen";
+import TimelineScreen from "../screens/Profile/TimelineScreen";
 
 const Stack = createSharedElementStackNavigator();
 
@@ -20,7 +21,7 @@ export function MainStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeTabs} />
       <Stack.Screen name="MultiStep" component={MultiStepForm} />
-      <Stack.Screen name="UserListScreen" component={UserList} />
+      <Stack.Screen name="UserListScreen" component={TimelineScreen} />
       <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} />
       <Stack.Screen name="ScholarshipDetail" component={ScholarshipDetail} />
@@ -30,6 +31,7 @@ export function MainStack() {
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
       <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
+      <Stack.Screen name="TimelineScreen" component={TimelineScreen} />
     </Stack.Navigator>
   );
 }

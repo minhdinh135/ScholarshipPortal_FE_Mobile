@@ -54,6 +54,7 @@
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
     "react-native-shadow-2": "^7.1.0",
+    "react-native-timeline-flatlist": "^0.8.0",
     "react-native-web": "^0.19.13",
     "react-native-webview": "13.6.4",
     "react-navigation-shared-element": "^3.1.3",

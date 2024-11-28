@@ -119,7 +119,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           {formData.file.endsWith(".jpg") || formData.file.endsWith(".png") || formData.file.endsWith(".jpeg") ? (
             <Image
               source={{ uri: formData.file }}
-              style={{ width: 200, height: 200, borderRadius: 8 }}
+              style={{ width: 300, height: 300, borderRadius: 8 }}
             />
           ) : (
             <Text>Uploaded file: {formData.file}</Text>
@@ -217,7 +217,10 @@ const MultiStepForm = ({ navigation, route }) => {
           fileUrl: formData.file
         }]
       }
-      await postApplication(applicationData).then((res) => console.log(res));
+
+      await postApplication(applicationData)
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
       Alert.alert("Success", "Form submitted successfully!", [{
         text: "OK",
         onPress: () => navigation.goBack(),

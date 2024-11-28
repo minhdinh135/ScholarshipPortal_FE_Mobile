@@ -1,12 +1,10 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
-import { FONTS, COLORS, SIZES, icons } from '../../constants';
+import { FONTS, COLORS, SIZES } from '../../constants';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment'
 
 const Description = ({ item }) => {
-  console.log(item.qualification);
-
   return (
     <ScrollView style={styles.container}>
       {/* Key Information */}
@@ -42,9 +40,6 @@ const Description = ({ item }) => {
         <Text style={styles.title}>About this Scholarship</Text>
         <Text style={styles.text}>
           {item.description}
-          {/* The Global Excellence Scholarship aims to support outstanding students
-          with exceptional academic achievements and leadership skills. This program
-          is designed to foster the growth of tomorrow's leaders and innovators. */}
         </Text>
       </View>
 
