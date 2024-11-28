@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Image,
+} from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
 import { postApplication } from "../../api/applicationApi";
+
+const BASE_URL = process.env.BASE_URL;
 
 const StepOne = ({ formData, setFormData, errors }) => {
   return (
@@ -36,7 +46,7 @@ const StepOne = ({ formData, setFormData, errors }) => {
       />
       {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
     </View>
-  )
+  );
 };
 
 const StepTwo = ({ formData, setFormData, errors }) => {
@@ -59,7 +69,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           size: size,
         });
 
-        const response = await fetch(`http://10.0.2.2:5254/api/file-upload`, {
+        const response = await fetch(`${BASE_URL}/api/file-upload`, {
           method: "POST",
           body: files,
           headers: {
@@ -91,7 +101,10 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       }
     } catch (error) {
       console.error("File upload error:", error);
-      Alert.alert("Error", "There was a problem selecting or uploading the file.");
+      Alert.alert(
+        "Error",
+        "There was a problem selecting or uploading the file.",
+      );
     }
   };
 
@@ -116,7 +129,9 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       {errors.major && <Text style={styles.errorText}>{errors.major}</Text>}
       {formData.file && (
         <View style={{ marginVertical: 16 }}>
-          {formData.file.endsWith(".jpg") || formData.file.endsWith(".png") || formData.file.endsWith(".jpeg") ? (
+          {formData.file.endsWith(".jpg") ||
+          formData.file.endsWith(".png") ||
+          formData.file.endsWith(".jpeg") ? (
             <Image
               source={{ uri: formData.file }}
               style={{ width: 300, height: 300, borderRadius: 8 }}
@@ -150,7 +165,9 @@ const StepThree = ({ formData }) => {
       <Text style={styles.summaryText}>Type: {formData.major}</Text>
       {formData.file && (
         <View style={{ marginVertical: 16 }}>
-          {formData.file.endsWith(".jpg") || formData.file.endsWith(".png") || formData.file.endsWith(".jpeg") ? (
+          {formData.file.endsWith(".jpg") ||
+          formData.file.endsWith(".png") ||
+          formData.file.endsWith(".jpeg") ? (
             <Image
               source={{ uri: formData.file }}
               style={{ width: 200, height: 200, borderRadius: 8 }}
@@ -161,7 +178,7 @@ const StepThree = ({ formData }) => {
         </View>
       )}
     </View>
-  )
+  );
 };
 
 const MultiStepForm = ({ navigation, route }) => {
@@ -181,7 +198,8 @@ const MultiStepForm = ({ navigation, route }) => {
   const validateStepOne = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Valid email is required";
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Valid email is required";
     if (!formData.phone) newErrors.phone = "Phone number is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -211,20 +229,21 @@ const MultiStepForm = ({ navigation, route }) => {
         scholarshipProgramId: selectedScholarship.id,
         appliedDate: new Date().toISOString(),
         status: "Submitted",
-        documents: [{
-          name: formData.school,
-          type: formData.major,
-          fileUrl: formData.file
-        }]
-      }
-
-      await postApplication(applicationData)
-        .then((res) => console.log(res))
-        .catch((err) => console.error(err));
-      Alert.alert("Success", "Form submitted successfully!", [{
-        text: "OK",
-        onPress: () => navigation.goBack(),
-      }]);
+        documents: [
+          {
+            name: formData.school,
+            type: formData.major,
+            fileUrl: formData.file,
+          },
+        ],
+      };
+      await postApplication(applicationData).then((res) => console.log(res));
+      Alert.alert("Success", "Form submitted successfully!", [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     } catch (error) {
       console.log("Form submission error:", error);
     }
@@ -241,11 +260,24 @@ const MultiStepForm = ({ navigation, route }) => {
     <View style={styles.progressContainer}>
       {[1, 2, 3].map((s, index) => (
         <React.Fragment key={s}>
-          <View style={[styles.stepDot, (step > s || s === step) && styles.activeStepDot]}>
-            <Text style={(s === step || step > s) ? styles.activeStepText : styles.stepText}>{s}</Text>
+          <View
+            style={[
+              styles.stepDot,
+              (step > s || s === step) && styles.activeStepDot,
+            ]}
+          >
+            <Text
+              style={
+                s === step || step > s ? styles.activeStepText : styles.stepText
+              }
+            >
+              {s}
+            </Text>
           </View>
           {index < 2 && (
-            <View style={[styles.stepLine, step > s && styles.activeStepLine]} />
+            <View
+              style={[styles.stepLine, step > s && styles.activeStepLine]}
+            />
           )}
         </React.Fragment>
       ))}
@@ -254,13 +286,26 @@ const MultiStepForm = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-
       {renderProgressBar()}
 
       <View style={styles.card}>
-        {step === 1 && <StepOne formData={formData} setFormData={setFormData} errors={errors} />}
-        {step === 2 && <StepTwo formData={formData} setFormData={setFormData} errors={errors} />}
-        {step === 3 && <StepThree formData={formData} setFormData={setFormData} />}
+        {step === 1 && (
+          <StepOne
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        )}
+        {step === 2 && (
+          <StepTwo
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        )}
+        {step === 3 && (
+          <StepThree formData={formData} setFormData={setFormData} />
+        )}
 
         <View style={styles.buttonContainer}>
           {step > 1 && (
@@ -268,8 +313,15 @@ const MultiStepForm = ({ navigation, route }) => {
               <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity style={styles.nextButton} onPress={step === 3 ? handleSubmitConfirmation : validateAndNextStep}>
-            <Text style={styles.buttonText}>{step === 3 ? "Submit" : "Next"}</Text>
+          <TouchableOpacity
+            style={styles.nextButton}
+            onPress={
+              step === 3 ? handleSubmitConfirmation : validateAndNextStep
+            }
+          >
+            <Text style={styles.buttonText}>
+              {step === 3 ? "Submit" : "Next"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -395,3 +447,4 @@ const styles = StyleSheet.create({
 });
 
 export default MultiStepForm;
+

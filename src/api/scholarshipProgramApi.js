@@ -1,14 +1,12 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/scholarship-programs`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/scholarship-programs`
+const BASE_URL = `${process.env.BASE_URL}/api/scholarship-programs`;
 
 export const getScholarProgram = async (params = {}) => {
   const {
     PageIndex = 1,
     PageSize = 3,
-    SortBy = '',
+    SortBy = "",
     IsDescending = false,
-    IsPaging = true
+    IsPaging = true,
   } = params;
 
   try {
@@ -17,7 +15,7 @@ export const getScholarProgram = async (params = {}) => {
       PageSize: PageSize.toString(),
       SortBy,
       IsDescending: IsDescending.toString(),
-      IsPaging: IsPaging.toString()
+      IsPaging: IsPaging.toString(),
     });
 
     const res = await fetch(`${BASE_URL}?${queryParams.toString()}`);

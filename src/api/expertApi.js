@@ -1,6 +1,4 @@
-// const BASE_URL = `${process.env.BASE_URL}/api/experts`;
-import { URL } from ".";
-const BASE_URL = `${URL}/api/experts` 
+const BASE_URL = `${process.env.BASE_URL}/api/experts`;
 
 export const getApplicationByExpertId = async (id) => {
   try {
@@ -31,3 +29,4 @@ export const reviewApplication = async () => {
     console.error("Error reviewing the application: ", error);
   }
 };
+

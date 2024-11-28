@@ -15,11 +15,7 @@ import { getAccountById } from "../../api/accountApi";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { FilterModal, IconButton } from "../../components/Card";
-import {
-  useSharedValue,
-  withTiming,
-  withDelay,
-} from 'react-native-reanimated';
+import { useSharedValue, withTiming, withDelay } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 
 const ApplicationManagementScreen = ({ navigation }) => {
@@ -50,7 +46,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
                 console.error(Error`fetching`);
                 return { ...application, applicant: null };
               }
-            })
+            }),
           );
 
           setApplications(applicationsWithApplicants);
@@ -63,7 +59,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
       };
 
       fetchApplications();
-    }, [userInfo.id])
+    }, [userInfo.id]),
   );
 
   const getStatusStyle = (status) => {
@@ -86,7 +82,9 @@ const ApplicationManagementScreen = ({ navigation }) => {
     if (status === "All") {
       setFilteredApplications(applications);
     } else {
-      const filtered = applications.filter((application) => application.status === status);
+      const filtered = applications.filter(
+        (application) => application.status === status,
+      );
       setFilteredApplications(filtered);
     }
   };
@@ -96,12 +94,18 @@ const ApplicationManagementScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         style={styles.applicationCard}
-        onPress={() => navigation.navigate("ApplicationDetailScreen", { application: item })}
+        onPress={() =>
+          navigation.navigate("ApplicationDetailScreen", { application: item })
+        }
       >
         <View style={styles.applicationInfo}>
-          <Text style={styles.applicationName}>{item.applicant.username.toUpperCase()}</Text>
-          <Text style={styles.applicantEmail}>Email: {item.applicant?.email}</Text>
-          <Text style={styles.date}>Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}</Text>
+          {/* <Text style={styles.applicationName}>{item.applicant.username.toUpperCase()}</Text> */}
+          <Text style={styles.applicantEmail}>
+            Email: {item.applicant?.email}
+          </Text>
+          <Text style={styles.date}>
+            Applied on: {moment(item.appliedDate).format("MMM DD, YYYY")}
+          </Text>
         </View>
         <View style={[styles.statusBadge, statusStyle]}></View>
       </TouchableOpacity>
@@ -136,19 +140,22 @@ const ApplicationManagementScreen = ({ navigation }) => {
           containerStyle={{
             width: 50,
             height: 50,
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
             borderRadius: 10,
             backgroundColor: COLORS.primary,
             marginLeft: 10,
           }}
           onPress={() => {
             filterModalSharedValue1.value = withTiming(0, {
-              duration: 100
-            })
-            filterModalSharedValue2.value = withDelay(100, withTiming(0, {
-              duration: 500
-            }))
+              duration: 100,
+            });
+            filterModalSharedValue2.value = withDelay(
+              100,
+              withTiming(0, {
+                duration: 500,
+              }),
+            );
           }}
         />
       </View>
@@ -239,14 +246,14 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: COLORS.white,
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: COLORS.white,
     paddingHorizontal: SIZES.padding,
   },
@@ -258,7 +265,7 @@ const styles = StyleSheet.create({
   emptyText: {
     ...FONTS.h1,
     color: COLORS.primary,
-    textAlign: 'center',
+    textAlign: "center",
     padding: SIZES.padding,
   },
   searchInput: {
@@ -359,13 +366,13 @@ const styles = StyleSheet.create({
   filterButtonText: {
     color: COLORS.gray50,
     ...FONTS.body4,
-    marginBottom: -4
+    marginBottom: -4,
   },
   activeFilterButtonText: {
     color: COLORS.white,
     ...FONTS.body4,
   },
-
 });
 
 export default ApplicationManagementScreen;
+
