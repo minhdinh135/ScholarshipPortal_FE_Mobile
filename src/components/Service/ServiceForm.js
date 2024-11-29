@@ -1,426 +1,354 @@
-import React, { useState } from "react";
+// import React, { useRef, useState } from 'react';
+// import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
+// import BottomSheet from '@gorhom/bottom-sheet';
+// import * as ImagePicker from 'expo-image-picker'; // Ensure Expo ImagePicker is installed
+// import { COLORS, FONTS, SIZES } from '../../constants'; // Adjust the paths as needed
+
+// const ServiceForm = ({ navigation, route }) => {
+//   const bottomSheetRef = useRef(null);
+//   const [description, setDescription] = useState('');
+//   const [selectedImage, setSelectedImage] = useState(null);
+//   const [paymentMethod, setPaymentMethod] = useState('Credit Card');
+//   const [paymentDescription, setPaymentDescription] = useState('');
+
+//   const snapPoints = ['50%', '90%']; // Bottom sheet snap points
+
+//   // File upload handler
+//   const handleImagePick = async () => {
+//     let result = await ImagePicker.launchImageLibraryAsync({
+//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//       allowsEditing: true,
+//       quality: 1,
+//     });
+
+//     if (!result.canceled) {
+//       setSelectedImage(result.assets[0].uri);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+//         <View style={styles.sheetContent}>
+//           {/* Description */}
+//           <Text style={styles.label}>Description</Text>
+//           <TextInput
+//             style={styles.textInput}
+//             placeholder="Enter your description"
+//             multiline
+//             value={description}
+//             onChangeText={setDescription}
+//           />
+
+//           {/* File Upload */}
+//           <Text style={styles.label}>Upload File</Text>
+//           <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
+//             <Text style={styles.uploadText}>Choose File</Text>
+//           </TouchableOpacity>
+//           {selectedImage && <Image source={{ uri: selectedImage }} style={styles.imagePreview} />}
+
+//           {/* Payment Method */}
+//           <Text style={styles.label}>Payment Method</Text>
+//           <View style={styles.paymentOptions}>
+//             <TouchableOpacity
+//               style={[
+//                 styles.paymentOption,
+//                 paymentMethod === 'Credit Card' && styles.selectedOption,
+//               ]}
+//               onPress={() => setPaymentMethod('Credit Card')}
+//             >
+//               <Text
+//                 style={[
+//                   styles.paymentOptionText,
+//                   paymentMethod === 'Credit Card' && styles.selectedText,
+//                 ]}
+//               >
+//                 Credit Card
+//               </Text>
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               style={[
+//                 styles.paymentOption,
+//                 paymentMethod === 'Cash' && styles.selectedOption,
+//               ]}
+//               onPress={() => setPaymentMethod('Cash')}
+//             >
+//               <Text
+//                 style={[
+//                   styles.paymentOptionText,
+//                   paymentMethod === 'Cash' && styles.selectedText,
+//                 ]}
+//               >
+//                 Cash
+//               </Text>
+//             </TouchableOpacity>
+//           </View>
+
+//           {/* Payment Description */}
+//           <Text style={styles.label}>Payment Description</Text>
+//           <TextInput
+//             style={styles.textInput}
+//             placeholder="Enter payment details"
+//             multiline
+//             value={paymentDescription}
+//             onChangeText={setPaymentDescription}
+//           />
+
+//           {/* Buttons */}
+//           <View style={styles.buttonRow}>
+//             <TouchableOpacity
+//               style={[styles.button, { backgroundColor: COLORS.primary }]}
+//               onPress={() => {
+//                 // Submit logic
+//                 console.log({
+//                   description,
+//                   selectedImage,
+//                   paymentMethod,
+//                   paymentDescription,
+//                 });
+//               }}
+//             >
+//               <Text style={styles.buttonText}>Submit</Text>
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               style={[styles.button, { backgroundColor: COLORS.gray20 }]}
+//               onPress={() => navigation.goBack()}
+//             >
+//               <Text style={[styles.buttonText, { color: COLORS.black }]}>Cancel</Text>
+//             </TouchableOpacity>
+//           </View>
+//         </View>
+//       </BottomSheet>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: COLORS.white,
+//   },
+//   sheetContent: {
+//     padding: SIZES.padding,
+//   },
+//   label: {
+//     ...FONTS.h3,
+//     color: COLORS.black,
+//     marginBottom: 5,
+//   },
+//   textInput: {
+//     height: 60,
+//     borderColor: COLORS.gray20,
+//     borderWidth: 1,
+//     borderRadius: SIZES.radius,
+//     paddingHorizontal: 10,
+//     marginBottom: 15,
+//     ...FONTS.body3,
+//   },
+//   uploadButton: {
+//     height: 50,
+//     backgroundColor: COLORS.primary,
+//     borderRadius: SIZES.radius,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     marginBottom: 10,
+//   },
+//   uploadText: {
+//     color: COLORS.white,
+//     ...FONTS.body3,
+//   },
+//   imagePreview: {
+//     width: '100%',
+//     height: 150,
+//     borderRadius: SIZES.radius,
+//     marginTop: 10,
+//     resizeMode: 'contain',
+//   },
+//   paymentOptions: {
+//     flexDirection: 'row',
+//     marginBottom: 15,
+//   },
+//   paymentOption: {
+//     flex: 1,
+//     height: 50,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     borderWidth: 1,
+//     borderColor: COLORS.gray20,
+//     borderRadius: SIZES.radius,
+//     marginRight: 10,
+//   },
+//   selectedOption: {
+//     backgroundColor: COLORS.primary,
+//   },
+//   paymentOptionText: {
+//     ...FONTS.body3,
+//     color: COLORS.black,
+//   },
+//   selectedText: {
+//     color: COLORS.white,
+//   },
+//   buttonRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     marginTop: 20,
+//   },
+//   button: {
+//     flex: 1,
+//     height: 50,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     borderRadius: SIZES.radius,
+//     marginHorizontal: 5,
+//   },
+//   buttonText: {
+//     color: COLORS.white,
+//     ...FONTS.h3,
+//   },
+// });
+
+// export default ServiceForm;
+
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
-  Alert,
-  Image,
-} from "react-native";
-import { COLORS, SIZES, FONTS } from "../../constants";
-import * as DocumentPicker from "expo-document-picker";
-import { useAuth } from "../../context/AuthContext";
-import { postApplication } from "../../api/applicationApi";
+  TouchableOpacity,
+  Button,
+} from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 
-const BASE_URL = process.env.BASE_URL;
-
-const StepOne = ({ formData, setFormData, errors }) => {
-  return (
-    <View style={styles.cardContent}>
-      <Text style={styles.title}>Create Request</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.name}
-        onChangeText={(text) => setFormData({ ...formData, name: text })}
-      />
-      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.email}
-        onChangeText={(text) => setFormData({ ...formData, email: text })}
-        keyboardType="email-address"
-      />
-      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Phone Number"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.phone}
-        onChangeText={(text) => setFormData({ ...formData, phone: text })}
-        keyboardType="number-pad"
-      />
-      {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-    </View>
-  );
-};
-
-const StepTwo = ({ formData, setFormData, errors }) => {
-  const [imagePreview, setImagePreview] = useState(null);
-
-  const uploadFile = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-      });
-
-      if (result) {
-        const { uri, name, mimeType, size } = result.assets[0];
-        const isImage = mimeType.startsWith("image/");
-        const files = new FormData();
-        files.append("files", {
-          uri: uri,
-          name: name,
-          type: mimeType,
-          size: size,
-        });
-
-        const response = await fetch(`${BASE_URL}/api/file-upload`, {
-          method: "POST",
-          body: files,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        const responseText = await response.text();
-        console.log("Raw Response:", responseText);
-
-        try {
-          const responseJson = JSON.parse(responseText);
-
-          if (response.ok) {
-            Alert.alert("Upload Success", "File uploaded successfully.");
-            setFormData({ ...formData, file: responseJson.data[0] });
-
-            if (isImage) {
-              setImagePreview(formData.file);
-            }
-          } else {
-            console.error("Upload error:", responseJson);
-            Alert.alert("Upload Error", "Failed to upload file.");
-          }
-        } catch (error) {
-          console.error("Failed to parse response:", error);
-          Alert.alert("Response Error", "The response is not valid JSON.");
-        }
-      }
-    } catch (error) {
-      console.error("File upload error:", error);
-      Alert.alert(
-        "Error",
-        "There was a problem selecting or uploading the file.",
-      );
-    }
-  };
-
-  return (
-    <View style={styles.cardContent}>
-      <Text style={styles.title}>Upload Document</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="School Name"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.school}
-        onChangeText={(text) => setFormData({ ...formData, school: text })}
-      />
-      {errors.school && <Text style={styles.errorText}>{errors.school}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Major"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.major}
-        onChangeText={(text) => setFormData({ ...formData, major: text })}
-      />
-      {errors.major && <Text style={styles.errorText}>{errors.major}</Text>}
-      <TouchableOpacity style={styles.uploadButton} onPress={uploadFile}>
-        <Text style={styles.buttonText}>Upload File</Text>
-      </TouchableOpacity>
-
-      {/* Show preview if the file is an image */}
-      {imagePreview && (
-        <Image
-          source={{ uri: imagePreview }}
-          style={styles.imagePreview}
-          resizeMode="contain"
-        />
-      )}
-
-      {/* {formData.file && <Text style={styles.fileText}>File: {formData.file}</Text>}
-      {errors.file && <Text style={styles.errorText}>{errors.file}</Text>} */}
-    </View>
-  );
-};
-
-const StepThree = ({ formData }) => {
-  return (
-    <View style={styles.cardContent}>
-      <Text style={styles.title}>Check Information</Text>
-      <Text style={styles.summaryText}>Name: {formData.name}</Text>
-      <Text style={styles.summaryText}>Email: {formData.email}</Text>
-      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
-      <Text style={styles.summaryText}>School: {formData.school}</Text>
-      <Text style={styles.summaryText}>Major: {formData.major}</Text>
-      {formData.file && (
-        <Text style={styles.summaryText}>File Uploaded: {formData.file}</Text>
-      )}
-    </View>
-  );
-};
-
-const MultiStepForm = ({ navigation, route }) => {
-  const { userInfo } = useAuth();
-  const { selectedScholarship } = route.params;
-  const [step, setStep] = useState(1);
-  const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    school: "",
-    major: "",
-    file: null,
+const ProductScreen = () => {
+  const bottomSheetRef = useRef(null); // Reference for the Bottom Sheet
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    message: '',
   });
 
-  const validateStepOne = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Valid email is required";
-    if (!formData.phone) newErrors.phone = "Phone number is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleInputChange = (field, value) => {
+    setForm((prevForm) => ({ ...prevForm, [field]: value }));
   };
 
-  const validateStepTwo = () => {
-    const newErrors = {};
-    if (!formData.school) newErrors.school = "School name is required";
-    if (!formData.major) newErrors.major = "Major is required";
-    if (!formData.file) newErrors.file = "Document is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleSubmit = () => {
+    console.log('Form Submitted:', form);
+    bottomSheetRef.current?.close();
+    setForm({ name: '', email: '', message: '' }); // Reset form
   };
-
-  const validateAndNextStep = () => {
-    const isValid = step === 1 ? validateStepOne() : validateStepTwo();
-    if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 3));
-  };
-
-  // const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, 3));
-  const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
-
-  const submitForm = async () => {
-    try {
-      const applicationData = {
-        applicantId: userInfo.id,
-        scholarshipProgramId: selectedScholarship.id,
-        appliedDate: new Date().toISOString(),
-        status: "PENDING",
-        documents: [
-          {
-            name: "Test",
-            type: "CV",
-            fileUrl: formData.file,
-          },
-        ],
-      };
-      await postApplication(applicationData).then((res) => console.log(res));
-      Alert.alert("Success", "Form submitted successfully!");
-    } catch (error) {
-      console.log("Form submission error:", error);
-    }
-  };
-
-  const handleSubmitConfirmation = () => {
-    Alert.alert("Confirm Submission", "Are you sure you want to submit?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Yes", onPress: submitForm },
-    ]);
-  };
-
-  const renderProgressBar = () => (
-    <View style={styles.progressContainer}>
-      {[1, 2, 3].map((s, index) => (
-        <React.Fragment key={s}>
-          <View
-            style={[
-              styles.stepDot,
-              (step > s || s === step) && styles.activeStepDot,
-            ]}
-          >
-            <Text
-              style={
-                s === step || step > s ? styles.activeStepText : styles.stepText
-              }
-            >
-              {s}
-            </Text>
-          </View>
-          {index < 2 && (
-            <View
-              style={[styles.stepLine, step > s && styles.activeStepLine]}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      {renderProgressBar()}
-
-      <View style={styles.card}>
-        {step === 1 && (
-          <StepOne
-            formData={formData}
-            setFormData={setFormData}
-            errors={errors}
-          />
-        )}
-        {step === 2 && (
-          <StepTwo
-            formData={formData}
-            setFormData={setFormData}
-            errors={errors}
-          />
-        )}
-        {step === 3 && (
-          <StepThree formData={formData} setFormData={setFormData} />
-        )}
-
-        <View style={styles.buttonContainer}>
-          {step > 1 && (
-            <TouchableOpacity style={styles.backButton} onPress={prevStep}>
-              <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity
-            style={styles.nextButton}
-            onPress={
-              step === 3 ? handleSubmitConfirmation : validateAndNextStep
-            }
-          >
-            <Text style={styles.buttonText}>
-              {step === 3 ? "Submit" : "Next"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+      {/* Product Information */}
+      <View style={styles.productInfo}>
+        <Text style={styles.title}>Product Name</Text>
+        <Text style={styles.description}>
+          This is an amazing product with awesome features. Click the button below to submit a form.
+        </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => bottomSheetRef.current?.expand()}
+        >
+          <Text style={styles.buttonText}>Open Form</Text>
+        </TouchableOpacity>
       </View>
+
+      {/* Bottom Sheet */}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={['50%', '80%']}
+        enablePanDownToClose={true}
+      >
+        <View style={styles.sheetContainer}>
+          <Text style={styles.sheetTitle}>Submit Form</Text>
+
+          {/* Name Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Your Name"
+            value={form.name}
+            onChangeText={(text) => handleInputChange('name', text)}
+          />
+
+          {/* Email Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Your Email"
+            value={form.email}
+            onChangeText={(text) => handleInputChange('email', text)}
+            keyboardType="email-address"
+          />
+
+          {/* Message Input */}
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Your Message"
+            value={form.message}
+            onChangeText={(text) => handleInputChange('message', text)}
+            multiline={true}
+            numberOfLines={4}
+          />
+
+          {/* Submit Button */}
+          <Button title="Submit" onPress={handleSubmit} />
+        </View>
+      </BottomSheet>
     </View>
   );
 };
+
+export default ProductScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightGray,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
   },
-  progressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: SIZES.base * 2,
-    padding: SIZES.padding,
-  },
-  stepDot: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
-    backgroundColor: COLORS.gray20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  activeStepDot: {
-    backgroundColor: COLORS.primary,
-  },
-  stepText: {
-    color: COLORS.gray50,
-    ...FONTS.h3,
-  },
-  activeStepText: {
-    color: COLORS.white,
-    ...FONTS.h3,
-  },
-  stepLine: {
-    height: 2,
-    flex: 1,
-    backgroundColor: COLORS.gray20,
-  },
-  activeStepLine: {
-    backgroundColor: COLORS.primary,
-  },
-  card: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: SIZES.radius * 3,
-    borderTopRightRadius: SIZES.radius * 3,
-    padding: SIZES.padding * 2,
-    shadowColor: COLORS.black,
-    shadowOpacity: 0.1,
-    shadowRadius: SIZES.radius,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
-    justifyContent: "space-between",
-  },
-  cardContent: {
-    flex: 1,
+  productInfo: {
+    marginBottom: 20,
   },
   title: {
-    ...FONTS.h1,
-    color: COLORS.black,
-    textAlign: "center",
-    marginBottom: SIZES.padding,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  input: {
-    borderBottomWidth: 1,
-    borderColor: COLORS.gray40,
-    padding: SIZES.base,
-    marginBottom: SIZES.padding,
-    color: COLORS.black,
+  description: {
     fontSize: 16,
-    backgroundColor: COLORS.lightGray,
+    color: '#555',
+    marginBottom: 20,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: SIZES.padding,
-  },
-  backButton: {
-    flex: 0.45,
-    padding: SIZES.base,
-    backgroundColor: COLORS.gray30,
-    borderRadius: SIZES.radius,
-    alignItems: "center",
-  },
-  nextButton: {
-    flex: 0.45,
-    padding: SIZES.base,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.radius,
-    alignItems: "center",
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
   },
   buttonText: {
-    color: COLORS.white,
-    ...FONTS.h3,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-  },
-  summaryText: {
-    color: COLORS.black,
+    color: '#fff',
     fontSize: 16,
-    marginVertical: SIZES.base / 2,
+    fontWeight: 'bold',
   },
-  uploadButton: {
-    padding: SIZES.base,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.radius,
-    alignItems: "center",
-    marginVertical: SIZES.base,
+  sheetContainer: {
+    flex: 1,
+    padding: 20,
   },
-  imagePreview: {
-    width: "100%",
-    height: 200,
-    marginVertical: SIZES.base,
-    borderRadius: SIZES.radius,
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 10,
+  },
+  textArea: {
+    height: 100,
   },
 });
-
-export default MultiStepForm;
-

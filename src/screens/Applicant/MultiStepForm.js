@@ -130,8 +130,9 @@ const StepTwo = ({ formData, setFormData, errors }) => {
       {formData.file && (
         <View style={{ marginVertical: 16 }}>
           {formData.file.endsWith(".jpg") ||
-          formData.file.endsWith(".png") ||
-          formData.file.endsWith(".jpeg") ? (
+            formData.file.endsWith(".png") ||
+            formData.file.endsWith(".jpeg") ||
+            formData.file.endsWith(".pdf") ? (
             <Image
               source={{ uri: formData.file }}
               style={{ width: 300, height: 300, borderRadius: 8 }}
@@ -166,8 +167,8 @@ const StepThree = ({ formData }) => {
       {formData.file && (
         <View style={{ marginVertical: 16 }}>
           {formData.file.endsWith(".jpg") ||
-          formData.file.endsWith(".png") ||
-          formData.file.endsWith(".jpeg") ? (
+            formData.file.endsWith(".png") ||
+            formData.file.endsWith(".jpeg") ? (
             <Image
               source={{ uri: formData.file }}
               style={{ width: 200, height: 200, borderRadius: 8 }}
@@ -207,8 +208,8 @@ const MultiStepForm = ({ navigation, route }) => {
 
   const validateStepTwo = () => {
     const newErrors = {};
-    if (!formData.school) newErrors.school = "School name is required";
-    if (!formData.major) newErrors.major = "Major is required";
+    if (!formData.school) newErrors.school = "File name is required";
+    if (!formData.major) newErrors.major = "Type is required";
     if (!formData.file) newErrors.file = "Document is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

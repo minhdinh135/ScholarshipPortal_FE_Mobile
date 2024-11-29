@@ -68,10 +68,10 @@ const ApplicationManagementScreen = ({ navigation }) => {
         return { backgroundColor: COLORS.primary };
       case "Awarded":
         return { backgroundColor: "yellow" };
-      case "Submitted":
+      case "Reviewing":
         return { backgroundColor: COLORS.gray20 };
-      case "Rejected":
-        return { backgroundColor: "red" };
+      case "Failed":
+        return { backgroundColor: COLORS.secondary };
       default:
         return { backgroundColor: COLORS.gray10 };
     }
@@ -164,7 +164,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
       <View>
         <FlatList
           horizontal
-          data={["All", "Approved", "Rejected", "Submitted"]}
+          data={["All", "Approved", "Failed", "Reviewing"]}
           keyExtractor={(item) => item}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{

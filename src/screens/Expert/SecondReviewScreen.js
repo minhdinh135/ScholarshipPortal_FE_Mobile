@@ -12,7 +12,6 @@ const DetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewScore, setReviewScore] = useState('');
-  const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [isReviewed, setIsReviewed] = useState(false);
 
   useEffect(() => {
@@ -35,9 +34,9 @@ const DetailsScreen = ({ route }) => {
     switch (status) {
       case 'Approved':
         return <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />;
-      case 'Reviewing':
+      case 'Submitted':
         return <Ionicons name="hourglass" size={24} color={COLORS.gray50} />;
-      case 'Failed':
+      case 'Rejected':
         return <Ionicons name="close-circle" size={24} color={COLORS.secondary} />;
       default:
         return null;
@@ -45,26 +44,23 @@ const DetailsScreen = ({ route }) => {
   };
 
   const handleReviewSubmit = async () => {
-    if (!selectedReviewId) {
-      Alert.alert('No Review Selected', 'Please select a review to update.');
-      return;
-    }
     if (reviewText.trim().length === 0 || reviewScore.trim().length === 0) {
       Alert.alert('Review Required', 'Please provide both a review and a score before proceeding.');
       return;
     }
 
     const score = parseFloat(reviewScore);
-    if (isNaN(score) || score < 1 || score > 100) {
-      Alert.alert('Invalid Score', 'Please enter a valid score between 1 and 100.');
+    if (isNaN(score) || score < 1 || score > 10) {
+      Alert.alert('Invalid Score', 'Please enter a valid score between 1 and 10.');
       return;
     }
 
     const updatedReview = {
-      applicationReviewId: selectedReviewId,
+      applicationReviewId: application.applicationReviews[0].id,
       comment: reviewText,
-      isPassed: score >= 50 ? true : false,
+      isPassed: true,
       score,
+      isFirstReview: false,
     };
 
     try {
@@ -73,7 +69,7 @@ const DetailsScreen = ({ route }) => {
 
       // Update review list in application state
       const updatedReviews = application.applicationReviews.map((review) =>
-        review.id === selectedReviewId
+        review.id === updatedReview.applicationReviewId
           ? { ...review, comment: reviewText, score, reviewDate: new Date().toISOString() }
           : review
       );
@@ -135,7 +131,7 @@ const DetailsScreen = ({ route }) => {
                 styles.statusText,
                 application.status === 'Approved'
                   ? styles.statusApprovedText
-                  : application.status === 'Reviewing'
+                  : application.status === 'Submitted'
                     ? styles.statusPendingText
                     : styles.statusDisapprovedText,
               ]}
@@ -176,21 +172,20 @@ const DetailsScreen = ({ route }) => {
           <Text style={styles.sectionTitle}>Reviews</Text>
           {application.applicationReviews.length > 0 ? (
             application.applicationReviews.map((review) => (
-              <TouchableOpacity
-                key={review.id}
-                style={[
-                  styles.reviewContainer,
-                  selectedReviewId === review.id && styles.selectedReview,
-                ]}
-                onPress={() => setSelectedReviewId(review.id)}
-              >
-                <Text style={styles.reviewDescription}>
-                  {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
-                </Text>
-                <Text style={styles.infoText}>
-                  {`Score: ${review.score || 'N/A'} | Date: ${review.reviewDate ? new Date(review.reviewDate).toLocaleDateString() : 'N/A'}`}
-                </Text>
-              </TouchableOpacity>
+              <View key={review.id} style={styles.reviewContainer}>
+                {review.score ? (
+                  <>
+                    <Text style={styles.reviewDescription}>
+                      {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
+                    </Text>
+                    <Text style={styles.infoText}>
+                      {`Score: ${review.score} | Date: ${new Date(review.reviewDate).toLocaleDateString()}`}
+                    </Text>
+                  </>
+                ) : (
+                  <Text style={styles.infoText}>This application hasn't been reviewed yet.</Text>
+                )}
+              </View>
             ))
           ) : (
             <Text style={styles.infoText}>No reviews available.</Text>
@@ -223,13 +218,13 @@ const DetailsScreen = ({ route }) => {
 
       {/* Fixed Action Buttons */}
       <View style={styles.actionsContainer}>
-        {application.status === 'Reviewing' ? (
+        {application.status === 'Submitted' ? (
           <>
             <TouchableOpacity style={styles.actionButton} onPress={() => updateStatus('Approved')} disabled={loading || !isReviewed}>
               <Text style={styles.actionButtonText}>Approve</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.rejectButton} onPress={() => updateStatus('Failed')} disabled={loading || !isReviewed}>
-              <Text style={styles.actionButtonText}>Fail</Text>
+            <TouchableOpacity style={styles.rejectButton} onPress={() => updateStatus('Rejected')} disabled={loading || !isReviewed}>
+              <Text style={styles.actionButtonText}>Reject</Text>
             </TouchableOpacity>
           </>
         ) : (
@@ -249,7 +244,7 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: COLORS.white,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
@@ -375,9 +370,5 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     ...FONTS.body2,
     fontWeight: 'bold',
-  },
-  selectedReview: {
-    borderColor: COLORS.primary,
-    borderWidth: 2,
   },
 });

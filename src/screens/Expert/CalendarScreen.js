@@ -1,80 +1,84 @@
 import React, { useState, useCallback, memo, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import { COLORS, SIZES, FONTS } from '../../constants';
 import { useAuth } from '../../context/AuthContext';
+import { getApplicationByExpertId } from '../../api/expertApi';
+import moment from 'moment';
 
-// Predefined dummy data
-const dummyData = {
-  "2024-11-28": [
-    {
-      name: "Interview with Candidate A",
-      time: "10:00 AM - 11:00 AM",
-      location: "Room 1",
-    },
-    {
-      name: "Interview with Candidate B",
-      time: "2:00 PM - 3:00 PM",
-      location: "Room 2",
-    },
-  ],
-  "2024-11-29": [
-    {
-      name: "Interview with Candidate C",
-      time: "9:00 AM - 10:00 AM",
-      location: "Room 3",
-    },
-  ],
-  "2024-11-30": [
-    {
-      name: "Interview with Candidate D",
-      time: "1:00 PM - 2:00 PM",
-      location: "Room 4",
-    },
-    {
-      name: "Interview with Candidate E",
-      time: "3:00 PM - 4:00 PM",
-      location: "Room 5",
-    },
-  ],
-};
-
-const Item = memo(({ item }) => (
-  <View style={styles.item}>
+const Item = memo(({ item, onPress }) => (
+  <TouchableOpacity style={styles.item} onPress={onPress}>
     <Text style={styles.itemTitle}>{item.name}</Text>
     <Text style={styles.itemSubtitle}>Time: {item.time}</Text>
     <Text style={styles.itemSubtitle}>Location: {item.location}</Text>
-  </View>
+  </TouchableOpacity>
 ));
 
-const InterviewerSchedule = () => {
-  const [items, setItems] = useState(dummyData);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const { userInfo, setUser } = useAuth();
+const CalendarScreen = ({ navigation }) => {
+  const [items, setItems] = useState({});
+  const [loading, setLoading] = useState(true);
+  const { userInfo } = useAuth();
 
   useEffect(() => {
-    setLoading(true); // Show loading spinner
-    getAccountById(userInfo.id)
+    setLoading(true);
+    getApplicationByExpertId(userInfo.id)
       .then((res) => {
-        setUser(res.data);
-        // Update items or other state here if necessary
+        const fetchedApplications = res.data || [];
+
+        // Transform data into Agenda-compatible format
+        const agendaItems = fetchedApplications.reduce((acc, application) => {
+          application.applicationReviews.forEach((review) => {
+            const date = moment(review.reviewDate).format("YYYY-MM-DD");
+
+            if (!acc[date]) {
+              acc[date] = [];
+            }
+
+            acc[date].push({
+              name: application.applicantId,
+              time: moment(review.reviewDate).format("hh:mm A"),
+              location: `Location for Application ${application.id}`,
+              applicationId: application.id,
+              reviewDetails: review,
+            });
+          });
+          return acc;
+        }, {});
+
+        setItems(agendaItems); // Update state with transformed data
+      })
+      .catch((err) => {
+        console.error(err);
       })
       .finally(() => {
-        setLoading(false); // Hide loading spinner after data is fetched
+        setLoading(false);
       });
   }, [userInfo?.id]);
 
-  // Memoized renderItem to prevent unnecessary re-renders
+  // Render item function for Agenda
   const renderItem = useCallback(
-    (item) => <Item item={item} />,
+    (item) => (
+      <Item
+        item={{
+          name: item.name,
+          time: item.time,
+          location: item.location,
+        }}
+        onPress={() => handleItemPress(item)}
+      />
+    ),
     []
   );
+
+  const handleItemPress = (item) => {
+    navigation.navigate("SecondReviewScreen")
+  };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Loading Schedule...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -83,10 +87,10 @@ const InterviewerSchedule = () => {
     <View style={styles.container}>
       <Agenda
         items={items}
-        selected={"2024-11-29"} // Default selected date
+        selected={moment().format("YYYY-MM-DD")} // Default to today's date
         renderItem={renderItem}
-        pastScrollRange={3} // Allow navigation to one month in the past
-        futureScrollRange={3} // Allow navigation to one month in the future
+        pastScrollRange={3}
+        futureScrollRange={3}
         showClosingKnob={true}
         theme={{
           calendarBackground: COLORS.white,
@@ -122,7 +126,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SIZES.padding,
     ...FONTS.body3,
-    color: COLORS.primary,
+    color: COLORS.black,
   },
   item: {
     backgroundColor: COLORS.white,
@@ -130,6 +134,11 @@ const styles = StyleSheet.create({
     padding: SIZES.padding / 2,
     marginRight: SIZES.padding / 2,
     marginTop: SIZES.padding / 2,
+    shadowColor: COLORS.gray40,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   itemTitle: {
     ...FONTS.h3,
@@ -141,4 +150,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InterviewerSchedule;
+export default CalendarScreen;

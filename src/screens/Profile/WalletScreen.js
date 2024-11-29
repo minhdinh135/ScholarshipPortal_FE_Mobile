@@ -18,6 +18,7 @@ import { getWalletById } from '../../api/walletApi';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { WebView } from "react-native-webview";
 import axios from 'axios';
+import moment from 'moment';
 import { getTransactionByWalletId } from '../../api/paymentApi';
 
 const WalletScreen = ({ navigation }) => {
@@ -32,13 +33,13 @@ const WalletScreen = ({ navigation }) => {
   const getWalletInformation = async () => {
     setLoading(true);
     try {
-      const [walletResponse, transactionResponse] = await Promise.all([
-        getWalletById(userInfo.id),
-        getTransactionByWalletId(wallet.id)
-      ]);
-
+      const walletResponse = await getWalletById(userInfo.id);
       setWallet(walletResponse.data || []);
-      setTransactions(transactionResponse.data || []);
+
+      if (walletResponse.data?.id) {
+        const transactionResponse = await getTransactionByWalletId(walletResponse.data.id);
+        setTransactions(transactionResponse.data || []);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -91,15 +92,22 @@ const WalletScreen = ({ navigation }) => {
 
   const renderTransaction = ({ item }) => {
     const isReceiver = item.walletReceiverId === wallet.id;
+    const formattedDate = moment(item.transactionDate).format('DD/MM/YYYY');
 
     return (
       <View style={styles.transactionContainer}>
-        <Text style={{ ...FONTS.body3, color: COLORS.gray70 }}>{item.description}</Text>
+        <View>
+          <Text style={{ ...FONTS.body3, color: COLORS.gray70 }}>{item.description}</Text>
+          <Text style={{ ...FONTS.body4, color: COLORS.gray40, marginTop: 5 }}>
+            {formattedDate}
+          </Text>
+        </View>
         <Text
           style={{
             ...FONTS.body3,
             fontWeight: 'bold',
             color: isReceiver ? COLORS.primary : COLORS.secondary,
+            marginTop: 10
           }}
         >
           {isReceiver ? `+$${item.amount}` : `-$${item.amount}`}
@@ -174,7 +182,7 @@ const WalletScreen = ({ navigation }) => {
                 <View style={styles.transactionContainerWrapper}>
                   <Text style={{ ...FONTS.h2, color: COLORS.gray80, marginBottom: 10 }}>Transactions</Text>
                   <FlatList
-                    data={transactions}
+                    data={transactions.reverse()}
                     renderItem={renderTransaction}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={{ marginTop: 10 }}
@@ -225,13 +233,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     backgroundColor: COLORS.white,
-    borderRadius: 10,
     marginBottom: 10,
     shadowColor: COLORS.black,
     shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
   },
   loadingContainer: {
     flex: 1,

@@ -22,13 +22,17 @@ export function MainStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeTabs} />
-      <Stack.Screen name="MultiStep" component={MultiStepForm} />
-      <Stack.Screen name="UserListScreen" component={PaymentFailScreen} />
+
+      <Stack.Screen name="UserListScreen" component={UserList} />
       <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
+
       <Stack.Screen name="ScholarshipListing" component={ScholarshipListing} />
       <Stack.Screen name="ScholarshipDetail" component={ScholarshipDetail} />
+      <Stack.Screen name="MultiStep" component={MultiStepForm} />
+
       <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
       <Stack.Screen name="ServiceForm" component={ServiceForm} />
+
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
