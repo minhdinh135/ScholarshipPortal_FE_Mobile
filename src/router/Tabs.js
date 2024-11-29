@@ -11,6 +11,7 @@ import NotificationScreen from "../screens/Profile/NotificationScreen";
 import ApplicationManagementScreen from "../screens/Expert/ApplicationManagementScreen";
 import { useAuth } from "../context/AuthContext";
 import ServiceList from "../screens/Service/ServiceList";
+import CalendarScreen from "../screens/Expert/CalendarScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -100,6 +101,14 @@ function ExpertTabs() {
         options={{
           tabBarIcon: ({ focused }) => tabBarIcon(focused, Entypo, { name: "list" }),
           tabBarLabel: ({ focused }) => tabBarLabel(focused, "Applications"),
+        }}
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={CalendarScreen}
+        options={{
+          tabBarIcon: ({ focused }) => tabBarIcon(focused, FontAwesome6, { name: "user-large" }),
+          tabBarLabel: ({ focused }) => tabBarLabel(focused, "Schedule"),
         }}
       />
       <Tab.Screen

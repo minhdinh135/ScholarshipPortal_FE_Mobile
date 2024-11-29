@@ -18,7 +18,9 @@ const thumbnail_3 = require("../assets/images/thumbnail_3.png")
 const thumbnail_4 = require("../assets/images/thumbnail_4.png")
 const welcome = require("../assets/images/ScholarshipProgram.jpg")
 const empty_file = require("../assets/images/empty_file.jpg")
-const nothing_here = require("../assets/images/void.png");
+const nothing_here = require("../assets/images/void.png")
+const check_mark = require("../assets/images/check_mark.png")
+const ex_mark = require("../assets/images/ex_mark.png")
 
 export default {
   bg,
@@ -47,4 +49,7 @@ export default {
 
   empty_file,
   nothing_here,
+
+  check_mark,
+  ex_mark,
 }

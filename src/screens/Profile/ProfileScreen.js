@@ -54,7 +54,7 @@ const SettingsScreen = ({ navigation }) => {
             <View style={styles.sectionBody}>
               <Pressable
                 onPress={() => {
-                  // handle onPress
+                  navigation.navigate("WalletScreen")
                 }}
                 style={styles.profile}>
                 <Image
