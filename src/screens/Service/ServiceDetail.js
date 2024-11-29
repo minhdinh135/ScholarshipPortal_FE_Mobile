@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Animated, TextInput, Alert } from 'react-native'
+import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Animated, TextInput, Alert, Image, ActivityIndicator } from 'react-native'
 import {
   IconButton,
   LineDivider,
   TextButton
 } from "../../components/Card";
 import BottomSheet from '@gorhom/bottom-sheet';
+import * as DocumentPicker from "expo-document-picker";
+
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
+
 import ServiceDescription from '../../components/Service/ServiceDescription';
 import Feedback from '../../components/ScholarshipProgram/Feedback';
 import Discussion from '../../components/ScholarshipProgram/Discussion';
+
 import { useAuth } from '../../context/AuthContext';
 import { getWalletById } from '../../api/walletApi';
 import { transferMoney } from '../../api/paymentApi';
@@ -122,6 +126,8 @@ const ServiceDetail = ({ navigation, route }) => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const bottomSheetRef = React.useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [imagePreview, setImagePreview] = useState([]);
   const [form, setForm] = useState({
     senderId: '',
     receiverId: '',
@@ -132,6 +138,7 @@ const ServiceDetail = ({ navigation, route }) => {
 
   const getWalletInformation = async () => {
     try {
+      setLoading(true);
       const [userWallet, providerWallet] = await Promise.all([
         getWalletById(userInfo.id),
         getWalletById(selectedService.providerId)
@@ -143,14 +150,12 @@ const ServiceDetail = ({ navigation, route }) => {
         receiverId: providerWallet.data.id
       }));
 
-      return {
-        userWallet,
-        providerWallet
-      };
-
+      return { userWallet, providerWallet };
     } catch (error) {
       console.error('Error fetching wallet information:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,6 +175,63 @@ const ServiceDetail = ({ navigation, route }) => {
     setForm({ ...form, [field]: value });
   };
 
+  const handleUploadFile = async () => {
+    setLoading(true);
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+      });
+
+      if (result) {
+        const { uri, name, mimeType, size } = result.assets[0];
+        const isImage = mimeType.startsWith("image/");
+        const files = new FormData();
+        files.append("files", {
+          uri: uri,
+          name: name,
+          type: mimeType,
+          size: size,
+        });
+
+        const response = await fetch(`${process.env.BASE_URL}/api/file-upload`, {
+          method: "POST",
+          body: files,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        const responseText = await response.text();
+        console.log("Raw Response:", responseText);
+
+        try {
+          const responseJson = JSON.parse(responseText);
+
+          if (response.ok) {
+            Alert.alert("Upload Success", "File uploaded successfully.");
+            if (isImage) {
+              setImagePreview(responseJson.data[0]);
+            }
+          } else {
+            console.error("Upload error:", responseJson);
+            Alert.alert("Upload Error", "Failed to upload file.");
+          }
+        } catch (error) {
+          console.error("Failed to parse response:", error);
+          Alert.alert("Response Error", "The response is not valid JSON.");
+        }
+      }
+    } catch (error) {
+      console.error("File upload error:", error);
+      Alert.alert(
+        "Error",
+        "There was a problem selecting or uploading the file.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       await transferMoney(form);
@@ -182,6 +244,7 @@ const ServiceDetail = ({ navigation, route }) => {
             onPress: () => {
               bottomSheetRef.current?.close();
               setForm({ description: '', file: '', paymentMethod: '' });
+              setImagePreview([]);
             }
           }
         ]
@@ -407,13 +470,19 @@ const ServiceDetail = ({ navigation, route }) => {
 
           {/* File Upload */}
           <Text style={styles.sectionTitle}>Upload File</Text>
-          <TouchableOpacity style={styles.fileUploadButton}>
-            <Text style={styles.fileUploadText}>Upload Image</Text>
-          </TouchableOpacity>
-
-          {form.file && (
+          {imagePreview.length > 0 ? (<></>) : (
+            <>
+              <TouchableOpacity style={styles.fileUploadButton} onPress={handleUploadFile}>
+                <Text style={styles.fileUploadText}>Upload Image</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {imagePreview.length > 0 && (
             <View style={styles.imagePreviewContainer}>
-              <Image source={{ uri: form.file }} style={styles.imagePreview} />
+              <Image
+                source={{ uri: imagePreview }}
+                style={{ width: 150, height: 150 }}
+              />
             </View>
           )}
 
@@ -445,7 +514,7 @@ const ServiceDetail = ({ navigation, route }) => {
             label="Submit"
             contentContainerStyle={{
               height: 60,
-              marginTop: 100
+              marginTop: 40
             }}
             labelStyle={{
               ...FONTS.h2
@@ -457,6 +526,16 @@ const ServiceDetail = ({ navigation, route }) => {
     );
   }
 
+  function renderLoadingScreen() {
+    if (!loading) return null;
+
+    return (
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
@@ -464,6 +543,7 @@ const ServiceDetail = ({ navigation, route }) => {
         backgroundColor: COLORS.white
       }}
     >
+      {renderLoadingScreen()}
       {renderHeader()}
       {renderTop()}
       {renderScholarshipInfo()}
@@ -511,12 +591,10 @@ const styles = StyleSheet.create({
     ...FONTS.h3,
   },
   imagePreviewContainer: {
-    marginTop: 10,
+    marginVertical: 20,
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.gray20,
-    borderRadius: SIZES.radius,
   },
   imagePreview: {
     width: 80,
@@ -557,5 +635,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     ...FONTS.body2,
     color: COLORS.black,
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
   },
 });
