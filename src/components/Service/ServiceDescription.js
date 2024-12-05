@@ -8,14 +8,10 @@ const ServiceDescription = ({ selectedService }) => {
       <View style={styles.header}>
         <Text style={styles.title}>{selectedService?.name}</Text>
       </View>
-
-      {/* Description Section */}
       <View style={styles.descriptionContainer}>
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.descriptionText}>{selectedService?.description}</Text>
       </View>
-
-      {/* Price Section */}
       <View style={styles.priceContainer}>
         <Text style={styles.sectionTitle}>Price</Text>
         <Text style={styles.priceText}>${selectedService?.price}</Text>

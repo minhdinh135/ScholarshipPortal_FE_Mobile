@@ -8,8 +8,8 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Replace with your icon library if necessary.
-import { COLORS, SIZES, FONTS } from '../../constants'; // Replace with your constants or use custom styles.
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, SIZES, FONTS } from '../../constants';
 
 const Discussion = () => {
   const [comments, setComments] = useState([
@@ -52,8 +52,6 @@ const Discussion = () => {
     <View style={styles.commentContainer}>
       <Text style={styles.commentUser}>{item.user}</Text>
       <Text style={styles.commentText}>{item.comment}</Text>
-
-      {/* Reply Button */}
       <TouchableOpacity
         style={styles.replyButton}
         onPress={() => setReplyingTo(item.id)}
@@ -61,8 +59,6 @@ const Discussion = () => {
         <Icon name="chatbox-outline" size={20} color={COLORS.primary} />
         <Text style={styles.replyButtonText}>Reply</Text>
       </TouchableOpacity>
-
-      {/* Replies */}
       {item.replies.length > 0 && (
         <View style={styles.repliesContainer}>
           {item.replies.map((reply, index) => (
@@ -73,8 +69,6 @@ const Discussion = () => {
           ))}
         </View>
       )}
-
-      {/* Reply Input */}
       {replyingTo === item.id && (
         <View style={styles.replyInputContainer}>
           <TextInput
@@ -98,16 +92,12 @@ const Discussion = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Discussion Board</Text>
-
-      {/* Comments List */}
       <FlatList
         data={comments}
         renderItem={renderComment}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
-
-      {/* New Comment Input */}
       <View style={styles.newCommentContainer}>
         <TextInput
           style={styles.newCommentInput}

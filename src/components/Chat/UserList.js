@@ -17,11 +17,9 @@ const UserListScreen = () => {
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.title}>
         Chat List
       </Text>
-
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
@@ -34,7 +32,6 @@ const UserListScreen = () => {
         )}
         contentContainerStyle={styles.listContainer}
       />
-
     </View>
   );
 };

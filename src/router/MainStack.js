@@ -8,7 +8,6 @@ import ScholarshipListing from "../screens/Scholarship/ScholarshipListing";
 import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
 import ServiceDetail from "../screens/Service/ServiceDetail";
 import ServiceForm from "../components/Service/ServiceForm";
-import PaymentScreen from "../screens/Payment/PaymentScreen";
 import HistoryScreen from "../screens/Profile/HistoryScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
 import ChangePasswordScreen from "../screens/Profile/ChangePasswordScreen";
@@ -38,7 +37,6 @@ export function MainStack() {
       <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
 
-      <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
       <Stack.Screen name="PaymentSuccessScreen" component={PaymentSuccessScreen} />
       <Stack.Screen name="PaymentFailScreen" component={PaymentFailScreen} />
     </Stack.Navigator>

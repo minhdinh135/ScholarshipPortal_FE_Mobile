@@ -1,10 +1,17 @@
 import React from "react";
-import { View, Text, Image, ImageBackground, TouchableOpacity } from "react-native";
+import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import { IconLabel } from "../Card";
-import { SIZES, FONTS, COLORS, icons } from "../../constants";
+import { SIZES, FONTS, COLORS } from "../../constants";
 
 const ServiceHorizontalList = ({ containerStyle, course, onPress }) => {
+  const shortenDescription = (description) => {
+    if (description && description.length > 20) {
+      return description.substring(0, 20) + "...";
+    }
+    return description;
+  };
+
   return (
     <TouchableOpacity
       style={{
@@ -14,42 +21,17 @@ const ServiceHorizontalList = ({ containerStyle, course, onPress }) => {
       onPress={onPress}
     >
       <ImageBackground
-        // source={course.imageUrl}
-        src={course.imageUrl}
+        source={{ uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEbr-UWJc7dtbc8zEKrYUGvi8M0tnaBYxZEw&s" }} // Static image for now
         resizeMode="cover"
         style={{
-          width: 130,
-          height: 130,
+          width: 120,
+          height: 120,
           marginBottom: SIZES.radius
         }}
         imageStyle={{
           borderRadius: SIZES.radius
         }}
-      >
-        {/* <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            width: 30,
-            height: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 5,
-            backgroundColor: COLORS.white
-          }}
-        >
-          <Image
-            source={icons.favourite}
-            resizeMode="contain"
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: course.is_favourite ? COLORS.secondary : COLORS.additionalColor4
-            }}
-          />
-        </View> */}
-      </ImageBackground>
+      />
 
       <View
         style={{
@@ -73,28 +55,33 @@ const ServiceHorizontalList = ({ containerStyle, course, onPress }) => {
             marginTop: SIZES.base
           }}
         >
+          <Icon name="business" size={18} color={COLORS.primary} style={{ marginRight: SIZES.base }} />
           <Text
             style={{
               ...FONTS.h4
             }}
           >
-            By {course.name}
+            {course.type}
           </Text>
+        </View>
 
-          <IconLabel
-            icon={icons.time}
-            label={course.scholarshipAmount}
-            containerStyle={{
-              marginLeft: SIZES.base
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 5
+          }}
+        >
+          <Icon name="reader" size={18} color={COLORS.primary} style={{ marginRight: SIZES.base }} />
+          <Text
+            style={{
+              ...FONTS.body4,
+              color: COLORS.gray60,
+              maxWidth: 200
             }}
-            iconStyle={{
-              width: 15,
-              height: 15
-            }}
-            labelStyle={{
-              ...FONTS.body4
-            }}
-          />
+          >
+            {shortenDescription(course.description)}
+          </Text>
         </View>
 
         <View
@@ -104,36 +91,19 @@ const ServiceHorizontalList = ({ containerStyle, course, onPress }) => {
             marginTop: SIZES.base
           }}
         >
+          <Icon name="cash-outline" size={18} color={COLORS.primary} style={{ marginRight: SIZES.base }} />
           <Text
             style={{
-              ...FONTS.h2,
+              ...FONTS.h3,
               color: COLORS.primary
             }}
           >
-            {course.numberOfScholarships}
+            ${course.price}
           </Text>
-
-          <IconLabel
-            icon={icons.star}
-            label={course.feedbacks[0]?.rating}
-            containerStyle={{
-              marginLeft: SIZES.base
-            }}
-            iconStyle={{
-              width: 15,
-              height: 15,
-              tintColor: COLORS.primary2
-            }}
-            labelStyle={{
-              marginLeft: 5,
-              color: COLORS.black,
-              ...FONTS.h3
-            }}
-          />
         </View>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 export default ServiceHorizontalList;

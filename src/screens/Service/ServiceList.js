@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, Image } from 'react-native';
+import { View, Text, ActivityIndicator, FlatList, Image, TextInput } from 'react-native';
 import { FilterModal, IconButton, LineDivider } from '../../components/Card';
 import ServiceHorizontalList from '../../components/Service/ServiceHorizontalList';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
@@ -18,6 +18,7 @@ const ServiceList = ({ navigation }) => {
     hasNextPage: false,
     hasPreviousPage: false,
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
@@ -31,7 +32,16 @@ const ServiceList = ({ navigation }) => {
       IsDescending: pagination.IsDescending,
       IsPaging: pagination.IsPaging,
     }).then((res) => {
-      setServices(res.data.items);
+      let filteredServices = res.data.items;
+
+      // Filter services by name if there is a search query
+      if (searchQuery.trim() !== "") {
+        filteredServices = filteredServices.filter((service) =>
+          service.name.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by name
+        );
+      }
+
+      setServices(filteredServices);
       setPagination((prev) => ({
         ...prev,
         hasNextPage: res.data.hasNextPage,
@@ -41,7 +51,7 @@ const ServiceList = ({ navigation }) => {
       }));
       setLoading(false);
     });
-  }, [pagination.PageIndex, pagination.PageSize, pagination.SortBy, pagination.IsDescending, pagination.IsPaging]);
+  }, [pagination.PageIndex, pagination.PageSize, pagination.SortBy, pagination.IsDescending, pagination.IsPaging, searchQuery]);
 
   useEffect(() => {
     fetchServices();
@@ -76,6 +86,23 @@ const ServiceList = ({ navigation }) => {
         >
           Services
         </Text>
+
+        {/* Search Bar */}
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery} // Update search query on change
+          placeholder="Search services..."
+          style={{
+            height: 40,
+            borderColor: COLORS.gray30,
+            borderWidth: 1,
+            borderRadius: SIZES.radius,
+            marginHorizontal: SIZES.padding,
+            paddingLeft: 10,
+            marginBottom: SIZES.padding,
+            ...FONTS.body4,
+          }}
+        />
       </View>
     );
   }

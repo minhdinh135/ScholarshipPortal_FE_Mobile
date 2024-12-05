@@ -1,28 +1,3 @@
-// import { initializeApp } from "firebase/app";
-// import { getFirestore } from "firebase/firestore";
-// import Constants from "expo-constants";
-// import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-// import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
-
-// const firebaseConfig = {
-//   apiKey: Constants.manifest2.extra.API_KEY,
-//   authDomain: Constants.manifest2.extra.AUTH_DOMAIN,
-//   projectId: Constants.manifest2.extra.PROJECT_ID,
-//   storageBucket: Constants.manifest2.extra.STORAGE_BUCKET,
-//   messagingSenderId: Constants.manifest2.extra.MESSAGING_SENDER_ID,
-//   appId: Constants.manifest2.extra.APP_ID
-// };
-
-// const app = initializeApp(firebaseConfig);
-
-// const auth = initializeAuth(app, {
-//   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-// });
-
-// const database = getFirestore(app);
-
-// export { auth, database }
-
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';

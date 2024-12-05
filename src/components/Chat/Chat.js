@@ -3,17 +3,17 @@ import { Bubble, GiftedChat, Avatar } from 'react-native-gifted-chat';
 import { sendMessage, subscribeToMessages, createChatRoom } from '../../services/ChatService';
 import { useAuth } from '../../context/AuthContext';
 import { COLORS } from '../../constants';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 const ChatScreen = ({ route }) => {
   const { userInfo } = useAuth();
-  const { otherUserId } = route.params; // Passed from user selection screen
+  const { otherUserId } = route.params;
   const [messages, setMessages] = useState([]);
 
-  const chatId = [userInfo.id, otherUserId].sort().join('_'); // Unique chat room ID
+  const chatId = [userInfo.id, otherUserId].sort().join('_');
 
   useEffect(() => {
-    createChatRoom(chatId); // Ensure chat room exists
+    createChatRoom(chatId);
     const unsubscribe = subscribeToMessages(chatId, (newMessages) => {
       setMessages(newMessages);
     });
@@ -38,33 +38,32 @@ const ChatScreen = ({ route }) => {
       {...props}
       wrapperStyle={{
         right: {
-          backgroundColor: COLORS.primary, // Customize right bubble color
+          backgroundColor: COLORS.primary,
           padding: 5,
           borderRadius: 15,
         },
         left: {
-          backgroundColor: COLORS.gray10, // Customize left bubble color
+          backgroundColor: COLORS.gray10,
           padding: 5,
           borderRadius: 15,
         },
       }}
       textStyle={{
         right: {
-          color: COLORS.primary3, // Customize text color for right bubbles
+          color: COLORS.primary3,
         },
         left: {
-          color: COLORS.black, // Customize text color for left bubbles
+          color: COLORS.black,
         },
       }}
     />
   );
 
   const renderAvatar = (props) => {
-    // Show avatar only for messages from the other user (left side)
     if (props.currentMessage.user._id !== userInfo.id) {
       return <Avatar {...props} />;
     }
-    return null; // Hide avatar for messages from the current user
+    return null;
   };
 
   return (

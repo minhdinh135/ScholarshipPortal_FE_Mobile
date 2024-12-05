@@ -5,8 +5,6 @@ import {
   LineDivider
 } from "../../components/Card";
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
-import { interpolate } from 'react-native-reanimated';
-
 import Description from '../../components/ScholarshipProgram/Description';
 import Feedback from '../../components/ScholarshipProgram/Feedback';
 import Discussion from '../../components/ScholarshipProgram/Discussion';
@@ -200,12 +198,6 @@ const ScholarshipDetail = ({ navigation, route }) => {
       }}>
         <Text style={{ ...FONTS.h2 }}>{selectedScholarship?.name}</Text>
         <Text style={{ color: COLORS.gray60, marginTop: 5, ...FONTS.body3 }}>Ho Chi Minh City, Vietnam</Text>
-        {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
-          <Text style={{ ...FONTS.body3, color: COLORS.black }}>
-            {`Rating: ${selectedScholarship?.rating} / 5`}
-          </Text>
-        </View> */}
-
         <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <TouchableOpacity
             style={{
@@ -260,25 +252,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
             alignItems: 'center',
             justifyContent: 'center'
           }}
-        >
-          {/* <IconButton
-            icon={icons.play}
-            iconStyle={{
-              width: 25,
-              height: 25,
-              tintColor: COLORS.white
-            }}
-            containerStyle={{
-              width: 55,
-              height: 55,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: SIZES.padding,
-              borderRadius: 30,
-              backgroundColor: COLORS.primary
-            }}
-          /> */}
-        </ImageBackground>
+        />
       </View>
     )
   }

@@ -14,7 +14,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
       onPress={onPress}
     >
       <ImageBackground
-        // source={course.imageUrl}
         src={course.imageUrl}
         resizeMode="cover"
         style={{
@@ -25,32 +24,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
         imageStyle={{
           borderRadius: SIZES.radius
         }}
-      >
-        {/* <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            width: 30,
-            height: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 5,
-            backgroundColor: COLORS.white
-          }}
-        >
-          <Image
-            source={icons.favourite}
-            resizeMode="contain"
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: course.is_favourite ? COLORS.secondary : COLORS.additionalColor4
-            }}
-          />
-        </View> */}
-      </ImageBackground>
-
+      />
       <View
         style={{
           flex: 1,
@@ -115,7 +89,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
 
           <IconLabel
             icon={icons.star}
-            // label={course.ratings}
             containerStyle={{
               marginLeft: SIZES.base
             }}

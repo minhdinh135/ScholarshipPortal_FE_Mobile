@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, Animated, TextInput, Alert, Image, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  StyleSheet, Animated,
+  TextInput,
+  Alert,
+  Image,
+  ActivityIndicator
+} from 'react-native';
 import {
   IconButton,
   LineDivider,
@@ -11,12 +21,12 @@ import * as DocumentPicker from "expo-document-picker";
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
 import ServiceDescription from '../../components/Service/ServiceDescription';
-import Feedback from '../../components/ScholarshipProgram/Feedback';
 import Discussion from '../../components/ScholarshipProgram/Discussion';
 
 import { useAuth } from '../../context/AuthContext';
 import { getWalletById } from '../../api/walletApi';
 import { transferMoney } from '../../api/paymentApi';
+import ServiceFeedback from '../../components/Service/ServiceFeedback';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -443,7 +453,7 @@ const ServiceDetail = ({ navigation, route }) => {
                 }}
               >
                 {index == 0 && <ServiceDescription selectedService={selectedService} />}
-                {index == 1 && <Feedback />}
+                {index == 1 && <ServiceFeedback />}
                 {index == 2 && <Discussion />}
               </View>
             )

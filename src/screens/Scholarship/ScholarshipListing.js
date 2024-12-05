@@ -19,7 +19,6 @@ import { getScholarProgram } from '../../api/scholarshipProgramApi';
 const HEADER_HEIGHT = 250;
 
 const ScholarshipListing = ({ navigation, route }) => {
-
   const [scholarPrograms, setScholarPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -333,17 +332,5 @@ const ScholarshipListing = ({ navigation, route }) => {
   );
 
 }
-
-// ScholarshipListing.sharedElements = (route, otherRoute, showing) => {
-//   const { category, sharedElementPrefix } = route.params;
-//   return [
-//     {
-//       id: `${sharedElementPrefix}-CategoryCard-Bg-${category?.id}`
-//     },
-//     {
-//       id: `${sharedElementPrefix}-CategoryCard-Title-${category?.id}`
-//     }
-//   ]
-// }
 
 export default ScholarshipListing;

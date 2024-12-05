@@ -1,16 +1,30 @@
-import { View, SafeAreaView, Text, ScrollView, TouchableOpacity, Image, TextInput, Alert } from 'react-native'
-import React from 'react'
+import { View, SafeAreaView, Text, ScrollView, TouchableOpacity, Image, TextInput, Alert, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { COLORS, FONTS, icons } from '../../constants';
 import { IconButton, IconLabel } from '../../components/Card';
 import { useAuth } from '../../context/AuthContext';
 import * as DocumentPicker from "expo-document-picker";
-import { changeAvatar } from '../../api/accountApi';
+import { changeAvatar, getAccountById } from '../../api/accountApi';
 
 const EditProfileScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
+  const [userProfile, setUserProfile] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getAccountById(userInfo.id)
+      .then((res) => {
+        setUserProfile(res || []);
+        console.log(res);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const uploadFile = async () => {
     try {
+      setLoading(true);
       const result = await DocumentPicker.getDocumentAsync({
         type: "*/*",
       });
@@ -45,28 +59,46 @@ const EditProfileScreen = ({ navigation }) => {
     } catch (error) {
       console.error("File upload error:", error);
       Alert.alert("Error", "There was a problem selecting or uploading the file.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: COLORS.white,
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ marginTop: 12, ...FONTS.body3 }}>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: COLORS.white,
-        paddingHorizontal: 22
+        paddingHorizontal: 22,
       }}
     >
       <View
         style={{
           marginHorizontal: 12,
           flexDirection: 'row',
-          justifyContent: 'center'
+          justifyContent: 'center',
         }}
       >
         <IconButton
           icon={icons.back}
           iconStyle={{
-            tintColor: COLORS.black
+            tintColor: COLORS.black,
           }}
           containerStyle={{
             position: 'absolute',
@@ -75,7 +107,7 @@ const EditProfileScreen = ({ navigation }) => {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 25,
-            backgroundColor: COLORS.white
+            backgroundColor: COLORS.white,
           }}
           onPress={() => navigation.goBack()}
         />
@@ -97,7 +129,7 @@ const EditProfileScreen = ({ navigation }) => {
                 width: 120,
                 borderRadius: 85,
                 borderWidth: 2,
-                borderColor: COLORS.primary
+                borderColor: COLORS.primary,
               }}
             />
             <View
@@ -105,7 +137,7 @@ const EditProfileScreen = ({ navigation }) => {
                 position: 'absolute',
                 bottom: 0,
                 right: 0,
-                zIndex: 9999
+                zIndex: 9999,
               }}
             >
               <IconLabel
@@ -138,7 +170,7 @@ const EditProfileScreen = ({ navigation }) => {
               }}
             >
               <TextInput
-                value={userInfo.username}
+                value={userProfile.username}
                 onChangeText={(value) => setName(value)}
                 editable={true}
               />
@@ -164,7 +196,7 @@ const EditProfileScreen = ({ navigation }) => {
               }}
             >
               <TextInput
-                value={userInfo.email}
+                value={userProfile.email}
                 onChangeText={(value) => setName(value)}
                 editable={true}
               />
@@ -190,7 +222,7 @@ const EditProfileScreen = ({ navigation }) => {
               }}
             >
               <TextInput
-                value={userInfo.phoneNumber}
+                value={userProfile.phoneNumber}
                 onChangeText={(value) => setName(value)}
                 editable={true}
               />
@@ -216,7 +248,7 @@ const EditProfileScreen = ({ navigation }) => {
               }}
             >
               <TextInput
-                value={userInfo.address}
+                value={userProfile.address}
                 onChangeText={(value) => setName(value)}
                 editable={true}
               />
@@ -230,13 +262,13 @@ const EditProfileScreen = ({ navigation }) => {
             height: 44,
             borderRadius: 6,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <Text
             style={{
               ...FONTS.body3,
-              color: COLORS.white
+              color: COLORS.white,
             }}
           >
             Save Changes
@@ -244,7 +276,7 @@ const EditProfileScreen = ({ navigation }) => {
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default EditProfileScreen
+export default EditProfileScreen;

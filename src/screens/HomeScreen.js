@@ -277,7 +277,7 @@ const HomeScreen = () => {
   function renderUniversities() {
     return (
       <Section
-        title="Recommend Schools"
+        title="Universities"
         containerStyle={{
           marginBottom: 30
         }}

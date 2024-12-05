@@ -24,19 +24,6 @@ const SettingsScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={styles.container}>
-        {/* <View style={styles.header}>
-          <View style={[styles.headerAction, { alignItems: 'flex-end' }]}>
-            <Pressable
-              onPress={() => {
-                // handle onPress
-              }}>
-              <FeatherIcon
-                color="#000"
-                name="more-vertical"
-                size={24} />
-            </Pressable>
-          </View>
-        </View> */}
         <View
           style={{
             marginTop: 36,
@@ -60,7 +47,6 @@ const SettingsScreen = ({ navigation }) => {
                 <Image
                   alt=""
                   source={{
-                    // uri: userInfo.image
                     uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj"
                   }}
                   style={styles.profileAvatar} />
@@ -296,7 +282,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
   },
-  /** Header */
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -315,7 +300,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000',
   },
-  /** Content */
   content: {
     paddingHorizontal: 16,
   },
@@ -327,7 +311,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#a69f9f',
   },
-  /** Section */
   section: {
     paddingVertical: 12,
   },
@@ -351,7 +334,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 3,
   },
-  /** Profile */
   profile: {
     padding: 12,
     backgroundColor: '#fff',

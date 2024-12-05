@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Replace with your icon library if necessary.
-import { COLORS, SIZES, FONTS } from '../../constants'; // Replace with your constants or use custom styles.
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, SIZES, FONTS } from '../../constants';
 
 const Feedback = () => {
   const [rating, setRating] = useState(0);
@@ -32,7 +32,6 @@ const Feedback = () => {
         Please rate your experience and leave a comment below.
       </Text>
 
-      {/* Rating Section */}
       <View style={styles.ratingContainer}>
         <Text style={styles.sectionTitle}>Rate Us</Text>
         <View style={styles.stars}>
@@ -49,7 +48,6 @@ const Feedback = () => {
         </View>
       </View>
 
-      {/* Comment Section */}
       <View style={styles.commentContainer}>
         <Text style={styles.sectionTitle}>Your Comments</Text>
         <TextInput
@@ -62,7 +60,6 @@ const Feedback = () => {
         />
       </View>
 
-      {/* Submit Button */}
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit Feedback</Text>
       </TouchableOpacity>

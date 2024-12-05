@@ -71,7 +71,6 @@ const DetailsScreen = ({ route }) => {
       setLoading(true);
       await reviewResultApplication(updatedReview);
 
-      // Update review list in application state
       const updatedReviews = application.applicationReviews.map((review) =>
         review.id === selectedReviewId
           ? { ...review, comment: reviewText, score, reviewDate: new Date().toISOString() }
@@ -116,16 +115,12 @@ const DetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Loading Indicator */}
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       )}
-
-      {/* Scrollable Content */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Applicant Information */}
         <View style={styles.section}>
           <Text style={styles.title}>{application.applicant.username}</Text>
           <View style={styles.statusContainer}>
@@ -147,16 +142,12 @@ const DetailsScreen = ({ route }) => {
           <Text style={styles.infoText}>Phone: {application.applicant.phoneNumber}</Text>
           <Text style={styles.infoText}>Address: {application.applicant.address}</Text>
         </View>
-
-        {/* Application Details */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Application Details</Text>
           <Text style={styles.infoText}>Applied Date: {new Date(application.appliedDate).toLocaleDateString()}</Text>
           <Text style={styles.infoText}>Scholarship Program: {scholarship?.name}</Text>
           <Text style={styles.infoText}>University: {scholarship?.university?.name}</Text>
         </View>
-
-        {/* Documents */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Documents</Text>
           {application.applicationDocuments.length > 0 ? (
@@ -170,8 +161,6 @@ const DetailsScreen = ({ route }) => {
             <Text style={styles.infoText}>No documents submitted.</Text>
           )}
         </View>
-
-        {/* Review List */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Reviews</Text>
           {application.applicationReviews.length > 0 ? (
@@ -196,8 +185,6 @@ const DetailsScreen = ({ route }) => {
             <Text style={styles.infoText}>No reviews available.</Text>
           )}
         </View>
-
-        {/* Review Input */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Review</Text>
           <TextInput
@@ -221,7 +208,6 @@ const DetailsScreen = ({ route }) => {
         </View>
       </ScrollView>
 
-      {/* Fixed Action Buttons */}
       <View style={styles.actionsContainer}>
         {application.status === 'Reviewing' ? (
           <>
@@ -298,23 +284,23 @@ const styles = StyleSheet.create({
     marginLeft: SIZES.base,
   },
   reviewContainer: {
-    backgroundColor: COLORS.white, // Light background
-    borderWidth: 1, // Add a border for definition
-    borderColor: COLORS.gray30, // Light gray border
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.gray30,
     padding: SIZES.base,
     borderRadius: SIZES.radius,
     marginBottom: SIZES.base,
-    shadowColor: '#000', // Shadow for depth
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, // Shadow for Android
+    elevation: 2,
   },
   reviewDescription: {
     ...FONTS.body3,
-    color: COLORS.gray90, // Darker gray for text
+    color: COLORS.gray90,
     marginBottom: SIZES.base / 2,
-    fontWeight: 'bold', // Emphasize the comment
+    fontWeight: 'bold',
   },
   infoText: {
     ...FONTS.body3,

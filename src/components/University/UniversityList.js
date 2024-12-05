@@ -1,10 +1,16 @@
 import React from "react";
-import { View, Text, Image, ImageBackground, TouchableOpacity } from "react-native";
-
-import { IconLabel } from "../Card";
-import { SIZES, FONTS, COLORS, icons } from "../../constants";
+import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
+import { SIZES, FONTS, COLORS } from "../../constants";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const UniversityList = ({ containerStyle, university, onPress }) => {
+  const shortenDescription = (description) => {
+    if (description && description.length > 20) {
+      return description.substring(0, 50) + "...";
+    }
+    return description;
+  };
+
   return (
     <TouchableOpacity
       style={{
@@ -14,42 +20,17 @@ const UniversityList = ({ containerStyle, university, onPress }) => {
       onPress={onPress}
     >
       <ImageBackground
-        // source={university.imageUrl}
-        // src={university.imageUrl}
+        source={{ uri: "https://t3.ftcdn.net/jpg/04/91/76/62/360_F_491766294_h4j7LbW2YgfbNHhq7F8GboIc1XyBSEY5.jpg" }}
         resizeMode="cover"
         style={{
-          width: 130,
-          height: 130,
+          width: 150,
+          height: 150,
           marginBottom: SIZES.radius
         }}
         imageStyle={{
           borderRadius: SIZES.radius
         }}
-      >
-        {/* <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            width: 30,
-            height: 30,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 5,
-            backgroundColor: COLORS.white
-          }}
-        >
-          <Image
-            source={icons.favourite}
-            resizeMode="contain"
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: university.is_favourite ? COLORS.secondary : COLORS.additionalColor4
-            }}
-          />
-        </View> */}
-      </ImageBackground>
+      />
 
       <View
         style={{
@@ -73,68 +54,39 @@ const UniversityList = ({ containerStyle, university, onPress }) => {
             marginTop: SIZES.base
           }}
         >
+          <Icon name="location-outline" size={24} color={COLORS.primary} />
           <Text
             style={{
-              ...FONTS.h4
+              ...FONTS.h4,
+              color: COLORS.primary
             }}
           >
-            By {university.name}
+            {university.country.name}
           </Text>
-
-          <IconLabel
-            icon={icons.time}
-            label={university.scholarshipAmount}
-            containerStyle={{
-              marginLeft: SIZES.base
-            }}
-            iconStyle={{
-              width: 15,
-              height: 15
-            }}
-            labelStyle={{
-              ...FONTS.body4
-            }}
-          />
         </View>
 
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginTop: SIZES.base
+            marginTop: 5
           }}
         >
           <Text
             style={{
-              ...FONTS.h2,
-              color: COLORS.primary
+              ...FONTS.body4,
+              color: COLORS.gray60,
+              marginTop: SIZES.base,
+              flexWrap: 'wrap',
+              maxWidth: 200
             }}
           >
-            {/* {university.numberOfScholarships} */}
-            Hello
+            {shortenDescription(university.description)}
           </Text>
-
-          {/* <IconLabel
-            icon={icons.star}
-            // label={university.ratings}
-            containerStyle={{
-              marginLeft: SIZES.base
-            }}
-            iconStyle={{
-              width: 15,
-              height: 15,
-              tintColor: COLORS.primary2
-            }}
-            labelStyle={{
-              marginLeft: 5,
-              color: COLORS.black,
-              ...FONTS.h3
-            }}
-          /> */}
         </View>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 export default UniversityList;

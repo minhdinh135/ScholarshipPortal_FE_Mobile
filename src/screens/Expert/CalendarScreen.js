@@ -24,8 +24,6 @@ const CalendarScreen = ({ navigation }) => {
     getApplicationByExpertId(userInfo.id)
       .then((res) => {
         const fetchedApplications = res.data || [];
-
-        // Transform data into Agenda-compatible format
         const agendaItems = fetchedApplications.reduce((acc, application) => {
           application.applicationReviews.forEach((review) => {
             const date = moment(review.reviewDate).format("YYYY-MM-DD");
@@ -45,7 +43,7 @@ const CalendarScreen = ({ navigation }) => {
           return acc;
         }, {});
 
-        setItems(agendaItems); // Update state with transformed data
+        setItems(agendaItems);
       })
       .catch((err) => {
         console.error(err);
@@ -55,7 +53,6 @@ const CalendarScreen = ({ navigation }) => {
       });
   }, [userInfo?.id]);
 
-  // Render item function for Agenda
   const renderItem = useCallback(
     (item) => (
       <Item
@@ -87,7 +84,7 @@ const CalendarScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Agenda
         items={items}
-        selected={moment().format("YYYY-MM-DD")} // Default to today's date
+        selected={moment().format("YYYY-MM-DD")}
         renderItem={renderItem}
         pastScrollRange={3}
         futureScrollRange={3}

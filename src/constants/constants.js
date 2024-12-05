@@ -110,12 +110,12 @@ const class_types = [
   },
   {
     id: 1,
-    label: "Staff Pick",
+    label: "Academic",
     icon: require("../assets/icons/staff_pick.png")
   },
   {
     id: 2,
-    label: "Original",
+    label: "Full-ride",
     icon: require("../assets/icons/original.png")
   },
 ]

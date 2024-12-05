@@ -50,7 +50,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
           );
 
           setApplications(applicationsWithApplicants);
-          setFilteredApplications(applicationsWithApplicants); // Initialize filtered list
+          setFilteredApplications(applicationsWithApplicants);
           setLoading(false);
         } catch (err) {
           console.log(err);
@@ -99,7 +99,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
         }
       >
         <View style={styles.applicationInfo}>
-          {/* <Text style={styles.applicationName}>{item.applicant.username.toUpperCase()}</Text> */}
           <Text style={styles.applicantEmail}>
             Email: {item.applicant?.email}
           </Text>
