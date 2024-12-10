@@ -11,7 +11,7 @@ export const getApplicationById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
+    console.log("Error fetching the scholarship programs: ", error);
   }
 };
 
@@ -32,7 +32,7 @@ export const postApplication = async (applicationData) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error posting the application: ", error);
+    console.log("Error posting the application: ", error);
   }
 };
 
@@ -53,7 +53,7 @@ export const updateApplication = async (id, status) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error updating status application: ", error);
+    console.log("Error updating status application: ", error);
   }
 };
 
@@ -74,6 +74,6 @@ export const reviewResultApplication = async (reviewData) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error updating review application: ", error);
+    console.log("Error updating review application: ", error);
   }
 }

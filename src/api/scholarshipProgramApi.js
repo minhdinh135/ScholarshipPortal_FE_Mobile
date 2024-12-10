@@ -27,7 +27,7 @@ export const getScholarProgram = async (params = {}) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
+    console.log("Error fetching the scholarship programs: ", error);
   }
 };
 
@@ -42,6 +42,6 @@ export const getScholarProgramById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs by id: ", error);
+    console.log("Error fetching the scholarship programs by id: ", error);
   }
 };

@@ -18,6 +18,7 @@ export default {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.scholarship",
       "adaptiveIcon": {
         "foregroundImage": "./public/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -28,6 +29,11 @@ export default {
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fd125460-d5b3-412c-a70a-ee6ebead916b"
+      }
+    }
   }
 }

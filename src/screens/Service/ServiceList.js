@@ -34,10 +34,9 @@ const ServiceList = ({ navigation }) => {
     }).then((res) => {
       let filteredServices = res.data.items;
 
-      // Filter services by name if there is a search query
       if (searchQuery.trim() !== "") {
         filteredServices = filteredServices.filter((service) =>
-          service.name.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by name
+          service.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
 
@@ -87,10 +86,9 @@ const ServiceList = ({ navigation }) => {
           Services
         </Text>
 
-        {/* Search Bar */}
         <TextInput
           value={searchQuery}
-          onChangeText={setSearchQuery} // Update search query on change
+          onChangeText={setSearchQuery}
           placeholder="Search services..."
           style={{
             height: 40,

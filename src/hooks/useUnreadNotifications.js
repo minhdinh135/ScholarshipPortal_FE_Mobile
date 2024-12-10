@@ -11,7 +11,7 @@ const useUnreadNotifications = (userId) => {
         const unreadNotifications = response?.data?.filter(notification => !notification.isRead) || [];
         setUnreadCount(unreadNotifications.length);
       } catch (error) {
-        console.error("Error fetching notifications:", error);
+        console.log("Error fetching notifications:", error);
       }
     };
 

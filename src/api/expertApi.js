@@ -11,7 +11,7 @@ export const getApplicationByExpertId = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the assigned application: ", error);
+    console.log("Error fetching the assigned application: ", error);
   }
 };
 
@@ -26,7 +26,7 @@ export const reviewApplication = async () => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error reviewing the application: ", error);
+    console.log("Error reviewing the application: ", error);
   }
 };
 

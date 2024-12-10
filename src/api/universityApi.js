@@ -11,6 +11,6 @@ export const getUniversity = async () => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the universities: ", error);
+    console.log("Error fetching the universities: ", error);
   }
 };

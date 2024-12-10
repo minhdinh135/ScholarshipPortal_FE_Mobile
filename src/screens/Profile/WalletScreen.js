@@ -14,7 +14,7 @@ import {
 import { COLORS, FONTS, images, icons } from '../../constants';
 import { IconButton } from '../../components/Card';
 import { useAuth } from '../../context/AuthContext';
-import { getWalletById } from '../../api/walletApi';
+import { getWalletById, createWallet } from '../../api/walletApi';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { WebView } from "react-native-webview";
 import axios from 'axios';
@@ -24,7 +24,7 @@ import { getTransactionByWalletId } from '../../api/paymentApi';
 const WalletScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
   const [sessionUrl, setSessionUrl] = useState(null);
-  const [wallet, setWallet] = useState([]);
+  const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [amount, setAmount] = useState(0);
   const [transactions, setTransactions] = useState([]);
@@ -34,14 +34,32 @@ const WalletScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const walletResponse = await getWalletById(userInfo.id);
-      setWallet(walletResponse.data || []);
+      setWallet(walletResponse.data || null);
 
       if (walletResponse.data?.id) {
         const transactionResponse = await getTransactionByWalletId(walletResponse.data.id);
         setTransactions(transactionResponse.data || []);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createNewWallet = async () => {
+    setLoading(true);
+    try {
+      const response = await createWallet(userInfo.id);
+      if (response.data) {
+        Alert.alert("Success", "Wallet created successfully!");
+        getWalletInformation();
+      } else {
+        Alert.alert("Error", "Failed to create wallet.");
+      }
+    } catch (error) {
+      console.log("Error creating wallet:", error);
+      Alert.alert("Error", "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -70,7 +88,7 @@ const WalletScreen = ({ navigation }) => {
         Alert.alert("Error", "Failed to create invoice.");
       }
     } catch (error) {
-      console.error("Error creating invoice:", error);
+      console.log("Error creating invoice:", error);
       Alert.alert("Error", "Something went wrong.");
     } finally {
       setLoading(false);
@@ -132,7 +150,7 @@ const WalletScreen = ({ navigation }) => {
               }
             }}
             onError={(error) => {
-              console.error("WebView Error:", error);
+              console.log("WebView Error:", error);
               Alert.alert("Error", "Failed to load payment session.");
               setSessionUrl(null);
             }}
@@ -144,7 +162,7 @@ const WalletScreen = ({ navigation }) => {
                 <ActivityIndicator size="large" color={COLORS.primary} />
                 <Text style={{ ...FONTS.body3, color: COLORS.gray70, marginTop: 10 }}>Loading...</Text>
               </View>
-            ) : (
+            ) : wallet ? (
               <>
                 <ImageBackground
                   source={images.featured_bg_image}
@@ -181,14 +199,30 @@ const WalletScreen = ({ navigation }) => {
 
                 <View style={styles.transactionContainerWrapper}>
                   <Text style={{ ...FONTS.h2, color: COLORS.gray80, marginBottom: 10 }}>Transactions</Text>
-                  <FlatList
-                    data={transactions.reverse()}
-                    renderItem={renderTransaction}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ marginTop: 10 }}
-                  />
+                  {transactions.length === 0 ? (
+                    <View style={styles.noTransactionContainer}>
+                      <Text style={{ ...FONTS.body3, color: COLORS.gray40 }}>No transactions yet</Text>
+                    </View>
+                  ) : (
+                    <FlatList
+                      data={transactions.reverse()}
+                      renderItem={renderTransaction}
+                      keyExtractor={(item) => item.id}
+                      contentContainerStyle={{ marginTop: 10 }}
+                    />
+                  )}
                 </View>
               </>
+            ) : (
+              <View style={styles.noWalletContainer}>
+                <Text style={{ ...FONTS.h2, color: COLORS.gray80 }}>You haven't created a wallet</Text>
+                <TouchableOpacity
+                  style={styles.createWalletButton}
+                  onPress={createNewWallet}
+                >
+                  <Text style={{ color: COLORS.white, ...FONTS.body3 }}>Create Wallet Now</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
@@ -227,6 +261,18 @@ const WalletScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  noWalletContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  createWalletButton: {
+    marginTop: 20,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
   transactionContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -238,6 +284,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
     elevation: 2,
+  },
+  noTransactionContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
   },
   loadingContainer: {
     flex: 1,

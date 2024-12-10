@@ -27,6 +27,6 @@ export const getServices = async (params = {}) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the scholarship programs: ", error);
+    console.log("Error fetching the scholarship programs: ", error);
   }
 };

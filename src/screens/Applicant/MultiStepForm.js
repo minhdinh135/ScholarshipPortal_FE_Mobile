@@ -50,8 +50,6 @@ const StepOne = ({ formData, setFormData, errors }) => {
 };
 
 const StepTwo = ({ formData, setFormData, errors }) => {
-  const [imagePreview, setImagePreview] = useState(null);
-
   const uploadFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -60,7 +58,6 @@ const StepTwo = ({ formData, setFormData, errors }) => {
 
       if (result) {
         const { uri, name, mimeType, size } = result.assets[0];
-        const isImage = mimeType.startsWith("image/");
         const files = new FormData();
         files.append("files", {
           uri: uri,
@@ -78,7 +75,6 @@ const StepTwo = ({ formData, setFormData, errors }) => {
         });
 
         const responseText = await response.text();
-        console.log("Raw Response:", responseText);
 
         try {
           const responseJson = JSON.parse(responseText);
@@ -86,21 +82,14 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           if (response.ok) {
             Alert.alert("Upload Success", "File uploaded successfully.");
             setFormData({ ...formData, file: responseJson.data[0] });
-
-            if (isImage) {
-              setImagePreview(formData.file);
-            }
           } else {
-            console.error("Upload error:", responseJson);
             Alert.alert("Upload Error", "Failed to upload file.");
           }
         } catch (error) {
-          console.error("Failed to parse response:", error);
           Alert.alert("Response Error", "The response is not valid JSON.");
         }
       }
     } catch (error) {
-      console.error("File upload error:", error);
       Alert.alert(
         "Error",
         "There was a problem selecting or uploading the file.",
@@ -220,7 +209,6 @@ const MultiStepForm = ({ navigation, route }) => {
     if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 3));
   };
 
-  // const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, 3));
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
 
   const submitForm = async () => {

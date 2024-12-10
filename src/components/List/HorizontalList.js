@@ -1,112 +1,111 @@
 import React from "react";
-import { View, Text, Image, ImageBackground, TouchableOpacity } from "react-native";
-
-import { IconLabel } from "../Card";
-import { SIZES, FONTS, COLORS, icons } from "../../constants";
+import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
+import moment from "moment";
+import { SIZES, FONTS, COLORS } from "../../constants";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const HorizontalList = ({ containerStyle, course, onPress }) => {
+  const shortenDescription = (description) => {
+    if (description && description.length > 30) {
+      return description.substring(0, 30) + "...";
+    }
+    return description;
+  };
+
   return (
     <TouchableOpacity
       style={{
-        flexDirection: 'row',
-        ...containerStyle
+        flexDirection: "row",
+        ...containerStyle,
       }}
       onPress={onPress}
     >
+      {/* Scholarship Image */}
       <ImageBackground
-        src={course.imageUrl}
+        // source={{ uri: course.imageUrl }}
+        source={{ uri: "https://t3.ftcdn.net/jpg/04/91/76/62/360_F_491766294_h4j7LbW2YgfbNHhq7F8GboIc1XyBSEY5.jpg" }}
         resizeMode="cover"
         style={{
-          width: 130,
-          height: 130,
-          marginBottom: SIZES.radius
+          width: 150,
+          height: 150,
+          marginBottom: SIZES.radius,
         }}
         imageStyle={{
-          borderRadius: SIZES.radius
+          borderRadius: SIZES.radius,
         }}
       />
+
+      {/* Scholarship Info */}
       <View
         style={{
           flex: 1,
-          marginLeft: SIZES.base
+          marginLeft: SIZES.base,
         }}
       >
+        {/* Name */}
         <Text
           style={{
             ...FONTS.h3,
-            fontSize: 18
+            fontSize: 18,
           }}
+        // numberOfLines={1}
         >
           {course.name}
         </Text>
 
-        <View
+        {/* Description */}
+        <Text
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: SIZES.base
+            ...FONTS.body4,
+            color: COLORS.gray60,
+            marginTop: SIZES.base,
           }}
         >
+          {shortenDescription(course.description)}
+        </Text>
+
+        {/* Deadline */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: SIZES.base,
+          }}
+        >
+          <Icon name="time-outline" size={18} color={COLORS.gray60} />
           <Text
             style={{
-              ...FONTS.h4
+              ...FONTS.body4,
+              color: COLORS.gray60,
+              marginLeft: SIZES.base / 2,
             }}
           >
-            By {course.name}
+            {moment(course.deadline).format("MMM DD, YYYY")}
           </Text>
-
-          <IconLabel
-            icon={icons.time}
-            label={course.scholarshipAmount}
-            containerStyle={{
-              marginLeft: SIZES.base
-            }}
-            iconStyle={{
-              width: 15,
-              height: 15
-            }}
-            labelStyle={{
-              ...FONTS.body4
-            }}
-          />
         </View>
 
+        {/* Scholarship Amount */}
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: SIZES.base
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: SIZES.base,
           }}
         >
+          <Icon name="cash-outline" size={18} color={COLORS.primary} />
           <Text
             style={{
-              ...FONTS.h2,
-              color: COLORS.primary
+              ...FONTS.h4,
+              color: COLORS.primary,
+              marginLeft: SIZES.base / 2,
             }}
           >
-            {course.numberOfScholarships}
+            {course.scholarshipAmount}
           </Text>
-
-          <IconLabel
-            icon={icons.star}
-            containerStyle={{
-              marginLeft: SIZES.base
-            }}
-            iconStyle={{
-              width: 15,
-              height: 15,
-              tintColor: COLORS.primary2
-            }}
-            labelStyle={{
-              marginLeft: 5,
-              color: COLORS.black,
-              ...FONTS.h3
-            }}
-          />
         </View>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 export default HorizontalList;

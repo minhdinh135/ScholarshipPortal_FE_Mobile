@@ -11,6 +11,27 @@ export const getWalletById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching wallet: ", error);
+    console.log("Error fetching wallet: ", error);
   }
 };
+
+export const createWallet = async (id, walletData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/wallet`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(walletData),
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error creating wallet: ", error);
+  }
+}

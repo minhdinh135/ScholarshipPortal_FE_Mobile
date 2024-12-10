@@ -16,9 +16,8 @@ const EditProfileScreen = ({ navigation }) => {
     getAccountById(userInfo.id)
       .then((res) => {
         setUserProfile(res || []);
-        console.log(res);
       })
-      .catch((err) => console.error(err))
+      .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,7 +39,6 @@ const EditProfileScreen = ({ navigation }) => {
         });
 
         const responseText = await changeAvatar(userInfo.id, files).text();
-        console.log("Raw Response:", responseText);
 
         try {
           const responseJson = JSON.parse(responseText);
@@ -48,16 +46,13 @@ const EditProfileScreen = ({ navigation }) => {
           if (response.ok) {
             Alert.alert("Upload Success", "File uploaded successfully.");
           } else {
-            console.error("Upload error:", responseJson);
             Alert.alert("Upload Error", "Failed to upload file.");
           }
         } catch (error) {
-          console.error("Failed to parse response:", error);
           Alert.alert("Response Error", "The response is not valid JSON.");
         }
       }
     } catch (error) {
-      console.error("File upload error:", error);
       Alert.alert("Error", "There was a problem selecting or uploading the file.");
     } finally {
       setLoading(false);

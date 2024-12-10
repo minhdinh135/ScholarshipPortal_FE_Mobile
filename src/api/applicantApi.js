@@ -11,6 +11,6 @@ export const getApplicantById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching applicants: ", error);
+    console.log("Error fetching applicants: ", error);
   }
 };

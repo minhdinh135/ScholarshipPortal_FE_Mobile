@@ -11,7 +11,7 @@ export const getNotification = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the notifications: ", error);
+    console.log("Error fetching the notifications: ", error);
   }
 };
 

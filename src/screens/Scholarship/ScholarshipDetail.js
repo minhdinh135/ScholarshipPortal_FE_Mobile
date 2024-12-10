@@ -244,7 +244,6 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          // source={selectedScholarship?.imageUrl}
           src="https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg"
           style={{
             width: '100%',

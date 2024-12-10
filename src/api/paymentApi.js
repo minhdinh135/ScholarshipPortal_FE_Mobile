@@ -11,7 +11,7 @@ export const getTransactionByWalletId = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching transaction by wallet id: ", error);
+    console.log("Error fetching transaction by wallet id: ", error);
   }
 };
 
@@ -32,6 +32,6 @@ export const transferMoney = async (moneyData) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error transfering money: ", error);
+    console.log("Error transfering money: ", error);
   }
 };

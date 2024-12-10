@@ -43,7 +43,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
                 const applicantRes = await getAccountById(application.id);
                 return { ...application, applicant: applicantRes };
               } catch (error) {
-                console.error(Error`fetching`);
+                console.log(Error`fetching`);
                 return { ...application, applicant: null };
               }
             }),

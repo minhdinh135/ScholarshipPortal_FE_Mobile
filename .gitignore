@@ -3,6 +3,10 @@
 # dependencies
 node_modules/
 
+# project
+/android
+/ios
+
 # local env files
 # .env
 # .env*.local

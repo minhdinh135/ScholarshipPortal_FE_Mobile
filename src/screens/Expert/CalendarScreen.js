@@ -46,7 +46,7 @@ const CalendarScreen = ({ navigation }) => {
         setItems(agendaItems);
       })
       .catch((err) => {
-        console.error(err);
+        console.log(err);
       })
       .finally(() => {
         setLoading(false);

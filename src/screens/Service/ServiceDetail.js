@@ -162,7 +162,7 @@ const ServiceDetail = ({ navigation, route }) => {
 
       return { userWallet, providerWallet };
     } catch (error) {
-      console.error('Error fetching wallet information:', error);
+      console.log('Error fetching wallet information:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -212,7 +212,6 @@ const ServiceDetail = ({ navigation, route }) => {
         });
 
         const responseText = await response.text();
-        console.log("Raw Response:", responseText);
 
         try {
           const responseJson = JSON.parse(responseText);
@@ -223,16 +222,13 @@ const ServiceDetail = ({ navigation, route }) => {
               setImagePreview(responseJson.data[0]);
             }
           } else {
-            console.error("Upload error:", responseJson);
             Alert.alert("Upload Error", "Failed to upload file.");
           }
         } catch (error) {
-          console.error("Failed to parse response:", error);
           Alert.alert("Response Error", "The response is not valid JSON.");
         }
       }
     } catch (error) {
-      console.error("File upload error:", error);
       Alert.alert(
         "Error",
         "There was a problem selecting or uploading the file.",
@@ -260,7 +256,6 @@ const ServiceDetail = ({ navigation, route }) => {
         ]
       );
     } catch (error) {
-      console.error('Error submitting form:', error);
       Alert.alert("Error", "There was an issue submitting your request. Please try again.");
     }
   };
@@ -387,7 +382,6 @@ const ServiceDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          // source={selectedService?.imageUrl}
           src="https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg"
           style={{
             width: '100%',

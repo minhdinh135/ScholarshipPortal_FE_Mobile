@@ -21,7 +21,7 @@ const DetailsScreen = ({ route }) => {
         const res = await getScholarProgramById(application.scholarshipProgramId);
         setScholarship(res.data || null);
       } catch (err) {
-        console.error(err);
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -82,7 +82,7 @@ const DetailsScreen = ({ route }) => {
 
       Alert.alert('Review Submitted', 'Your review has been submitted. You can now approve or reject the application.');
     } catch (error) {
-      console.error(error);
+      console.log(error);
       Alert.alert('Error', 'There was an error submitting the review.');
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ const DetailsScreen = ({ route }) => {
       setApplication((prev) => ({ ...prev, status: newStatus }));
       Alert.alert('Status Updated', `The application status has been changed to ${newStatus}.`);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       Alert.alert('Update Failed', 'There was an error while updating the application status.');
     } finally {
       setLoading(false);

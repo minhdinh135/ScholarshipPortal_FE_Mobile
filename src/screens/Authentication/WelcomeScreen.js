@@ -35,10 +35,6 @@ const WelcomeScreen = () => {
                     }} />
                   <Text style={styles.btnTxt}>Login with Google</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                  <Entypo name='facebook' size={20} color='#1877F2' />
-                  <Text style={styles.btnTxt}>Login with Facebook</Text>
-                </TouchableOpacity>
               </View>
               <View style={{
                 flexDirection: 'row',

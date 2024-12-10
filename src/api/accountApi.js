@@ -11,7 +11,7 @@ export const getAccounts = async () => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching accounts: ", error);
+    console.log("Error fetching accounts: ", error);
   }
 };
 
@@ -26,7 +26,7 @@ export const getAccountById = async (id) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error fetching the account by id: ", error);
+    console.log("Error fetching the account by id: ", error);
   }
 };
 
@@ -51,7 +51,7 @@ export const changePassword = async (id, email, oldPassword, newPassword) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error changing the password: ", error);
+    console.log("Error changing the password: ", error);
   }
 };
 
@@ -72,6 +72,6 @@ export const changeAvatar = async (id, files) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.error("Error changing the password: ", error);
+    console.log("Error changing the password: ", error);
   }
 };
