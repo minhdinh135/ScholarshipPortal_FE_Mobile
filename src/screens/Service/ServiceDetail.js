@@ -351,21 +351,6 @@ const ServiceDetail = ({ navigation, route }) => {
           >
             <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Request Now</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              height: 50,
-              borderColor: COLORS.primary,
-              borderWidth: 1,
-              borderRadius: SIZES.radius,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onPress={() => {/* Add view more action here */ }}
-          >
-            <Text style={{ color: COLORS.primary, ...FONTS.h3 }}>View More</Text>
-          </TouchableOpacity>
         </View>
       </View>
     );
@@ -462,8 +447,6 @@ const ServiceDetail = ({ navigation, route }) => {
       <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['50%', '80%']} enablePanDownToClose={true}>
         <View style={styles.sheetContent}>
           <Text style={styles.sheetTitle}>Request Form</Text>
-
-          {/* Description */}
           <Text style={styles.sectionTitle}>Description</Text>
           <TextInput
             style={styles.input}
@@ -471,8 +454,6 @@ const ServiceDetail = ({ navigation, route }) => {
             value={form.description}
             onChangeText={(text) => handleInputChange('description', text)}
           />
-
-          {/* File Upload */}
           <Text style={styles.sectionTitle}>Upload File</Text>
           {imagePreview.length > 0 ? (<></>) : (
             <>
@@ -489,8 +470,6 @@ const ServiceDetail = ({ navigation, route }) => {
               />
             </View>
           )}
-
-          {/* Payment Method */}
           <Text style={styles.sectionTitle}>Payment Method</Text>
           <View style={styles.paymentOptions}>
             <TouchableOpacity
@@ -512,8 +491,6 @@ const ServiceDetail = ({ navigation, route }) => {
               <Text style={[styles.paymentOptionText, form.paymentMethod === 'Cash' && styles.selectedWalletText]}>Pay by Cash</Text>
             </TouchableOpacity>
           </View>
-
-          {/* Submit Button */}
           <TextButton
             label="Submit"
             contentContainerStyle={{

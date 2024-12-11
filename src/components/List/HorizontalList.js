@@ -20,7 +20,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
       }}
       onPress={onPress}
     >
-      {/* Scholarship Image */}
       <ImageBackground
         // source={{ uri: course.imageUrl }}
         source={{ uri: "https://t3.ftcdn.net/jpg/04/91/76/62/360_F_491766294_h4j7LbW2YgfbNHhq7F8GboIc1XyBSEY5.jpg" }}
@@ -34,26 +33,20 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
           borderRadius: SIZES.radius,
         }}
       />
-
-      {/* Scholarship Info */}
       <View
         style={{
           flex: 1,
           marginLeft: SIZES.base,
         }}
       >
-        {/* Name */}
         <Text
           style={{
             ...FONTS.h3,
             fontSize: 18,
           }}
-        // numberOfLines={1}
         >
           {course.name}
         </Text>
-
-        {/* Description */}
         <Text
           style={{
             ...FONTS.body4,
@@ -63,8 +56,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
         >
           {shortenDescription(course.description)}
         </Text>
-
-        {/* Deadline */}
         <View
           style={{
             flexDirection: "row",
@@ -83,8 +74,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
             {moment(course.deadline).format("MMM DD, YYYY")}
           </Text>
         </View>
-
-        {/* Scholarship Amount */}
         <View
           style={{
             flexDirection: "row",
@@ -100,7 +89,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
               marginLeft: SIZES.base / 2,
             }}
           >
-            {course.scholarshipAmount}
+            ${course.scholarshipAmount.toLocaleString()}
           </Text>
         </View>
       </View>

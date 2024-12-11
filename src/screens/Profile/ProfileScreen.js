@@ -362,7 +362,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#858585',
   },
-  /** Row */
   row: {
     height: 44,
     width: '100%',

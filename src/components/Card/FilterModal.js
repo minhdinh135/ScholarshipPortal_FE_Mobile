@@ -334,14 +334,11 @@ const FilterModal = ({ filterModalSharedValue1, filterModalSharedValue2 }) => {
                 />
               </View>
             </View>
-
           </ScrollView>
 
           {renderFooter()}
-
         </Animated.View>
       </Animated.View>
-
     </Animated.View>
   )
 }

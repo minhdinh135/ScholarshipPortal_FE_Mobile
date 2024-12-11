@@ -29,7 +29,6 @@ const ProductScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Product Information */}
       <View style={styles.productInfo}>
         <Text style={styles.title}>Product Name</Text>
         <Text style={styles.description}>
@@ -42,8 +41,6 @@ const ProductScreen = () => {
           <Text style={styles.buttonText}>Open Form</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Bottom Sheet */}
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}

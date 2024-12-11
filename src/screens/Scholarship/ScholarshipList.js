@@ -1,24 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native'
+import { View, Text, ActivityIndicator, Image, TextInput } from 'react-native'
 import Animated, {
-  Extrapolation,
-  interpolate,
   useAnimatedScrollHandler,
-  useAnimatedStyle,
   useSharedValue,
   withTiming,
-  runOnJS,
   withDelay,
 } from 'react-native-reanimated';
 import { FilterModal, IconButton, LineDivider } from '../../components/Card'
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
-import { SharedElement } from 'react-navigation-shared-element';
 import { getScholarProgram } from '../../api/scholarshipProgramApi';
 
-const HEADER_HEIGHT = 250;
-
-const ScholarshipListing = ({ navigation, route }) => {
+const ScholarshipList = ({ navigation }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [scholarPrograms, setScholarPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -32,7 +26,6 @@ const ScholarshipListing = ({ navigation, route }) => {
   });
 
   const flatListRef = React.useRef();
-  const headerSharedValue = useSharedValue(80);
   const scrollY = useSharedValue(0);
 
   const onScroll = useAnimatedScrollHandler((event) => {
@@ -41,9 +34,6 @@ const ScholarshipListing = ({ navigation, route }) => {
 
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
-
-
-  const { category, sharedElementPrefix } = route.params;
 
   function backHandler() {
     navigation.goBack()
@@ -87,154 +77,40 @@ const ScholarshipListing = ({ navigation, route }) => {
   }
 
   function renderHeader() {
-    const inputRange = [0, HEADER_HEIGHT - 50]
-    headerSharedValue.value = withDelay(500,
-      withTiming(0, {
-        duration: 500
-      })
-    )
-
-    const headerFadeAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        opacity: interpolate(headerSharedValue.value, [80, 0], [0, 1])
-      }
-    })
-
-    const headerHeightAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        height: interpolate(scrollY.value, inputRange, [HEADER_HEIGHT, 120], Extrapolation.CLAMP)
-      }
-    })
-
-    const headerHideOnScrollAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        opacity: interpolate(scrollY.value, [80, 0], [0, 1], Extrapolation.CLAMP),
-        transform: [
-          {
-            translateY: interpolate(scrollY.value, inputRange, [0, 200], Extrapolation.CLAMP)
-          }
-        ]
-      }
-    })
-
-    const headerShowOnScrollAnimatedStyle = useAnimatedStyle(() => {
-      return {
-        opacity: interpolate(scrollY.value, [80, 0], [1, 0], Extrapolation.CLAMP),
-        transform: [
-          {
-            translateY: interpolate(scrollY.value, inputRange, [50, 130], Extrapolation.CLAMP)
-          }
-        ]
-      }
-    })
-
     return (
-      <Animated.View
-        style={[{
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 250,
-          overflow: 'hidden'
-        }, headerHeightAnimatedStyle]}
-      >
-        <SharedElement
-          id={`${sharedElementPrefix}-CategoryCard-Bg-${category?.id}`}
-          style={[StyleSheet.absoluteFillObject]}
+      <View>
+        <Image
+          source={{ uri: 'https://my.alfred.edu/zoom/_images/powell.jpg' }}
+          style={{ width: '100%', height: 200 }}
+          resizeMode="cover"
+        />
+        <Text
+          style={{
+            textAlign: 'center',
+            marginVertical: SIZES.padding,
+            ...FONTS.h1,
+          }}
         >
-          <Image
-            source={category?.thumbnail}
-            resizeMode='cover'
-            style={{
-              height: "100%",
-              width: "100%",
-              borderBottomLeftRadius: 60
-            }}
-          />
-        </SharedElement>
+          Scholarship Programs
+        </Text>
 
-        <Animated.View
-          style={[{
-            position: 'absolute',
-            top: -80,
-            left: 0,
-            right: 0
-          }, headerShowOnScrollAnimatedStyle]}
-        >
-          <Text
-            style={{
-              textAlign: 'center',
-              color: COLORS.white,
-              fontSize: 26, fontWeight: 700,
-              lineHeight: 36
-            }}
-          >
-            {category?.title}
-          </Text>
-        </Animated.View>
-
-        <Animated.View
-          style={[{
-            position: 'absolute',
-            bottom: 70,
-            left: 30
-          }, headerHideOnScrollAnimatedStyle]}
-        >
-          <SharedElement
-            id={`${sharedElementPrefix}-CategoryCard-Title-${category?.id}`}
-            style={[StyleSheet.absoluteFillObject]}
-          >
-            <Text
-              style={{
-                position: 'absolute',
-                color: COLORS.white,
-                fontSize: 26, fontWeight: 700,
-                lineHeight: 36
-              }}
-            >
-              {category?.title}
-            </Text>
-          </SharedElement>
-        </Animated.View>
-
-        <Animated.View style={headerFadeAnimatedStyle}>
-          <IconButton
-            icon={icons.back}
-            iconStyle={{
-              tintColor: COLORS.black
-            }}
-            containerStyle={{
-              position: 'absolute',
-              top: 40,
-              left: 20,
-              width: 50,
-              height: 50,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 25,
-              backgroundColor: COLORS.white
-            }}
-            onPress={() => {
-              if (scrollY.value > 0 && scrollY.value <= 200) {
-                flatListRef.current?.scrollToOffset({
-                  offset: 0,
-                  animated: true
-                })
-                setTimeout(() => {
-                  headerSharedValue.value = withTiming(80, {
-                    duration: 500
-                  }, () => {
-                    runOnJS(backHandler)();
-                  })
-                })
-              } else {
-                backHandler()
-              }
-            }}
-          />
-        </Animated.View>
-      </Animated.View>
-    )
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search scholarships..."
+          style={{
+            height: 40,
+            borderColor: COLORS.gray30,
+            borderWidth: 1,
+            borderRadius: SIZES.radius,
+            marginHorizontal: SIZES.padding,
+            paddingLeft: 10,
+            marginBottom: SIZES.padding,
+            ...FONTS.body4,
+          }}
+        />
+      </View>
+    );
   }
 
   function renderResult() {
@@ -259,7 +135,7 @@ const ScholarshipListing = ({ navigation, route }) => {
         keyboardDismissMode="on-drag"
         onScroll={onScroll}
         ListHeaderComponent={
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 40, marginBottom: SIZES.base }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: SIZES.base }}>
             <Text style={{ flex: 1 }}>{scholarPrograms.length} results</Text>
             <IconButton
               icon={icons.filter}
@@ -327,10 +203,8 @@ const ScholarshipListing = ({ navigation, route }) => {
         filterModalSharedValue1={filterModalSharedValue1}
         filterModalSharedValue2={filterModalSharedValue2}
       />
-
     </View>
   );
-
 }
 
-export default ScholarshipListing;
+export default ScholarshipList;

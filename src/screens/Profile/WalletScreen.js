@@ -226,8 +226,6 @@ const WalletScreen = ({ navigation }) => {
             )}
           </View>
         )}
-
-        {/* Modal for Adding Money */}
         <Modal
           visible={isModalVisible}
           animationType="fade"

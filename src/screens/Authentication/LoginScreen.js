@@ -121,8 +121,6 @@ const LoginScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Conditionally render error message */}
         {error ? (
           <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
         ) : null}

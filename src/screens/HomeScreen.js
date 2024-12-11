@@ -227,7 +227,7 @@ const HomeScreen = () => {
                 marginLeft: index == 0 ? SIZES.padding : SIZES.base,
                 marginRight: index == dummyData.categories.length - 1 ? SIZES.padding : 0
               }}
-              onPress={() => navigation.navigate("ScholarshipListing", { category: item, sharedElementPrefix: "Home" })}
+              onPress={() => navigation.navigate("ScholarshipByMajor", { category: item, sharedElementPrefix: "Home" })}
             />
           )}
         />
@@ -242,6 +242,7 @@ const HomeScreen = () => {
         containerStyle={{
           marginTop: 40
         }}
+        onPress={() => navigation.navigate("ScholarshipList")}
       >
         <FlatList
           data={scholarPrograms}
@@ -314,47 +315,27 @@ const HomeScreen = () => {
   }
 
   return (
-    <GestureHandlerRootView>
-      <View
-        style={{
-          backgroundColor: COLORS.white,
-        }}
-      >
-        {renderHeader()}
-        <ScrollView
-          contentContainerStyle={{
-            paddingBottom: 150
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          {renderStartLearning()}
-          {renderCourses()}
-
-          <LineDivider
-            lineStyle={{
-              marginVertical: SIZES.padding
-            }}
-          />
-
-          {renderCategories()}
-
-          {loading ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-          ) : (
-            renderPopularCourses()
-          )}
-
-          {loading ? (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-          ) : (
-            renderUniversities()
-          )}
-        </ScrollView>
-      </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      ) : (
+        <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+          {renderHeader()}
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 150 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {renderStartLearning()}
+            {renderCourses()}
+            <LineDivider lineStyle={{ marginVertical: SIZES.padding }} />
+            {renderCategories()}
+            {renderPopularCourses()}
+            {renderUniversities()}
+          </ScrollView>
+        </View>
+      )}
     </GestureHandlerRootView>
   )
 }

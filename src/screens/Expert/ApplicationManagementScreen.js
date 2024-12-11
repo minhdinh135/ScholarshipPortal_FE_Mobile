@@ -113,7 +113,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View
         style={{
           marginTop: 36,
@@ -123,8 +122,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
       >
         <Text style={{ ...FONTS.h2, marginBottom: 20 }}>Approval List</Text>
       </View>
-
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -158,8 +155,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
           }}
         />
       </View>
-
-      {/* Filter Buttons */}
       <View>
         <FlatList
           horizontal
@@ -193,8 +188,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
           )}
         />
       </View>
-
-      {/* Application List */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -216,7 +209,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
           contentContainerStyle={styles.listContainer}
         />
       )}
-
       <FilterModal
         filterModalSharedValue1={filterModalSharedValue1}
         filterModalSharedValue2={filterModalSharedValue2}

@@ -45,3 +45,18 @@ export const getScholarProgramById = async (id) => {
     console.log("Error fetching the scholarship programs by id: ", error);
   }
 };
+
+export const getScholarProgramByMajorId = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/by-major-id/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching the scholarship programs by major id: ", error);
+  }
+};

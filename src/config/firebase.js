@@ -4,18 +4,12 @@ import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCUk3mrCBza2cPWqlRM1eGR6VRLd6VX-9s",
-  authDomain: "scholarapp-51bef.firebaseapp.com",
-  projectId: "scholarapp-51bef",
-  storageBucket: "scholarapp-51bef.appspot.com",
-  messagingSenderId: "69297679180",
-  appId: "1:69297679180:web:aa0f86ca15fe514135fde9",
-  // apiKey: process.env.API_KEY,
-  // authDomain: process.env.AUTH_DOMAIN,
-  // projectId: process.env.PROJECT_ID,
-  // storageBucket: process.env.STORAGE_BUCKET,
-  // messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  // appId: process.env.APP_ID,
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -25,3 +19,53 @@ const auth = initializeAuth(firebaseApp, {
 });
 
 export { auth, db, firebaseApp };
+
+// import { initializeApp } from 'firebase/app';
+// import messaging from 'firebase/messaging';
+
+// const firebaseConfig = {
+//   apiKey: process.env.API_KEY,
+//   authDomain: process.env.AUTH_DOMAIN,
+//   projectId: process.env.PROJECT_ID,
+//   storageBucket: process.env.STORAGE_BUCKET,
+//   messagingSenderId: process.env.MESSAGING_SENDER_ID,
+//   appId: process.env.APP_ID,
+// };
+
+// const firebaseApp = initializeApp(firebaseConfig);
+
+// export const requestUserPermission = async () => {
+//   try {
+//     const authStatus = await messaging().requestPermission();
+//     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+//     if (enabled) {
+//       console.log('Notification permission granted.');
+//     } else {
+//       console.log('Notification permission denied.');
+//     }
+//   } catch (error) {
+//     console.error('Error requesting notification permission:', error);
+//   }
+// };
+
+// // Get FCM device token
+// export const getDeviceToken = async () => {
+//   try {
+//     const token = await messaging().getToken();
+//     if (token) {
+//       console.log('FCM Device Token:', token);
+//       return token;
+//     }
+//   } catch (error) {
+//     console.error('Error getting device token:', error);
+//   }
+// };
+
+// // Listen for foreground messages
+// export const onMessageListener = (callback) => {
+//   return messaging().onMessage(async (payload) => {
+//     console.log('Foreground message received:', payload);
+//     callback(payload);
+//   });
+// };

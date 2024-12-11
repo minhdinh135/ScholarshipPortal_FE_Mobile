@@ -7,7 +7,6 @@ import moment from 'moment'
 const Description = ({ item }) => {
   return (
     <ScrollView style={styles.container}>
-      {/* Key Information */}
       <View style={[styles.section, styles.keyInfoContainer]}>
         <View style={styles.keyInfoRow}>
           <View style={styles.keyInfoItem}>
@@ -34,16 +33,12 @@ const Description = ({ item }) => {
           </View>
         </View>
       </View>
-
-      {/* About this Scholarship */}
       <View style={styles.section}>
         <Text style={styles.title}>About this Scholarship</Text>
         <Text style={styles.text}>
           {item.description}
         </Text>
       </View>
-
-      {/* About the University */}
       <View style={styles.section}>
         <Text style={styles.title}>About the {item.university.name}</Text>
         <Text style={styles.text}>
@@ -53,8 +48,6 @@ const Description = ({ item }) => {
           50,000 students from over 120 countries.
         </Text>
       </View>
-
-      {/* Eligibility */}
       <View style={styles.section}>
         <Text style={styles.title}>Eligibility</Text>
         <Text style={styles.text}>- Must be an international student.</Text>
@@ -62,8 +55,6 @@ const Description = ({ item }) => {
         <Text style={styles.text}>- Demonstrated leadership skills and community involvement.</Text>
         <Text style={styles.text}>- Proof of English proficiency (TOEFL, IELTS, or equivalent).</Text>
       </View>
-
-      {/* Application Process */}
       <View style={styles.section}>
         <Text style={styles.title}>Application Process</Text>
         <Text style={styles.text}>1. Submit the completed scholarship application form.</Text>
@@ -72,8 +63,6 @@ const Description = ({ item }) => {
         <Text style={styles.text}>4. Two letters of recommendation.</Text>
         <Text style={styles.text}>5. Proof of English proficiency (if applicable).</Text>
       </View>
-
-      {/* Benefits */}
       <View style={styles.section}>
         <Text style={styles.title}>Benefits</Text>
         <Text style={styles.text}>- Full tuition waiver for the entire duration of the program.</Text>
@@ -81,7 +70,6 @@ const Description = ({ item }) => {
         <Text style={styles.text}>- Access to exclusive networking events and mentorship opportunities.</Text>
         <Text style={styles.text}>- Health insurance coverage.</Text>
       </View>
-
     </ScrollView>
   );
 };

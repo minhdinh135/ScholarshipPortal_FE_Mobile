@@ -1,31 +1,31 @@
 const categories = [
   {
-    id: 0,
-    title: "Mobile Design",
+    id: 1,
+    title: "STEM",
     thumbnail: require("../assets/images/bg_1.png")
   },
   {
-    id: 1,
-    title: "3D Modeling",
+    id: 2,
+    title: "Business & Economics",
     thumbnail: require("../assets/images/bg_2.png")
   },
   {
-    id: 2,
-    title: "Web Designing",
+    id: 3,
+    title: "Health & Medicine",
     thumbnail: require("../assets/images/bg_3.png")
   },
   {
-    id: 3,
-    title: "Illustrations",
+    id: 4,
+    title: "Social Sciences & Humanities",
     thumbnail: require("../assets/images/bg_4.png")
   },
   {
-    id: 4,
-    title: "Drawing",
+    id: 5,
+    title: "Arts & Media",
     thumbnail: require("../assets/images/bg_5.png")
   },
   {
-    id: 5,
+    id: 6,
     title: "Animation",
     thumbnail: require("../assets/images/bg_6.png")
   }
