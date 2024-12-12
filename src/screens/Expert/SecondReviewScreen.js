@@ -194,7 +194,7 @@ const DetailsScreen = ({ route }) => {
           />
           <TextInput
             style={styles.textInput}
-            placeholder="Enter a score (1-10)"
+            placeholder="Enter a score (0-100)"
             value={reviewScore}
             onChangeText={setReviewScore}
             keyboardType="numeric"

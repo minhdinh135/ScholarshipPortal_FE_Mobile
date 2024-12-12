@@ -1,19 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, Image, TextInput } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, Image, TextInput } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
   withTiming,
   withDelay,
 } from 'react-native-reanimated';
-import { FilterModal, IconButton, LineDivider } from '../../components/Card'
+import { FilterModal, IconButton, LineDivider } from '../../components/Card';
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import { getScholarProgram } from '../../api/scholarshipProgramApi';
 
 const ScholarshipList = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [scholarPrograms, setScholarPrograms] = useState([]);
+  const [filteredPrograms, setFilteredPrograms] = useState([]); // Holds the filtered results
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     PageIndex: 1,
@@ -30,13 +31,13 @@ const ScholarshipList = ({ navigation }) => {
 
   const onScroll = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
-  })
+  });
 
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
 
   function backHandler() {
-    navigation.goBack()
+    navigation.goBack();
   }
 
   const fetchPrograms = useCallback(() => {
@@ -63,6 +64,17 @@ const ScholarshipList = ({ navigation }) => {
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
+
+  // Apply search filtering when searchQuery or scholarPrograms change
+  useEffect(() => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const filtered = scholarPrograms.filter(
+      (program) =>
+        program.name.toLowerCase().includes(lowerCaseQuery) ||
+        program.description.toLowerCase().includes(lowerCaseQuery)
+    );
+    setFilteredPrograms(filtered);
+  }, [searchQuery, scholarPrograms]);
 
   function loadNextPage() {
     if (pagination.hasNextPage) {
@@ -114,11 +126,11 @@ const ScholarshipList = ({ navigation }) => {
   }
 
   function renderResult() {
-    if (scholarPrograms.length === 0) {
+    if (filteredPrograms.length === 0) {
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: COLORS.gray50, textAlign: 'center', ...FONTS.h2 }}>
-            No scholarships available yet
+            No scholarships match your search criteria
           </Text>
         </View>
       );
@@ -127,7 +139,7 @@ const ScholarshipList = ({ navigation }) => {
     return (
       <Animated.FlatList
         ref={flatListRef}
-        data={scholarPrograms}
+        data={filteredPrograms}
         keyExtractor={(item) => `Result-${item.id}`}
         contentContainerStyle={{ paddingHorizontal: SIZES.padding }}
         showsHorizontalScrollIndicator={false}
@@ -136,7 +148,7 @@ const ScholarshipList = ({ navigation }) => {
         onScroll={onScroll}
         ListHeaderComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: SIZES.base }}>
-            <Text style={{ flex: 1 }}>{scholarPrograms.length} results</Text>
+            <Text style={{ flex: 1 }}>{filteredPrograms.length} results</Text>
             <IconButton
               icon={icons.filter}
               iconStyle={{ width: 20, height: 20 }}
@@ -150,11 +162,11 @@ const ScholarshipList = ({ navigation }) => {
               }}
               onPress={() => {
                 filterModalSharedValue1.value = withTiming(0, {
-                  duration: 100
-                })
+                  duration: 100,
+                });
                 filterModalSharedValue2.value = withDelay(100, withTiming(0, {
-                  duration: 500
-                }))
+                  duration: 500,
+                }));
               }}
             />
           </View>
@@ -205,6 +217,6 @@ const ScholarshipList = ({ navigation }) => {
       />
     </View>
   );
-}
+};
 
 export default ScholarshipList;
