@@ -324,7 +324,6 @@ const HomeScreen = () => {
         <View style={{ flex: 1, backgroundColor: COLORS.white }}>
           {renderHeader()}
           <ScrollView
-            contentContainerStyle={{ paddingBottom: 150 }}
             showsVerticalScrollIndicator={false}
           >
             {renderStartLearning()}

@@ -1,5 +1,5 @@
-import { AntDesign, Entypo, Feather, Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,69 +7,44 @@ import {
   ScrollView,
   Text,
   Pressable,
-  Switch,
   Image,
+  ImageBackground,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useAuth } from '../../context/AuthContext';
-import { COLORS, FONTS } from '../../constants';
+import { COLORS, FONTS, SIZES, images } from '../../constants';
 
 const SettingsScreen = ({ navigation }) => {
   const { signOut, userInfo } = useAuth();
-  const [form, setForm] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={styles.container}>
-        <View
-          style={{
-            marginTop: 36,
-            flexDirection: 'row',
-            justifyContent: 'center'
-          }}
-        >
-          <Text style={{ ...FONTS.h2, marginBottom: 5 }}>Settings</Text>
+        <View style={styles.header}>
+          <ImageBackground
+            source={images.bg_1}
+            style={styles.headerBackground}
+            imageStyle={styles.headerImage}
+          >
+            <View style={styles.profileSection}>
+              <Image
+                alt=""
+                source={{
+                  uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj",
+                }}
+                style={styles.profileImage}
+              />
+              <View style={styles.profileInfo}>
+                <Text style={styles.profileName}>{userInfo.username}</Text>
+                <Text style={styles.profileHandle}>{userInfo.email}</Text>
+              </View>
+            </View>
+          </ImageBackground>
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={[styles.section, { paddingTop: 4 }]}>
-            <Text style={styles.sectionTitle}>Account</Text>
-
-            <View style={styles.sectionBody}>
-              <Pressable
-                onPress={() => {
-                  navigation.navigate("WalletScreen")
-                }}
-                style={styles.profile}>
-                <Image
-                  alt=""
-                  source={{
-                    uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj"
-                  }}
-                  style={styles.profileAvatar} />
-
-                <View style={styles.profileBody}>
-                  <Text style={styles.profileName}>{userInfo.username}</Text>
-
-                  <Text style={styles.profileHandle}>
-                    {userInfo.email}
-                  </Text>
-                </View>
-
-                <FeatherIcon
-                  color="#bcbcbc"
-                  name="chevron-right"
-                  size={22} />
-              </Pressable>
-            </View>
-          </View>
-
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Account</Text>
-
+            <Text style={styles.sectionTitle}>Settings</Text>
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <Pressable
@@ -78,10 +53,9 @@ const SettingsScreen = ({ navigation }) => {
                   }}
                   style={styles.row}
                 >
-                  <AntDesign style={{ marginRight: "8px", color: "#243666" }} name="profile" size={20} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="person-circle-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Edit Profile</Text>
                   <View style={styles.rowSpacer} />
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -95,7 +69,7 @@ const SettingsScreen = ({ navigation }) => {
                     navigation.navigate("ChangePasswordScreen")
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="shield-outline" size={20} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="shield-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Change Password</Text>
                   <View style={styles.rowSpacer} />
                   <FeatherIcon
@@ -108,16 +82,13 @@ const SettingsScreen = ({ navigation }) => {
               <View style={styles.rowWrapper}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    //
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="notifications-outline" size={20} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="notifications-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Notifications</Text>
-
                   <View style={styles.rowSpacer} />
-
                   <Text style={styles.rowValue}>ON</Text>
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -131,13 +102,10 @@ const SettingsScreen = ({ navigation }) => {
                     // handle onPress
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="language" size={20} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="language" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Language</Text>
-
                   <View style={styles.rowSpacer} />
-
                   <Text style={styles.rowValue}>English</Text>
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -148,39 +116,71 @@ const SettingsScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Settings</Text>
+            <Text style={styles.sectionTitle}>Extensions</Text>
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
-                <View style={styles.row}>
-                  <Entypo style={{ marginRight: "8px", color: "#243666" }} name="block" size={20} color="black" />
-                  <Text style={styles.rowLabel}>Block Ads</Text>
-
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("HistoryScreen")
+                  }}
+                  style={styles.row}
+                >
+                  <Ionicons style={{ marginRight: "8px" }} name="document-outline" size={20} color={COLORS.primary3} />
+                  <Text style={styles.rowLabel}>Application History</Text>
                   <View style={styles.rowSpacer} />
+                  <FeatherIcon
+                    color="#bcbcbc"
+                    name="chevron-right"
+                    size={19} />
+                </Pressable>
+              </View>
 
-                  <Switch
-                    onValueChange={emailNotifications =>
-                      setForm({ ...form, emailNotifications })
-                    }
-                    style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
-                    value={form.emailNotifications}
-                  />
-                </View>
+              <View style={styles.rowWrapper}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("WalletScreen")
+                  }}
+                  style={styles.row}>
+                  <Ionicons style={{ marginRight: "8px" }} name="people-outline" size={20} color={COLORS.primary3} />
+                  <Text style={styles.rowLabel}>Service History</Text>
+                  <View style={styles.rowSpacer} />
+                  <FeatherIcon
+                    color="#bcbcbc"
+                    name="chevron-right"
+                    size={19} />
+                </Pressable>
+              </View>
+
+              <View style={styles.rowWrapper}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("WalletScreen")
+                  }}
+                  style={styles.row}>
+                  <Ionicons style={{ marginRight: "8px" }} name="wallet-outline" size={20} color={COLORS.primary3} />
+                  <Text style={styles.rowLabel}>My Wallet</Text>
+                  <View style={styles.rowSpacer} />
+                  <FeatherIcon
+                    color="#bcbcbc"
+                    name="chevron-right"
+                    size={19} />
+                </Pressable>
               </View>
 
               <View style={[styles.rowWrapper, styles.rowLast]}>
-                <View style={styles.row}>
-                  <Feather style={{ marginRight: "8px", color: "#243666" }} name="moon" size={20} color="black" />
-                  <Text style={styles.rowLabel}>Dark Mode</Text>
-
+                <Pressable
+                  onPress={() => {
+                    // handle onPress
+                  }}
+                  style={styles.row}>
+                  <Ionicons style={{ marginRight: "8px" }} name="card-outline" size={20} color={COLORS.primary3} />
+                  <Text style={styles.rowLabel}>Bank Information</Text>
                   <View style={styles.rowSpacer} />
-
-                  <Switch
-                    onValueChange={pushNotifications =>
-                      setForm({ ...form, pushNotifications })
-                    }
-                    style={{ transform: [{ scaleX: 0.95 }, { scaleY: 0.95 }] }}
-                    value={form.pushNotifications} />
-                </View>
+                  <FeatherIcon
+                    color="#bcbcbc"
+                    name="chevron-right"
+                    size={19} />
+                </Pressable>
               </View>
             </View>
           </View>
@@ -195,11 +195,9 @@ const SettingsScreen = ({ navigation }) => {
                     // handle onPress
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="help-circle-outline" size={24} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="help-buoy-outline" size={24} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Help & Support</Text>
-
                   <View style={styles.rowSpacer} />
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -213,11 +211,9 @@ const SettingsScreen = ({ navigation }) => {
                     // handle onPress
                   }}
                   style={styles.row}>
-                  <AntDesign style={{ marginRight: "8px", color: "#243666" }} name="contacts" size={22} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="call-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Contact Us</Text>
-
                   <View style={styles.rowSpacer} />
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -231,11 +227,9 @@ const SettingsScreen = ({ navigation }) => {
                     // handle onPress
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px", color: "#243666" }} name="shield-checkmark-outline" size={20} color="black" />
+                  <Ionicons style={{ marginRight: "8px" }} name="shield-checkmark-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Privacy Policy</Text>
-
                   <View style={styles.rowSpacer} />
-
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -264,9 +258,7 @@ const SettingsScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
-
           <Text style={styles.contentFooter}>App Version 2.24 #50491</Text>
-
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -283,22 +275,67 @@ const styles = StyleSheet.create({
     flexBasis: 0,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    overflow: 'hidden',
   },
-  headerAction: {
-    width: 40,
-    height: 40,
-    alignItems: 'flex-start',
+  headerBackground: {
+    width: '100%',
+    height: 130,
     justifyContent: 'center',
   },
-  headerTitle: {
-    fontSize: 19,
-    fontWeight: '600',
-    color: '#000',
+  headerImage: {
+    resizeMode: 'cover',
+  },
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: SIZES.padding,
+    marginTop: 10
+  },
+  profileImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginRight: 16,
+    borderColor: COLORS.white,
+    borderWidth: 3
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    ...FONTS.h2,
+    color: COLORS.black,
+  },
+  profileHandle: {
+    ...FONTS.body3,
+    color: COLORS.gray70,
+    marginTop: 4,
+  },
+  verifiedBadge: {
+    marginTop: 6,
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: "flex-start",
+  },
+  verifiedText: {
+    ...FONTS.body5,
+    color: COLORS.white,
+  },
+  changeBackgroundButton: {
+    marginTop: 16,
+    alignSelf: "flex-start",
+    backgroundColor: COLORS.additionalColor11,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  changeBackgroundText: {
+    ...FONTS.body4,
+    color: COLORS.primary3,
   },
   content: {
     paddingHorizontal: 16,
@@ -317,11 +354,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     margin: 8,
     marginLeft: 12,
-    fontSize: 13,
+    ...FONTS.h3,
     letterSpacing: 0.33,
-    fontWeight: '500',
-    color: '#a69f9f',
-    textTransform: 'uppercase',
+    color: COLORS.gray40,
   },
   sectionBody: {
     borderRadius: 12,
@@ -350,17 +385,6 @@ const styles = StyleSheet.create({
   },
   profileBody: {
     marginRight: 'auto',
-  },
-  profileName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#292929',
-  },
-  profileHandle: {
-    marginTop: 2,
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#858585',
   },
   row: {
     height: 44,

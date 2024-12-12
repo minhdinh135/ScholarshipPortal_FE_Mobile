@@ -160,7 +160,6 @@ const WalletScreen = ({ navigation }) => {
             {loading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={COLORS.primary} />
-                <Text style={{ ...FONTS.body3, color: COLORS.gray70, marginTop: 10 }}>Loading...</Text>
               </View>
             ) : wallet ? (
               <>

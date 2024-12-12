@@ -2,7 +2,7 @@ const BASE_URL = `${process.env.BASE_URL}/api/applicants`;
 
 export const getApplicantById = async (id) => {
   try {
-    const res = await fetch(`${BASE_URL}/${id}`);
+    const res = await fetch(`${BASE_URL}/${id}/applications`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);

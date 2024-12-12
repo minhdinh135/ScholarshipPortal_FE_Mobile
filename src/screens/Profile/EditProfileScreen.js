@@ -70,7 +70,6 @@ const EditProfileScreen = ({ navigation }) => {
         }}
       >
         <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={{ marginTop: 12, ...FONTS.body3 }}>Loading...</Text>
       </SafeAreaView>
     );
   }
