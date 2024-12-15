@@ -17,12 +17,9 @@ import {
 } from "../../components/Card";
 import BottomSheet from '@gorhom/bottom-sheet';
 import * as DocumentPicker from "expo-document-picker";
-
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
-
 import ServiceDescription from '../../components/Service/ServiceDescription';
 import Discussion from '../../components/ScholarshipProgram/Discussion';
-
 import { useAuth } from '../../context/AuthContext';
 import { getWalletById } from '../../api/walletApi';
 import { transferMoney } from '../../api/paymentApi';
@@ -240,6 +237,15 @@ const ServiceDetail = ({ navigation, route }) => {
 
   const handleSubmit = async () => {
     try {
+      const { userWallet } = await getWalletInformation();
+      if (selectedService.price > userWallet.data.balance) {
+        Alert.alert(
+          "Insufficient Balance",
+          "Your wallet balance is not enough to proceed with this request. Please top up your wallet or choose a different payment method."
+        );
+        return;
+      }
+
       await transferMoney(form);
       Alert.alert(
         "Request Sent",
@@ -624,6 +630,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: COLORS.white,
+    opacity: 0.7,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,

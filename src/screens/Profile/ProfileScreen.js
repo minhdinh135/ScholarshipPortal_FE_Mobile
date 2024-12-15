@@ -28,10 +28,7 @@ const SettingsScreen = ({ navigation }) => {
           >
             <View style={styles.profileSection}>
               <Image
-                alt=""
-                source={{
-                  uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj",
-                }}
+                src={userInfo.avatar}
                 style={styles.profileImage}
               />
               <View style={styles.profileInfo}>
@@ -121,7 +118,7 @@ const SettingsScreen = ({ navigation }) => {
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <Pressable
                   onPress={() => {
-                    navigation.navigate("HistoryScreen")
+                    navigation.navigate("ApplicationHistoryScreen")
                   }}
                   style={styles.row}
                 >
@@ -138,7 +135,7 @@ const SettingsScreen = ({ navigation }) => {
               <View style={styles.rowWrapper}>
                 <Pressable
                   onPress={() => {
-                    navigation.navigate("WalletScreen")
+                    navigation.navigate("ServiceHistoryScreen")
                   }}
                   style={styles.row}>
                   <Ionicons style={{ marginRight: "8px" }} name="people-outline" size={20} color={COLORS.primary3} />
@@ -170,7 +167,7 @@ const SettingsScreen = ({ navigation }) => {
               <View style={[styles.rowWrapper, styles.rowLast]}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    navigation.navigate("BankScreen")
                   }}
                   style={styles.row}>
                   <Ionicons style={{ marginRight: "8px" }} name="card-outline" size={20} color={COLORS.primary3} />

@@ -117,10 +117,10 @@ const EditProfileScreen = ({ navigation }) => {
         >
           <TouchableOpacity onPress={uploadFile}>
             <Image
-              source={{ uri: "https://yt3.googleusercontent.com/-CFTJHU7fEWb7BYEb6Jh9gm1EpetvVGQqtof0Rbh-VQRIznYYKJxCaqv_9HeBcmJmIsp2vOO9JU=s900-c-k-c0x00ffffff-no-rj" }}
+              src={userInfo.avatar}
               style={{
-                height: 120,
-                width: 120,
+                height: 130,
+                width: 130,
                 borderRadius: 85,
                 borderWidth: 2,
                 borderColor: COLORS.primary,

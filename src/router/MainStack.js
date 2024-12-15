@@ -8,13 +8,15 @@ import ScholarshipByMajor from "../screens/Scholarship/ScholarshipByMajor";
 import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
 import ServiceDetail from "../screens/Service/ServiceDetail";
 import ServiceForm from "../components/Service/ServiceForm";
-import HistoryScreen from "../screens/Profile/HistoryScreen";
+import ApplicationHistoryScreen from "../screens/Profile/ApplicationHistoryScreen";
+import ServiceHistoryScreen from "../screens/Profile/ServiceHistoryScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
 import ChangePasswordScreen from "../screens/Profile/ChangePasswordScreen";
 import PaymentSuccessScreen from "../screens/Payment/PaymentSuccessScreen";
 import PaymentFailScreen from "../screens/Payment/PaymentFailScreen";
 import WalletScreen from "../screens/Profile/WalletScreen";
 import ScholarshipList from "../screens/Scholarship/ScholarshipList";
+import BankScreen from "../screens/Profile/BankScreen";
 
 const Stack = createSharedElementStackNavigator();
 
@@ -36,8 +38,10 @@ export function MainStack() {
 
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
-      <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
+      <Stack.Screen name="ApplicationHistoryScreen" component={ApplicationHistoryScreen} />
+      <Stack.Screen name="ServiceHistoryScreen" component={ServiceHistoryScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
+      <Stack.Screen name="BankScreen" component={BankScreen} />
 
       <Stack.Screen name="PaymentSuccessScreen" component={PaymentSuccessScreen} />
       <Stack.Screen name="PaymentFailScreen" component={PaymentFailScreen} />
