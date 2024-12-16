@@ -9,13 +9,14 @@ import Animated, {
 import { FilterModal, IconButton, LineDivider } from '../../components/Card';
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
-import { getScholarProgram } from '../../api/scholarshipProgramApi';
+import { getScholarProgram, countScholarProgram } from '../../api/scholarshipProgramApi';
 
 const ScholarshipList = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [scholarPrograms, setScholarPrograms] = useState([]);
-  const [filteredPrograms, setFilteredPrograms] = useState([]); // Holds the filtered results
+  const [filteredPrograms, setFilteredPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalScholarships, setTotalScholarships] = useState(0);
   const [pagination, setPagination] = useState({
     PageIndex: 1,
     PageSize: 5,
@@ -35,10 +36,6 @@ const ScholarshipList = ({ navigation }) => {
 
   const filterModalSharedValue1 = useSharedValue(SIZES.height);
   const filterModalSharedValue2 = useSharedValue(SIZES.height);
-
-  function backHandler() {
-    navigation.goBack();
-  }
 
   const fetchPrograms = useCallback(() => {
     setLoading(true);
@@ -61,11 +58,17 @@ const ScholarshipList = ({ navigation }) => {
     });
   }, [pagination.PageIndex, pagination.PageSize, pagination.SortBy, pagination.IsDescending, pagination.IsPaging]);
 
+  const fetchTotalCount = useCallback(() => {
+    countScholarProgram().then((res) => {
+      setTotalScholarships(res.data);
+    });
+  }, []);
+
   useEffect(() => {
     fetchPrograms();
-  }, [fetchPrograms]);
+    fetchTotalCount();
+  }, [fetchPrograms, fetchTotalCount]);
 
-  // Apply search filtering when searchQuery or scholarPrograms change
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     const filtered = scholarPrograms.filter(
@@ -148,7 +151,9 @@ const ScholarshipList = ({ navigation }) => {
         onScroll={onScroll}
         ListHeaderComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginBottom: SIZES.base }}>
-            <Text style={{ flex: 1 }}>{filteredPrograms.length} results</Text>
+            <Text style={{ flex: 1 }}>
+              Showing {filteredPrograms.length} - {totalScholarships} results
+            </Text>
             <IconButton
               icon={icons.filter}
               iconStyle={{ width: 20, height: 20 }}
@@ -183,16 +188,27 @@ const ScholarshipList = ({ navigation }) => {
         )}
         ItemSeparatorComponent={() => <LineDivider lineStyle={{ backgroundColor: COLORS.gray20 }} />}
         ListFooterComponent={
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
-            {pagination.hasPreviousPage && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingVertical: 20,
+            }}
+          >
+            {pagination.hasPreviousPage ? (
               <Text onPress={loadPreviousPage} style={{ color: COLORS.primary }}>
                 Previous
               </Text>
+            ) : (
+              <View style={{ width: 60 }} />
             )}
-            {pagination.hasNextPage && (
+            {pagination.hasNextPage ? (
               <Text onPress={loadNextPage} style={{ color: COLORS.primary }}>
                 Next
               </Text>
+            ) : (
+              <View style={{ width: 60 }} />
             )}
           </View>
         }

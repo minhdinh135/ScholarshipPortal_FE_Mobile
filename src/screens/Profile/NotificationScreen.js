@@ -1,4 +1,11 @@
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  Text,
+  SectionList,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getNotification } from '../../api/notificationApi';
@@ -7,13 +14,14 @@ import moment from 'moment';
 
 const NotificationScreen = () => {
   const { userInfo } = useAuth();
-  const [notifications, setNotifications] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getNotification(userInfo?.id)
       .then((res) => {
-        setNotifications(res.data || []);
+        const groupedNotifications = groupNotificationsByDate(res.data || []);
+        setSections(groupedNotifications);
         setLoading(false);
       })
       .catch((err) => {
@@ -22,6 +30,24 @@ const NotificationScreen = () => {
       });
   }, []);
 
+  const groupNotificationsByDate = (notifications) => {
+    const grouped = notifications.reduce((acc, notification) => {
+      const dateKey = moment(notification.createdAt).format('MMMM DD, YYYY');
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(notification);
+      return acc;
+    }, {});
+
+    return Object.keys(grouped)
+      .sort((a, b) => moment(b, 'MMMM DD, YYYY') - moment(a, 'MMMM DD, YYYY'))
+      .map((date) => ({
+        title: date,
+        data: grouped[date],
+      }));
+  };
+
   const renderNotification = ({ item }) => (
     <View style={styles.notificationItem}>
       {!item.isRead && <View style={styles.unreadDot} />}
@@ -29,9 +55,13 @@ const NotificationScreen = () => {
         {item.message}
       </Text>
       <Text style={styles.notificationBody}>
-        {moment(item.createdAt).format('MMM DD, YYYY')}
+        {moment(item.createdAt).format('h:mm A')}
       </Text>
     </View>
+  );
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <Text style={styles.sectionHeader}>{title}</Text>
   );
 
   return (
@@ -41,7 +71,7 @@ const NotificationScreen = () => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
-      ) : notifications.length === 0 ? (
+      ) : sections.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Image
             source={images.nothing_here}
@@ -51,10 +81,11 @@ const NotificationScreen = () => {
           <Text style={styles.emptyText}>No notifications yet</Text>
         </View>
       ) : (
-        <FlatList
-          data={notifications}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderNotification}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContent}
         />
       )}
@@ -69,7 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
     paddingTop: SIZES.padding,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   screenTitle: {
     ...FONTS.h2,
@@ -104,6 +135,13 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: SIZES.padding,
   },
+  sectionHeader: {
+    ...FONTS.h2,
+    color: COLORS.black,
+    marginVertical: SIZES.base,
+    padding: SIZES.base,
+    borderRadius: SIZES.radius,
+  },
   notificationItem: {
     backgroundColor: COLORS.white,
     padding: 20,
@@ -119,7 +157,7 @@ const styles = StyleSheet.create({
     ...FONTS.h3,
     color: COLORS.primary3,
     marginBottom: 5,
-    paddingRight: 20
+    paddingRight: 20,
   },
   notificationBody: {
     ...FONTS.body4,

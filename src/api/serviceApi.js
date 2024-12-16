@@ -30,3 +30,18 @@ export const getServices = async (params = {}) => {
     console.log("Error fetching the scholarship programs: ", error);
   }
 };
+
+export const countServices = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/count`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching count services: ", error);
+  }
+}

@@ -3,12 +3,13 @@ import { View, Text, ActivityIndicator, FlatList, Image, TextInput } from 'react
 import { FilterModal, IconButton, LineDivider } from '../../components/Card';
 import ServiceHorizontalList from '../../components/Service/ServiceHorizontalList';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
-import { getServices } from '../../api/serviceApi';
+import { getServices, countServices } from '../../api/serviceApi';
 import { useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 const ServiceList = ({ navigation }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalServices, setTotalServices] = useState(0);
   const [pagination, setPagination] = useState({
     PageIndex: 1,
     PageSize: 5,
@@ -52,9 +53,16 @@ const ServiceList = ({ navigation }) => {
     });
   }, [pagination.PageIndex, pagination.PageSize, pagination.SortBy, pagination.IsDescending, pagination.IsPaging, searchQuery]);
 
+  const fetchTotalCount = useCallback(() => {
+    countServices().then((res) => {
+      setTotalServices(res.data);
+    });
+  }, []);
+
   useEffect(() => {
     fetchServices();
-  }, [fetchServices]);
+    fetchTotalCount()
+  }, [fetchServices, fetchTotalCount]);
 
   function loadNextPage() {
     if (pagination.hasNextPage) {
@@ -126,7 +134,9 @@ const ServiceList = ({ navigation }) => {
         keyboardDismissMode="on-drag"
         ListHeaderComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, marginBottom: SIZES.base }}>
-            <Text style={{ flex: 1, ...FONTS.body3 }}>{services.length} results</Text>
+            <Text style={{ flex: 1, ...FONTS.body3 }}>
+              Showing {services.length} - {totalServices} results
+            </Text>
             <IconButton
               icon={icons.filter}
               iconStyle={{ width: 20, height: 20 }}
@@ -164,16 +174,27 @@ const ServiceList = ({ navigation }) => {
         )}
         ItemSeparatorComponent={() => <LineDivider lineStyle={{ backgroundColor: COLORS.gray20 }} />}
         ListFooterComponent={
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
-            {pagination.hasPreviousPage && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingVertical: 10,
+            }}
+          >
+            {pagination.hasPreviousPage ? (
               <Text onPress={loadPreviousPage} style={{ color: COLORS.primary }}>
                 Previous
               </Text>
+            ) : (
+              <View style={{ width: 60 }} />
             )}
-            {pagination.hasNextPage && (
+            {pagination.hasNextPage ? (
               <Text onPress={loadNextPage} style={{ color: COLORS.primary }}>
                 Next
               </Text>
+            ) : (
+              <View style={{ width: 60 }} />
             )}
           </View>
         }

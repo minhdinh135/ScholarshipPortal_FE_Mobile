@@ -1,19 +1,16 @@
-import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet, Alert } from 'react-native'
+import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { COLORS, FONTS, icons, SIZES } from '../../constants'
 import { Entypo } from '@expo/vector-icons'
-import Checkbox from 'expo-checkbox'
 import { useNavigation } from '@react-navigation/native'
 import { useAuth } from '../../context/AuthContext'
 
 const LoginScreen = () => {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
   const { signIn, signInWithGoogle, userToken, setIsLoggedIn } = useAuth();
-  const [isChecked, setIsChecked] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
 
   useEffect(() => {
@@ -133,16 +130,7 @@ const LoginScreen = () => {
             marginVertical: 6,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Checkbox
-              style={{ marginRight: 8 }}
-              value={isChecked}
-              onValueChange={setIsChecked}
-              color={isChecked ? COLORS.primary : undefined}
-            />
-            <Text>Remember me</Text>
-          </View>
-
+          <View style={{ flexDirection: 'row', alignItems: 'center' }} />
           <Pressable
             onPress={() => navigation.navigate('ForgotPassword')}
             style={{ alignSelf: 'flex-end' }}

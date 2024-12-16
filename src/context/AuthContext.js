@@ -59,8 +59,12 @@ export const AuthProvider = ({ children }) => {
       const token = data.token;
 
       if (token) {
-        setUserToken(token);
         const decodedUserInfo = jwtDecode(token);
+        if (decodedUserInfo.role !== "Expert" && decodedUserInfo.role !== "Applicant") {
+          Alert.alert("Login failed", "User not found.");
+          return;
+        }
+        setUserToken(token);
         setUserInfo(decodedUserInfo);
         setIsLoggedIn(true);
         await AsyncStorage.setItem("userToken", token);
