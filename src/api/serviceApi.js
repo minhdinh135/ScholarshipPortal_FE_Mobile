@@ -45,3 +45,18 @@ export const countServices = async () => {
     console.log("Error fetching count services: ", error);
   }
 }
+
+export const getServicesByProviderId = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/by-provider-id/${id}`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching services by provider: ", error);
+  }
+}

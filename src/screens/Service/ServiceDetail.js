@@ -295,25 +295,6 @@ const ServiceDetail = ({ navigation, route }) => {
             onPress={() => navigation.goBack()}
           />
         </View>
-
-        <View
-          style={{
-            flexDirection: 'row'
-          }}
-        >
-          <IconButton
-            icon={icons.favourite_outline}
-            iconStyle={{
-              tintColor: COLORS.white
-            }}
-            containerStyle={{
-              width: 50,
-              height: 50,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          />
-        </View>
       </>
     )
   }
@@ -339,10 +320,10 @@ const ServiceDetail = ({ navigation, route }) => {
   function renderScholarshipInfo() {
     return (
       <View style={{
-        padding: SIZES.padding,
+        paddingHorizontal: SIZES.padding,
         backgroundColor: COLORS.white,
       }}>
-        <Text style={{ ...FONTS.h2 }}>{selectedService?.name}</Text>
+        <Text style={{ ...FONTS.h2, paddingTop: SIZES.padding }}>{selectedService?.name}</Text>
 
         <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <TouchableOpacity
@@ -439,7 +420,7 @@ const ServiceDetail = ({ navigation, route }) => {
                   width: SIZES.width
                 }}
               >
-                {index == 0 && <ServiceDescription selectedService={selectedService} />}
+                {index == 0 && <ServiceDescription selectedService={selectedService} navigation={navigation} />}
                 {index == 1 && <ServiceFeedback />}
                 {index == 2 && <Discussion />}
               </View>

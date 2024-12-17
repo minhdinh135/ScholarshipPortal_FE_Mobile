@@ -162,24 +162,6 @@ const ScholarshipDetail = ({ navigation, route }) => {
             onPress={() => navigation.goBack()}
           />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-          }}
-        >
-          <IconButton
-            icon={icons.favourite_outline}
-            iconStyle={{
-              tintColor: COLORS.white,
-            }}
-            containerStyle={{
-              width: 50,
-              height: 50,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          />
-        </View>
       </>
     );
   }

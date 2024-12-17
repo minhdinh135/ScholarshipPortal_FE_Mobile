@@ -8,6 +8,7 @@ import ScholarshipByMajor from "../screens/Scholarship/ScholarshipByMajor";
 import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
 import ServiceDetail from "../screens/Service/ServiceDetail";
 import ServiceForm from "../components/Service/ServiceForm";
+import ProviderProfileScreen from "../screens/Provider/ProviderProfileScreen";
 import ApplicationHistoryScreen from "../screens/Profile/ApplicationHistoryScreen";
 import ServiceHistoryScreen from "../screens/Profile/ServiceHistoryScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
@@ -35,6 +36,7 @@ export function MainStack() {
 
       <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
       <Stack.Screen name="ServiceForm" component={ServiceForm} />
+      <Stack.Screen name="ProviderProfileScreen" component={ProviderProfileScreen} />
 
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />

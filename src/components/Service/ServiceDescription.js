@@ -1,21 +1,72 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { FONTS, COLORS, SIZES } from '../../constants';
+import { getProviderById } from '../../api/providerApi';
 
-const ServiceDescription = ({ selectedService }) => {
+const ServiceDescription = ({ selectedService, navigation }) => {
+  const [provider, setProvider] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchProvider = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getProviderById(selectedService.providerId);
+      setProvider(res.data);
+    } catch (error) {
+      console.log('Error fetching provider: ', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedService.providerId]);
+
+  useEffect(() => {
+    if (selectedService?.providerId) {
+      fetchProvider();
+    }
+  }, [fetchProvider, selectedService?.providerId]);
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{selectedService?.name}</Text>
-      </View>
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.descriptionText}>{selectedService?.description}</Text>
-      </View>
-      <View style={styles.priceContainer}>
-        <Text style={styles.sectionTitle}>Price</Text>
-        <Text style={styles.priceText}>${selectedService?.price}</Text>
-      </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      ) : (
+        <>
+          <View style={styles.header}>
+            <Text style={styles.title}>{selectedService?.name}</Text>
+          </View>
+          <View style={styles.priceContainer}>
+            <Text style={styles.sectionTitle}>Price:</Text>
+            <Text style={styles.priceText}>${selectedService?.price.toLocaleString()}</Text>
+          </View>
+
+          <View style={styles.priceContainer}>
+            <Text style={styles.sectionTitle}>Type:</Text>
+            <Text style={styles.priceText}>{selectedService?.type}</Text>
+          </View>
+          {provider && (
+            <View style={styles.providerContainer}>
+              <Image source={{ uri: provider.avatar }} style={styles.providerAvatar} />
+              <View style={styles.providerInfo}>
+                <Text style={styles.providerName}>{provider.contactPersonName}</Text>
+                <Text style={styles.providerDescription}>{provider.email}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate("ProviderProfileScreen", { selectedService: selectedService })}
+              >
+                <Text style={{ color: COLORS.white, ...FONTS.h4 }}>View</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.sectionTitle}>Description</Text>
+            <Text style={styles.descriptionText}>{selectedService?.description}</Text>
+          </View>
+          <View style={styles.priceContainer} />
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -33,13 +84,40 @@ const styles = StyleSheet.create({
     ...FONTS.h2,
     color: COLORS.black,
   },
-  status: {
-    ...FONTS.body2,
+  providerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 15,
+    borderRadius: SIZES.radius,
+    borderColor: COLORS.gray20,
+    borderTopWidth: 2,
+    borderBottomWidth: 2
+  },
+  providerAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  providerInfo: {
+    flex: 1,
+  },
+  providerName: {
+    ...FONTS.h3,
+    color: COLORS.black,
+  },
+  providerDescription: {
+    ...FONTS.body4,
     color: COLORS.gray,
-    marginTop: 5,
+  },
+  button: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SIZES.padding,
+    paddingVertical: SIZES.padding / 2,
+    borderRadius: 100
   },
   descriptionContainer: {
-    marginBottom: 20,
+    marginBottom: 60,
   },
   sectionTitle: {
     ...FONTS.h3,
@@ -52,28 +130,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   priceContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
+    flexDirection: 'row',
   },
   priceText: {
-    ...FONTS.h2,
+    ...FONTS.h3,
     color: COLORS.primary,
-    fontWeight: 'bold',
-  },
-  feedbacksContainer: {
-    marginBottom: 20,
-  },
-  feedbackItem: {
-    marginBottom: 10,
-  },
-  feedbackText: {
-    ...FONTS.body3,
-    color: COLORS.black,
-    lineHeight: 18,
-  },
-  noFeedbacksText: {
-    ...FONTS.body3,
-    color: COLORS.gray,
-    fontStyle: 'italic',
+    marginLeft: 5
   },
 });
 

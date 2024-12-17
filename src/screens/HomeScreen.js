@@ -296,10 +296,9 @@ const HomeScreen = () => {
             <UniversityList
               university={item}
               containerStyle={{
-                marginVertical: SIZES.padding,
+                marginVertical: SIZES.base,
                 marginTop: index == 0 ? SIZES.radius : SIZES.padding
               }}
-
             />
           )}
           ItemSeparatorComponent={() => (
