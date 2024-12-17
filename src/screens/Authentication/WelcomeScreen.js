@@ -1,7 +1,7 @@
 import { View, Text, Image, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
-import { COLORS, icons, images } from '../../constants'
+import { COLORS, FONTS, icons, images } from '../../constants'
 import { Entypo } from '@expo/vector-icons'
 import { Pressable } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -21,6 +21,19 @@ const WelcomeScreen = () => {
             colors={["transparent", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.8)"]}
           >
             <View style={styles.wrapper}>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../../public/icon.jpg')}
+                  style={styles.logo}
+                />
+              </View>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>Welcome to Scholarship</Text>
+                <Text style={styles.description}>
+                  A platform to connect students with scholarship opportunities.
+                </Text>
+              </View>
+
               <View style={styles.socialLogin}>
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
                   <Entypo name='mail' size={20} />
@@ -36,11 +49,12 @@ const WelcomeScreen = () => {
                   <Text style={styles.btnTxt}>Login with Google</Text>
                 </TouchableOpacity>
               </View>
+
               <View style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
               }}>
-                <Text style={{ textAlign: "center", color: "gray", fontSize: 16 }}>
+                <Text style={{ textAlign: "center", color: COLORS.gray60, ...FONTS.body3 }}>
                   Don't have an account?
                 </Text>
                 <Pressable
@@ -80,6 +94,34 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingHorizontal: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 50,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+    borderRadius: 100
+  },
+  titleContainer: {
+    marginBottom: 30,
+    alignItems: 'center',
+    marginTop: 200
+  },
+  title: {
+    ...FONTS.h1,
+    color: COLORS.black,
+  },
+  description: {
+    ...FONTS.body3,
+    color: COLORS.gray80,
+    textAlign: 'center',
+    marginTop: 10,
+    paddingHorizontal: 20,
   },
   socialLogin: {
     alignSelf: 'stretch'

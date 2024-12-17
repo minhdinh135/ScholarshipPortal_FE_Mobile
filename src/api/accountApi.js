@@ -55,6 +55,69 @@ export const changePassword = async (id, email, oldPassword, newPassword) => {
   }
 };
 
+export const resetPassword = async (id, email, newPassword) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, newPassword }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error forgoting the password: ", error);
+  }
+};
+
+export const forgotPassword = async (email) => {
+  try {
+    const res = await fetch(`${BASE_URL}/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error forgoting the password: ", error);
+  }
+};
+
+export const verifyOTP = async (email, otp) => {
+  try {
+    const res = await fetch(`${BASE_URL}/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error forgoting the password: ", error);
+  }
+};
+
 export const changeAvatar = async (id, files) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}/change-avatar`, {

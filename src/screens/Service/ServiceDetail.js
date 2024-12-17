@@ -24,6 +24,8 @@ import { useAuth } from '../../context/AuthContext';
 import { getWalletById } from '../../api/walletApi';
 import { transferMoney } from '../../api/paymentApi';
 import ServiceFeedback from '../../components/Service/ServiceFeedback';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -373,7 +375,7 @@ const ServiceDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          src="https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg"
+          src="https://images.stockcake.com/public/6/d/8/6d8cc8ae-69d2-4a38-842f-ad2deaa9ba4f_large/writing-on-paper-stockcake.jpg"
           style={{
             width: '100%',
             height: '100%',
@@ -450,8 +452,19 @@ const ServiceDetail = ({ navigation, route }) => {
 
   function renderBottomSheet() {
     return (
-      <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={['50%', '80%']} enablePanDownToClose={true}>
-        <View style={styles.sheetContent}>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={['50%', '80%']}
+        enablePanDownToClose={true}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            padding: 20,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <Text style={styles.sheetTitle}>Request Form</Text>
           <Text style={styles.sectionTitle}>Description</Text>
           <TextInput
@@ -459,6 +472,8 @@ const ServiceDetail = ({ navigation, route }) => {
             placeholder="Describe your request"
             value={form.description}
             onChangeText={(text) => handleInputChange('description', text)}
+            multiline={true}
+            numberOfLines={5}
           />
           <Text style={styles.sectionTitle}>Upload File</Text>
           {imagePreview.length > 0 ? (<></>) : (
@@ -472,8 +487,14 @@ const ServiceDetail = ({ navigation, route }) => {
             <View style={styles.imagePreviewContainer}>
               <Image
                 source={{ uri: imagePreview }}
-                style={{ width: 150, height: 150 }}
+                style={styles.imagePreview}
               />
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={() => setImagePreview([])}
+              >
+                <Ionicons name="close-circle" size={24} color={COLORS.gray80} />
+              </TouchableOpacity>
             </View>
           )}
           <Text style={styles.sectionTitle}>Payment Method</Text>
@@ -508,7 +529,7 @@ const ServiceDetail = ({ navigation, route }) => {
             }}
             onPress={handleSubmit}
           />
-        </View>
+        </ScrollView>
       </BottomSheet>
     );
   }
@@ -564,6 +585,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: COLORS.white,
+    height: 100,
+    textAlignVertical: 'top'
   },
   fileUploadButton: {
     height: 50,
@@ -578,15 +601,23 @@ const styles = StyleSheet.create({
     ...FONTS.h3,
   },
   imagePreviewContainer: {
+    position: 'relative',
     marginVertical: 20,
-    height: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
   imagePreview: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    backgroundColor: COLORS.white,
+    borderRadius: 50,
+    padding: 5,
   },
   paymentTitle: {
     marginTop: 20,
@@ -630,7 +661,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: COLORS.white,
-    opacity: 0.7,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,

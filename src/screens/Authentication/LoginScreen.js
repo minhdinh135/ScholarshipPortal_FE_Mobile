@@ -1,14 +1,26 @@
-import { View, Text, KeyboardAvoidingView, TextInput, TouchableOpacity, Pressable, Image, StyleSheet } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { COLORS, FONTS, icons, SIZES } from '../../constants'
-import { Entypo } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
-import { useAuth } from '../../context/AuthContext'
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  Keyboard
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { COLORS, FONTS, icons, SIZES } from '../../constants';
+import { Entypo } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const { signIn, signInWithGoogle, userToken, setIsLoggedIn } = useAuth();
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -25,7 +37,15 @@ const LoginScreen = () => {
       return;
     }
     setError('');
-    await signIn(email, password);
+    setIsLoading(true);
+    Keyboard.dismiss();
+    try {
+      await signIn(email, password);
+    } catch (err) {
+      setError('Invalid email or password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -119,7 +139,7 @@ const LoginScreen = () => {
           </View>
         </View>
         {error ? (
-          <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>
+          <Text style={{ color: COLORS.secondary }}>{error}</Text>
         ) : null}
 
         <View
@@ -130,7 +150,6 @@ const LoginScreen = () => {
             marginVertical: 6,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }} />
           <Pressable
             onPress={() => navigation.navigate('ForgotPassword')}
             style={{ alignSelf: 'flex-end' }}
@@ -147,18 +166,24 @@ const LoginScreen = () => {
             padding: 15,
             marginTop: 20,
             borderRadius: 6,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <Text
-            style={{
-              color: "white",
-              fontSize: 16,
-              fontWeight: "bold",
-              textAlign: "center",
-            }}
-          >
-            Login
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text
+              style={{
+                color: "white",
+                fontSize: 16,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Login
+            </Text>
+          )}
         </Pressable>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
@@ -205,8 +230,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   btnTxt: {
-    fontSize: 16,
-    fontWeight: '600',
+    ...FONTS.body3,
     color: COLORS.black,
   },
 });

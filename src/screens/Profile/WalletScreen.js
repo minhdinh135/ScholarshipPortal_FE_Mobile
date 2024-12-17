@@ -110,7 +110,7 @@ const WalletScreen = ({ navigation }) => {
 
   const renderTransaction = ({ item }) => {
     const isReceiver = item.walletReceiverId === wallet.id;
-    const formattedDate = moment(item.transactionDate).format('DD/MM/YYYY');
+    const formattedDate = moment(item.transactionDate).format("MMM DD, YYYY");
 
     return (
       <View style={styles.transactionContainer}>
@@ -185,12 +185,6 @@ const WalletScreen = ({ navigation }) => {
                         onPress={handleAddMoney}
                       >
                         <Text style={{ color: COLORS.white, ...FONTS.body3 }}>Add Money</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.withdrawButton}
-                        onPress={() => console.log('Withdraw pressed')}
-                      >
-                        <Text style={{ color: COLORS.white, ...FONTS.body3 }}>Withdraw</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -313,13 +307,6 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: COLORS.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  withdrawButton: {
-    backgroundColor: COLORS.secondary,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

@@ -1,10 +1,12 @@
 export default {
   "expo": {
-    "name": "YOLO",
+    "name": "Scholarship",
     "slug": "YOLO",
+    "scheme": "com.scholarship",
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./public/icon.png",
+    "icon": "./public/icon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./public/splash.png",
