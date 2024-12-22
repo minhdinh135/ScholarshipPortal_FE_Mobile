@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -106,4 +106,4 @@ const ServiceHorizontalList = ({ containerStyle, course, onPress }) => {
   );
 };
 
-export default ServiceHorizontalList;
+export default memo(ServiceHorizontalList);

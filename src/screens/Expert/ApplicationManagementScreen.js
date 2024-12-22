@@ -9,13 +9,10 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
-import { COLORS, FONTS, SIZES, icons, images } from "../../constants";
+import { COLORS, FONTS, SIZES, images } from "../../constants";
 import { getApplicationByExpertId } from "../../api/expertApi";
-import { getAccountById } from "../../api/accountApi";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
-import { FilterModal, IconButton } from "../../components/Card";
-import { useSharedValue, withTiming, withDelay } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 
 const ApplicationManagementScreen = ({ navigation }) => {
@@ -26,9 +23,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
 
-  const filterModalSharedValue1 = useSharedValue(SIZES.height);
-  const filterModalSharedValue2 = useSharedValue(SIZES.height);
-
   useFocusEffect(
     React.useCallback(() => {
       const fetchApplications = async () => {
@@ -36,21 +30,8 @@ const ApplicationManagementScreen = ({ navigation }) => {
         try {
           const res = await getApplicationByExpertId(userInfo.id);
           const applicationsData = res.data || [];
-
-          const applicationsWithApplicants = await Promise.all(
-            applicationsData.map(async (application) => {
-              try {
-                const applicantRes = await getAccountById(application.id);
-                return { ...application, applicant: applicantRes };
-              } catch (error) {
-                console.log(Error`fetching`);
-                return { ...application, applicant: null };
-              }
-            }),
-          );
-
-          setApplications(applicationsWithApplicants);
-          setFilteredApplications(applicationsWithApplicants);
+          setApplications(applicationsData);
+          setFilteredApplications(applicationsData);
           setLoading(false);
         } catch (err) {
           console.log(err);
@@ -91,20 +72,30 @@ const ApplicationManagementScreen = ({ navigation }) => {
 
   const renderApplication = ({ item }) => {
     const statusStyle = getStatusStyle(item.status);
+    const type1 = item.applicationReviews[0]?.description || "N/A";
+    const type2 = item.applicationReviews[1]?.description || "N/A";
+    const displayType = type2 !== "N/A" ? type2 : type1;
+
     return (
       <TouchableOpacity
         style={styles.applicationCard}
         onPress={() =>
-          navigation.navigate("ApplicationDetailScreen", { application: item })
+          navigation.navigate("ApplicationDetailScreen", {
+            application: item,
+            type1,
+            type2,
+            applicationType: type2 !== "N/A" ? 2 : 1,
+          })
         }
       >
         <View style={styles.applicationInfo}>
-          <Text style={styles.applicantEmail}>
-            Email: {item.applicant?.email}
+          <Text style={styles.applicantName}>
+            {item?.applicantName}
           </Text>
           <Text style={styles.date}>
             Applied on: {moment(item.appliedDate).format("MMM DD, YYYY")}
           </Text>
+          <Text>Type: {displayType}</Text>
         </View>
         <View style={[styles.statusBadge, statusStyle]}></View>
       </TouchableOpacity>
@@ -129,30 +120,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
           placeholderTextColor={COLORS.gray}
           value={searchQuery}
           onChangeText={setSearchQuery}
-        />
-        <IconButton
-          icon={icons.filter}
-          iconStyle={{ width: 20, height: 20 }}
-          containerStyle={{
-            width: 50,
-            height: 50,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: COLORS.primary,
-            marginLeft: 10,
-          }}
-          onPress={() => {
-            filterModalSharedValue1.value = withTiming(0, {
-              duration: 100,
-            });
-            filterModalSharedValue2.value = withDelay(
-              100,
-              withTiming(0, {
-                duration: 500,
-              }),
-            );
-          }}
         />
       </View>
       <View>
@@ -209,10 +176,6 @@ const ApplicationManagementScreen = ({ navigation }) => {
           contentContainerStyle={styles.listContainer}
         />
       )}
-      <FilterModal
-        filterModalSharedValue1={filterModalSharedValue1}
-        filterModalSharedValue2={filterModalSharedValue2}
-      />
     </View>
   );
 };
@@ -324,15 +287,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   applicantName: {
-    fontSize: SIZES.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.gray,
-    marginTop: 5,
-  },
-  applicantEmail: {
-    fontSize: SIZES.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.gray,
+    ...FONTS.h3,
+    color: COLORS.black,
     marginTop: 5,
   },
   statusBadge: {

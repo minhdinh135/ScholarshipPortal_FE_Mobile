@@ -135,6 +135,6 @@ export const changeAvatar = async (id, files) => {
     const data = await res.json();
     return data;
   } catch (error) {
-    console.log("Error changing the password: ", error);
+    console.log("Error changing the avatar: ", error);
   }
 };

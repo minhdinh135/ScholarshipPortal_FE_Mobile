@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  SectionList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -13,24 +13,44 @@ import { IconButton } from '../../components/Card';
 import { getRequestById } from '../../api/requestApi';
 import moment from 'moment';
 
-const ApplicationHistory = ({ navigation }) => {
+const ServiceHistoryScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
-  const [services, setServices] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchServiceRequest = async () => {
       try {
         const response = await getRequestById(userInfo.id);
-        setServices(response.data);
+        const groupedRequests = groupRequestsByDate(response.data);
+        setSections(groupedRequests);
       } catch (error) {
         console.error('Failed to fetch services:', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchServiceRequest();
   }, []);
+
+  const groupRequestsByDate = (requests) => {
+    const grouped = requests.reduce((acc, request) => {
+      const dateKey = moment(request.requestDate).format('MMMM DD, YYYY');
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(request);
+      return acc;
+    }, {});
+
+    return Object.keys(grouped)
+      .sort((a, b) => moment(b, 'MMMM DD, YYYY') - moment(a, 'MMMM DD, YYYY'))
+      .map((date) => ({
+        title: date,
+        data: grouped[date],
+      }));
+  };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -41,11 +61,15 @@ const ApplicationHistory = ({ navigation }) => {
           {item.service?.name || 'Unknown'}
         </Text>
         <Text style={[styles.detail, FONTS.body4]}>
-          Applied on: {moment(item.requestDate).format('MMM DD, YYYY')}
+          Requested on: {moment(item.requestDate).format('MMM DD, YYYY')}
         </Text>
         <Text style={[styles.status, FONTS.body4]}>Status: {item.status}</Text>
       </View>
     </TouchableOpacity>
+  );
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <Text style={styles.sectionHeader}>{title}</Text>
   );
 
   return (
@@ -65,11 +89,16 @@ const ApplicationHistory = ({ navigation }) => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
+      ) : sections.length === 0 ? (
+        <View style={styles.noDataContainer}>
+          <Text style={styles.noDataText}>You haven't requested a service yet</Text>
+        </View>
       ) : (
-        <FlatList
-          data={services}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.list}
         />
       )}
@@ -85,6 +114,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginHorizontal: 12,
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -101,19 +131,29 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: COLORS.white,
   },
-  headerTitle: {
-    color: COLORS.black,
-    flex: 1,
-    textAlign: 'center',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SIZES.padding,
+  },
+  noDataText: {
+    color: COLORS.gray50,
+    ...FONTS.h2,
+  },
   list: {
     paddingVertical: SIZES.base,
     marginTop: SIZES.padding,
+  },
+  sectionHeader: {
+    color: COLORS.black,
+    ...FONTS.h2,
+    padding: 10,
   },
   card: {
     backgroundColor: COLORS.white,
@@ -141,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ApplicationHistory;
+export default ServiceHistoryScreen;

@@ -1,120 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
-import { IconButton, LineDivider } from '../../components/Card';
-import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
+import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { IconButton } from '../../components/Card';
+import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import Description from '../../components/ScholarshipProgram/Description';
-import Feedback from '../../components/ScholarshipProgram/Feedback';
-import Discussion from '../../components/ScholarshipProgram/Discussion';
 import { useAuth } from '../../context/AuthContext';
 import { getApplicantById } from '../../api/applicantApi';
-
-const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
-  ...course_details_tab,
-  ref: React.createRef(),
-}));
-
-const TabIndicator = ({ measureLayout, scrollX }) => {
-  const inputRange = course_details_tabs.map((_, i) => i * SIZES.width);
-  const TabIndicatorWidth = scrollX.interpolate({
-    inputRange,
-    outputRange: measureLayout.map((measure) => measure.width),
-  });
-
-  const translateX = scrollX.interpolate({
-    inputRange,
-    outputRange: measureLayout.map((measure) => measure.x),
-  });
-
-  return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        height: 4,
-        width: TabIndicatorWidth,
-        borderRadius: SIZES.radius,
-        backgroundColor: COLORS.primary,
-        transform: [{ translateX }],
-      }}
-    />
-  );
-};
-
-const Tabs = ({ scrollX, onTabPress }) => {
-  const [measureLayout, setMeasureLayout] = React.useState([]);
-  const containerRef = React.useRef();
-
-  React.useEffect(() => {
-    let ml = [];
-    course_details_tabs.forEach((course_details_tab) => {
-      course_details_tab?.ref?.current?.measureLayout(
-        containerRef.current,
-        (x, y, width, height) => {
-          ml.push({ x, y, width, height });
-
-          if (ml.length === course_details_tabs.length) {
-            setMeasureLayout(ml);
-          }
-        }
-      );
-    });
-  }, [containerRef.current]);
-
-  return (
-    <View
-      ref={containerRef}
-      style={{
-        flex: 1,
-        flexDirection: 'row',
-      }}
-    >
-      {measureLayout.length > 0 && (
-        <TabIndicator measureLayout={measureLayout} scrollX={scrollX} />
-      )}
-
-      {course_details_tabs.map((item, index) => {
-        return (
-          <TouchableOpacity
-            key={`Tab-${index}`}
-            ref={item.ref}
-            style={{
-              flex: 1,
-              paddingHorizontal: 15,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={() => {
-              onTabPress(index);
-            }}
-          >
-            <Text
-              style={{
-                ...FONTS.h3,
-                fontSize: SIZES.height > 800 ? 18 : 17,
-              }}
-            >
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
-};
 
 const ScholarshipDetail = ({ navigation, route }) => {
   const { userInfo } = useAuth();
   const { selectedScholarship } = route.params;
-  const flatListRef = React.useRef();
-  const scrollX = React.useRef(new Animated.Value(0)).current;
   const [hasApplied, setHasApplied] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const onTabPress = React.useCallback((tabIndex) => {
-    flatListRef?.current?.scrollToOffset({
-      offset: tabIndex * SIZES.width,
-    });
-  });
 
   const fetchApplicationByApplicantId = React.useCallback(async () => {
     setLoading(true);
@@ -137,32 +33,30 @@ const ScholarshipDetail = ({ navigation, route }) => {
 
   function renderHeaderComponent() {
     return (
-      <>
-        <View
-          style={{
-            flex: 1,
-            marginTop: 10,
+      <View
+        style={{
+          flex: 1,
+          marginTop: 10,
+        }}
+      >
+        <IconButton
+          icon={icons.back}
+          iconStyle={{
+            width: 25,
+            height: 25,
+            tintColor: COLORS.black,
           }}
-        >
-          <IconButton
-            icon={icons.back}
-            iconStyle={{
-              width: 25,
-              height: 25,
-              tintColor: COLORS.black,
-            }}
-            containerStyle={{
-              width: 40,
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 20,
-              backgroundColor: COLORS.white,
-            }}
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      </>
+          containerStyle={{
+            width: 40,
+            height: 40,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 20,
+            backgroundColor: COLORS.white,
+          }}
+          onPress={() => navigation.goBack()}
+        />
+      </View>
     );
   }
 
@@ -259,7 +153,9 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          src="https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg"
+          source={{
+            uri: 'https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg',
+          }}
           style={{
             width: '100%',
             height: '100%',
@@ -278,55 +174,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
           flex: 1,
         }}
       >
-        <View
-          style={{
-            height: 50,
-          }}
-        >
-          <Tabs scrollX={scrollX} onTabPress={onTabPress} />
-        </View>
-
-        <LineDivider
-          lineStyle={{
-            backgroundColor: COLORS.gray20,
-          }}
-        />
-
-        <Animated.FlatList
-          ref={flatListRef}
-          horizontal
-          pagingEnabled
-          snapToAlignment="center"
-          snapToInterval={SIZES.width}
-          decelerationRate="fast"
-          keyboardDismissMode="on-drag"
-          showsHorizontalScrollIndicator={false}
-          data={constants.course_details_tabs}
-          keyExtractor={(item) => `CourseDetailTabs-${item.id}`}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: { contentOffset: { x: scrollX } },
-              },
-            ],
-            {
-              useNativeDriver: false,
-            }
-          )}
-          renderItem={({ item, index }) => {
-            return (
-              <View
-                style={{
-                  width: SIZES.width,
-                }}
-              >
-                {index === 0 && <Description item={selectedScholarship} />}
-                {index === 1 && <Feedback />}
-                {index === 2 && <Discussion />}
-              </View>
-            );
-          }}
-        />
+        <Description item={selectedScholarship} />
       </View>
     );
   }

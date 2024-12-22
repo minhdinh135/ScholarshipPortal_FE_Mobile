@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
+  ActivityIndicator
 } from "react-native";
 import { COLORS, SIZES, FONTS } from "../../constants";
 import { Picker } from "@react-native-picker/picker";
@@ -14,6 +15,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
 import { postApplication } from "../../api/applicationApi";
 import { Ionicons } from "@expo/vector-icons";
+import { sendNotificationFunder } from "../../api/notificationApi";
 
 const StepOne = ({ formData, setFormData, errors }) => {
   return (
@@ -171,7 +173,8 @@ const StepThree = ({ formData }) => {
         <View style={{ marginVertical: 16 }}>
           {formData.file.endsWith(".jpg") ||
             formData.file.endsWith(".png") ||
-            formData.file.endsWith(".jpeg") ? (
+            formData.file.endsWith(".jpeg") ||
+            formData.file.endsWith(".pdf") ? (
             <Image
               source={{ uri: formData.file }}
               style={{ width: 200, height: 200, borderRadius: 8 }}
@@ -190,6 +193,7 @@ const MultiStepForm = ({ navigation, route }) => {
   const { selectedScholarship } = route.params;
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: userInfo.username,
     email: userInfo.email,
@@ -226,6 +230,7 @@ const MultiStepForm = ({ navigation, route }) => {
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
 
   const submitForm = async () => {
+    setLoading(true);
     try {
       const applicationData = {
         applicantId: userInfo.id,
@@ -240,15 +245,20 @@ const MultiStepForm = ({ navigation, route }) => {
           },
         ],
       };
-      await postApplication(applicationData).then((res) => console.log(res));
+      await Promise.all([
+        await postApplication(applicationData),
+        await sendNotificationFunder(userInfo.id, selectedScholarship.id)
+      ]);
       Alert.alert("Success", "Form submitted successfully!", [
         {
           text: "OK",
-          onPress: () => navigation.goBack(),
+          onPress: () => navigation.navigate("ApplicationHistoryScreen"),
         },
       ]);
     } catch (error) {
       console.log("Form submission error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -289,6 +299,7 @@ const MultiStepForm = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+
       {renderProgressBar()}
 
       <View style={styles.card}>
@@ -323,7 +334,13 @@ const MultiStepForm = ({ navigation, route }) => {
             }
           >
             <Text style={styles.buttonText}>
-              {step === 3 ? "Submit" : "Next"}
+              {loading ? (
+                <View style={styles.loadingOverlay}>
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                </View>
+              ) : (
+                step === 3 ? "Submit" : "Next"
+              )}
             </Text>
           </TouchableOpacity>
         </View>

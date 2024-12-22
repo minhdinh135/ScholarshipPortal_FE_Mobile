@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  SectionList,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -14,9 +14,9 @@ import { useAuth } from '../../context/AuthContext';
 import { IconButton } from '../../components/Card';
 import moment from 'moment';
 
-const ApplicationHistory = ({ navigation }) => {
+const ApplicationHistoryScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
-  const [applicants, setApplicants] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,17 +45,38 @@ const ApplicationHistory = ({ navigation }) => {
             };
           })
         );
-        setApplicants(applicantsWithScholarship);
+
+        const groupedApplications = groupApplicationsByDate(applicantsWithScholarship.reverse());
+        setSections(groupedApplications);
       } catch (error) {
         console.error('Failed to fetch applicants:', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchApplicantsWithScholarship();
   }, []);
 
-  const renderItem = ({ item }) => (
+  const groupApplicationsByDate = (applications) => {
+    const grouped = applications.reduce((acc, applicant) => {
+      const dateKey = moment(applicant.appliedDate).format('MMMM DD, YYYY');
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(applicant);
+      return acc;
+    }, {});
+
+    return Object.keys(grouped)
+      .sort((a, b) => moment(b, 'MMMM DD, YYYY') - moment(a, 'MMMM DD, YYYY'))
+      .map((date) => ({
+        title: date,
+        data: grouped[date],
+      }));
+  };
+
+  const renderApplicationItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() =>
@@ -74,6 +95,10 @@ const ApplicationHistory = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  const renderSectionHeader = ({ section: { title } }) => (
+    <Text style={styles.sectionHeader}>{title}</Text>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -83,7 +108,7 @@ const ApplicationHistory = ({ navigation }) => {
             tintColor: COLORS.black,
           }}
           containerStyle={styles.iconButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("Profile")}
         />
         <Text style={styles.headerText}>Application History</Text>
       </View>
@@ -92,10 +117,11 @@ const ApplicationHistory = ({ navigation }) => {
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
-        <FlatList
-          data={applicants}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
+          renderItem={renderApplicationItem}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.list}
         />
       )}
@@ -111,6 +137,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginHorizontal: 12,
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -127,11 +154,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: COLORS.white,
   },
-  headerTitle: {
-    color: COLORS.black,
-    flex: 1,
-    textAlign: 'center',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -140,6 +162,11 @@ const styles = StyleSheet.create({
   list: {
     paddingVertical: SIZES.base,
     marginTop: SIZES.padding,
+  },
+  sectionHeader: {
+    color: COLORS.black,
+    ...FONTS.h2,
+    padding: 10,
   },
   card: {
     backgroundColor: COLORS.white,
@@ -167,4 +194,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ApplicationHistory;
+export default ApplicationHistoryScreen;

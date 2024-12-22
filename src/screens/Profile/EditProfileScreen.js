@@ -22,35 +22,21 @@ const EditProfileScreen = ({ navigation }) => {
   }, []);
 
   const uploadFile = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const result = await DocumentPicker.getDocumentAsync({
         type: "*/*",
       });
-
       if (result) {
         const { uri, name, mimeType, size } = result.assets[0];
         const files = new FormData();
-        files.append("files", {
+        files.append("File", {
           uri: uri,
           name: name,
           type: mimeType,
           size: size,
         });
-
-        const responseText = await changeAvatar(userInfo.id, files).text();
-
-        try {
-          const responseJson = JSON.parse(responseText);
-
-          if (response.ok) {
-            Alert.alert("Upload Success", "File uploaded successfully.");
-          } else {
-            Alert.alert("Upload Error", "Failed to upload file.");
-          }
-        } catch (error) {
-          Alert.alert("Response Error", "The response is not valid JSON.");
-        }
+        await changeAvatar(userInfo.id, files);
       }
     } catch (error) {
       Alert.alert("Error", "There was a problem selecting or uploading the file.");

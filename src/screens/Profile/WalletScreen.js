@@ -38,7 +38,7 @@ const WalletScreen = ({ navigation }) => {
 
       if (walletResponse.data?.id) {
         const transactionResponse = await getTransactionByWalletId(walletResponse.data.id);
-        setTransactions(transactionResponse.data || []);
+        setTransactions(transactionResponse.data.reverse() || []);
       }
     } catch (error) {
       console.log(error);
@@ -128,7 +128,7 @@ const WalletScreen = ({ navigation }) => {
             marginTop: 10
           }}
         >
-          {isReceiver ? `+$${item.amount}` : `-$${item.amount}`}
+          {isReceiver ? `+$${item.amount.toLocaleString()}` : `-$${item.amount.toLocaleString()}`}
         </Text>
       </View>
     );
@@ -198,7 +198,7 @@ const WalletScreen = ({ navigation }) => {
                     </View>
                   ) : (
                     <FlatList
-                      data={transactions.reverse()}
+                      data={transactions}
                       renderItem={renderTransaction}
                       keyExtractor={(item) => item.id}
                       contentContainerStyle={{ marginTop: 10 }}

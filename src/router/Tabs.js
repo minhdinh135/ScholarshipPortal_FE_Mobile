@@ -104,14 +104,6 @@ function ExpertTabs() {
         }}
       />
       <Tab.Screen
-        name="Schedule"
-        component={CalendarScreen}
-        options={{
-          tabBarIcon: ({ focused }) => tabBarIcon(focused, FontAwesome6, { name: "calendar" }),
-          tabBarLabel: ({ focused }) => tabBarLabel(focused, "Schedule"),
-        }}
-      />
-      <Tab.Screen
         name="Notifications"
         component={NotificationScreen}
         options={{

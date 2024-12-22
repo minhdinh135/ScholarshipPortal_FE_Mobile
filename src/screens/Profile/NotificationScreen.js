@@ -5,19 +5,28 @@ import {
   ActivityIndicator,
   StyleSheet,
   Image,
+  TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getNotification } from '../../api/notificationApi';
+import { getNotification, markAsRead } from '../../api/notificationApi';
 import { COLORS, SIZES, FONTS, images } from '../../constants';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
 
 const NotificationScreen = () => {
   const { userInfo } = useAuth();
+  const navigation = useNavigation();
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  const loadNotifications = () => {
+    setLoading(true);
     getNotification(userInfo?.id)
       .then((res) => {
         const groupedNotifications = groupNotificationsByDate(res.data || []);
@@ -28,7 +37,13 @@ const NotificationScreen = () => {
         console.log(err);
         setLoading(false);
       });
-  }, []);
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadNotifications();
+    setRefreshing(false);
+  };
 
   const groupNotificationsByDate = (notifications) => {
     const grouped = notifications.reduce((acc, notification) => {
@@ -48,16 +63,54 @@ const NotificationScreen = () => {
       }));
   };
 
+  const clearAllNotifications = () => {
+    const allNotificationIds = sections
+      .flatMap((section) => section.data)
+      .map((notification) => notification.id);
+
+    markAsRead(allNotificationIds)
+      .then(() => {
+        const updatedSections = sections.map((section) => ({
+          ...section,
+          data: section.data.map((notification) => ({
+            ...notification,
+            isRead: true,
+          })),
+        }));
+        setSections(updatedSections);
+      })
+      .catch((err) => {
+        console.error('Failed to clear notifications:', err);
+      });
+  };
+
+  const handleNotificationPress = (notification) => {
+    markAsRead([notification.id])
+      .then(() => {
+        const updatedSections = sections.map((section) => ({
+          ...section,
+          data: section.data.map((notif) =>
+            notif.id === notification.id ? { ...notif, isRead: true } : notif
+          ),
+        }));
+        setSections(updatedSections);
+      })
+      .catch((err) => console.error('Failed to mark notification as read:', err));
+    navigation.navigate('HomeTab');
+  };
+
   const renderNotification = ({ item }) => (
-    <View style={styles.notificationItem}>
-      {!item.isRead && <View style={styles.unreadDot} />}
-      <Text style={[styles.notificationTitle, !item.isRead && styles.unreadTitle]}>
-        {item.message}
-      </Text>
-      <Text style={styles.notificationBody}>
-        {moment(item.createdAt).format('h:mm A')}
-      </Text>
-    </View>
+    <TouchableOpacity onPress={() => handleNotificationPress(item)}>
+      <View style={styles.notificationItem}>
+        {!item.isRead && <View style={styles.unreadDot} />}
+        <Text style={[styles.notificationTitle, !item.isRead && styles.unreadTitle]}>
+          {item.message}
+        </Text>
+        <Text style={styles.notificationBody}>
+          {moment(item.createdAt).format('h:mm A')}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 
   const renderSectionHeader = ({ section: { title } }) => (
@@ -66,7 +119,12 @@ const NotificationScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.screenTitle}>Notifications</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.screenTitle}>Notifications</Text>
+        <TouchableOpacity onPress={clearAllNotifications}>
+          <Text style={styles.clearButtonText}>Clear All</Text>
+        </TouchableOpacity>
+      </View>
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -87,6 +145,13 @@ const NotificationScreen = () => {
           renderItem={renderNotification}
           renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[COLORS.primary]}
+            />
+          }
         />
       )}
     </View>
@@ -102,11 +167,21 @@ const styles = StyleSheet.create({
     paddingTop: SIZES.padding,
     justifyContent: 'center',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.padding,
+  },
   screenTitle: {
-    ...FONTS.h2,
+    ...FONTS.h1,
     color: COLORS.black,
     textAlign: 'center',
     paddingVertical: SIZES.padding * 0.5,
+  },
+  clearButtonText: {
+    ...FONTS.body3,
+    color: COLORS.gray30,
   },
   loadingContainer: {
     flex: 1,

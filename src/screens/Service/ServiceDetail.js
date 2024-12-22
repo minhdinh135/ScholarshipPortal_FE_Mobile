@@ -13,19 +13,19 @@ import {
 import {
   IconButton,
   LineDivider,
-  TextButton
 } from "../../components/Card";
 import BottomSheet from '@gorhom/bottom-sheet';
 import * as DocumentPicker from "expo-document-picker";
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import ServiceDescription from '../../components/Service/ServiceDescription';
-import Discussion from '../../components/ScholarshipProgram/Discussion';
 import { useAuth } from '../../context/AuthContext';
 import { getWalletById } from '../../api/walletApi';
 import { transferMoney } from '../../api/paymentApi';
 import ServiceFeedback from '../../components/Service/ServiceFeedback';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import { sendRequest } from '../../api/requestApi';
+import { sendNotificationProvider } from '../../api/notificationApi';
 
 const course_details_tabs = constants.course_details_tabs.map((course_details_tab) => ({
   ...course_details_tab,
@@ -128,37 +128,35 @@ const Tabs = ({ scrollX, onTabPress }) => {
 }
 
 const ServiceDetail = ({ navigation, route }) => {
-
   const { selectedService } = route.params;
   const { userInfo } = useAuth();
   const flatListRef = React.useRef();
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const bottomSheetRef = React.useRef(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState([]);
   const [form, setForm] = useState({
     senderId: '',
     receiverId: '',
     description: '',
     amount: selectedService.price,
-    paymentMethod: "",
+    paymentMethod: '',
   });
 
   const getWalletInformation = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const [userWallet, providerWallet] = await Promise.all([
         getWalletById(userInfo.id),
-        getWalletById(selectedService.providerId)
+        getWalletById(selectedService.providerId),
       ]);
-
-      setForm(prevForm => ({
+      setForm((prevForm) => ({
         ...prevForm,
-        senderId: userWallet.data.id,
-        receiverId: providerWallet.data.id
+        senderId: userWallet.data.accountId,
+        receiverId: providerWallet.data.accountId,
       }));
-
       return { userWallet, providerWallet };
     } catch (error) {
       console.log('Error fetching wallet information:', error);
@@ -174,11 +172,9 @@ const ServiceDetail = ({ navigation, route }) => {
     }
   }, [userInfo?.id, selectedService?.providerId]);
 
-  const onTabPress = React.useCallback(tabIndex => {
-    flatListRef?.current?.scrollToOffset({
-      offset: tabIndex * SIZES.width
-    })
-  })
+  const onTabPress = React.useCallback((tabIndex) => {
+    flatListRef?.current?.scrollToOffset({ offset: tabIndex * SIZES.width });
+  });
 
   const handleInputChange = (field, value) => {
     setForm({ ...form, [field]: value });
@@ -190,7 +186,6 @@ const ServiceDetail = ({ navigation, route }) => {
       const result = await DocumentPicker.getDocumentAsync({
         type: "*/*",
       });
-
       if (result) {
         const { uri, name, mimeType, size } = result.assets[0];
         const isImage = mimeType.startsWith("image/");
@@ -201,7 +196,6 @@ const ServiceDetail = ({ navigation, route }) => {
           type: mimeType,
           size: size,
         });
-
         const response = await fetch(`${process.env.BASE_URL}/api/file-upload`, {
           method: "POST",
           body: files,
@@ -209,9 +203,7 @@ const ServiceDetail = ({ navigation, route }) => {
             "Content-Type": "multipart/form-data",
           },
         });
-
         const responseText = await response.text();
-
         try {
           const responseJson = JSON.parse(responseText);
 
@@ -239,33 +231,50 @@ const ServiceDetail = ({ navigation, route }) => {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       const { userWallet } = await getWalletInformation();
-      if (selectedService.price > userWallet.data.balance) {
-        Alert.alert(
-          "Insufficient Balance",
-          "Your wallet balance is not enough to proceed with this request. Please top up your wallet or choose a different payment method."
+      const userBalance = userWallet.data.balance;
+      if (selectedService.price > userBalance) {
+        return Alert.alert(
+          'Insufficient Balance',
+          'Your wallet balance is not enough to proceed with this request. Please top up your wallet or choose a different payment method.'
         );
-        return;
       }
-
       await transferMoney(form);
-      Alert.alert(
-        "Request Sent",
-        "Your request has been sent successfully.",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              bottomSheetRef.current?.close();
-              setForm({ description: '', file: '', paymentMethod: '' });
-              setImagePreview([]);
-            }
-          }
-        ]
-      );
+      const requestData = {
+        description: form.description,
+        applicantId: form.senderId,
+        serviceIds: [selectedService.id],
+        requestFileUrls: [imagePreview],
+      };
+      await Promise.all([
+        sendRequest(requestData),
+        sendNotificationProvider(userInfo.id, selectedService.id)
+      ]);
+      Alert.alert('Success', 'Your request has been submitted successfully.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            bottomSheetRef.current?.close();
+            resetFormAndImagePreview();
+          },
+        },
+      ]);
     } catch (error) {
-      Alert.alert("Error", "There was an issue submitting your request. Please try again.");
+      console.error('Submission Error:', error);
+      Alert.alert('Error', 'There was an issue submitting your request. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const resetFormAndImagePreview = () => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      description: '',
+      paymentMethod: '',
+    }));
+    setImagePreview([]);
   };
 
   function renderHeaderComponent() {
@@ -317,14 +326,13 @@ const ServiceDetail = ({ navigation, route }) => {
     )
   }
 
-  function renderScholarshipInfo() {
+  function renderServiceInfo() {
     return (
       <View style={{
         paddingHorizontal: SIZES.padding,
         backgroundColor: COLORS.white,
       }}>
         <Text style={{ ...FONTS.h2, paddingTop: SIZES.padding }}>{selectedService?.name}</Text>
-
         <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <TouchableOpacity
             style={{
@@ -422,7 +430,6 @@ const ServiceDetail = ({ navigation, route }) => {
               >
                 {index == 0 && <ServiceDescription selectedService={selectedService} navigation={navigation} />}
                 {index == 1 && <ServiceFeedback />}
-                {index == 2 && <Discussion />}
               </View>
             )
           }}
@@ -499,17 +506,23 @@ const ServiceDetail = ({ navigation, route }) => {
               <Text style={[styles.paymentOptionText, form.paymentMethod === 'Cash' && styles.selectedWalletText]}>Pay by Cash</Text>
             </TouchableOpacity>
           </View>
-          <TextButton
-            label="Submit"
-            contentContainerStyle={{
-              height: 60,
-              marginTop: 40
-            }}
-            labelStyle={{
-              ...FONTS.h2
-            }}
+          <TouchableOpacity
             onPress={handleSubmit}
-          />
+            style={{
+              height: 60,
+              marginTop: 40,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: COLORS.primary,
+              borderRadius: SIZES.radius
+            }}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="large" color={COLORS.white} />
+            ) : (
+              <Text style={{ ...FONTS.h2, color: COLORS.white }}>Submit</Text>
+            )}
+          </TouchableOpacity>
         </ScrollView>
       </BottomSheet>
     );
@@ -535,7 +548,7 @@ const ServiceDetail = ({ navigation, route }) => {
       {renderLoadingScreen()}
       {renderHeader()}
       {renderTop()}
-      {renderScholarshipInfo()}
+      {renderServiceInfo()}
       {renderContent()}
       {renderBottomSheet()}
     </View>

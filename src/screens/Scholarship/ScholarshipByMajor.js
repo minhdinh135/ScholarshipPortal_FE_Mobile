@@ -10,7 +10,7 @@ import Animated, {
   runOnJS,
   withDelay,
 } from 'react-native-reanimated';
-import { FilterModal, IconButton, LineDivider } from '../../components/Card'
+import { IconButton, LineDivider } from '../../components/Card'
 import { HorizontalList } from '../../components/List';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import { SharedElement } from 'react-navigation-shared-element';
@@ -30,9 +30,6 @@ const ScholarshipByMajor = ({ navigation, route }) => {
     scrollY.value = event.contentOffset.y;
   });
 
-  const filterModalSharedValue1 = useSharedValue(SIZES.height);
-  const filterModalSharedValue2 = useSharedValue(SIZES.height);
-
   const { category, sharedElementPrefix } = route.params;
 
   function backHandler() {
@@ -46,7 +43,7 @@ const ScholarshipByMajor = ({ navigation, route }) => {
       setLoading(false);
     });
   }, [category.id]);
-  
+
   function renderHeader() {
     const inputRange = [0, HEADER_HEIGHT - 50];
     headerSharedValue.value = withDelay(500,
@@ -222,26 +219,6 @@ const ScholarshipByMajor = ({ navigation, route }) => {
         ListHeaderComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 40, marginBottom: SIZES.base }}>
             <Text style={{ flex: 1 }}>{scholarPrograms.length} results</Text>
-            <IconButton
-              icon={icons.filter}
-              iconStyle={{ width: 20, height: 20 }}
-              containerStyle={{
-                width: 40,
-                height: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 10,
-                backgroundColor: COLORS.primary,
-              }}
-              onPress={() => {
-                filterModalSharedValue1.value = withTiming(0, {
-                  duration: 100
-                });
-                filterModalSharedValue2.value = withDelay(100, withTiming(0, {
-                  duration: 500
-                }));
-              }}
-            />
           </View>
         }
         renderItem={({ item, index }) => (
@@ -269,11 +246,6 @@ const ScholarshipByMajor = ({ navigation, route }) => {
       ) : (
         renderResult()
       )}
-
-      <FilterModal
-        filterModalSharedValue1={filterModalSharedValue1}
-        filterModalSharedValue2={filterModalSharedValue2}
-      />
     </View>
   );
 }

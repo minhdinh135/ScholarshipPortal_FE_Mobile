@@ -137,30 +137,49 @@ const class_levels = [
 
 const created_within = [
   {
-    id: 0,
-    label: "All Time"
+    label: "This Day",
+    dateRange: {
+      start: new Date(new Date().setHours(0, 0, 0, 0)),
+      end: new Date(new Date().setHours(23, 59, 59, 999)),
+    },
   },
   {
-    id: 1,
-    label: "This Month"
+    label: "This Week",
+    dateRange: {
+      start: new Date(new Date().setDate(new Date().getDate() - new Date().getDay())),
+      end: new Date(),
+    },
   },
   {
-    id: 2,
-    label: "This Week"
+    label: "This Month",
+    dateRange: {
+      start: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      end: new Date(),
+    },
   },
   {
-    id: 3,
-    label: "This Day"
+    label: "This Year",
+    dateRange: {
+      start: new Date(new Date().getFullYear(), 0, 1),
+      end: new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999),
+    },
   },
   {
-    id: 4,
-    label: "2 Months"
+    label: "2 Months",
+    dateRange: {
+      start: new Date(),
+      end: new Date(new Date().setMonth(new Date().getMonth() + 2)),
+    },
   },
   {
-    id: 5,
-    label: "4 Months"
-  }
-]
+    label: "4 Months",
+    dateRange: {
+      start: new Date(),
+      end: new Date(new Date().setMonth(new Date().getMonth() + 4)),
+    },
+  },
+];
+
 
 const course_details_tabs = [
   {
@@ -171,10 +190,6 @@ const course_details_tabs = [
     id: 1,
     label: "Feedbacks",
   },
-  {
-    id: 2,
-    label: "Discussions",
-  }
 ]
 
 export default {

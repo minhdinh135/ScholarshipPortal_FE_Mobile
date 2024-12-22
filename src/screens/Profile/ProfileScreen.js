@@ -59,8 +59,7 @@ const SettingsScreen = ({ navigation }) => {
                     size={19} />
                 </Pressable>
               </View>
-
-              <View style={styles.rowWrapper}>
+              <View style={[styles.rowWrapper, styles.rowLast]}>
                 <Pressable
                   onPress={() => {
                     navigation.navigate("ChangePasswordScreen")
@@ -69,40 +68,6 @@ const SettingsScreen = ({ navigation }) => {
                   <Ionicons style={{ marginRight: "8px" }} name="shield-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Change Password</Text>
                   <View style={styles.rowSpacer} />
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
-              </View>
-
-              <View style={styles.rowWrapper}>
-                <Pressable
-                  onPress={() => {
-                    //
-                  }}
-                  style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="notifications-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Notifications</Text>
-                  <View style={styles.rowSpacer} />
-                  <Text style={styles.rowValue}>ON</Text>
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
-              </View>
-
-              <View style={[styles.rowWrapper, styles.rowLast]}>
-                <Pressable
-                  onPress={() => {
-                    // handle onPress
-                  }}
-                  style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="language" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Language</Text>
-                  <View style={styles.rowSpacer} />
-                  <Text style={styles.rowValue}>English</Text>
                   <FeatherIcon
                     color="#bcbcbc"
                     name="chevron-right"
@@ -205,11 +170,11 @@ const SettingsScreen = ({ navigation }) => {
               <View style={styles.rowWrapper}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    navigation.navigate("AboutUsScreen")
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="call-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Contact Us</Text>
+                  <Ionicons style={{ marginRight: "8px" }} name="help-circle-outline" size={20} color={COLORS.primary3} />
+                  <Text style={styles.rowLabel}>About Us</Text>
                   <View style={styles.rowSpacer} />
                   <FeatherIcon
                     color="#bcbcbc"
@@ -255,7 +220,7 @@ const SettingsScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
-          <Text style={styles.contentFooter}>App Version 2.24 #50491</Text>
+          <Text style={styles.contentFooter}>App Version 1.0.0</Text>
         </ScrollView>
       </View>
     </SafeAreaView>

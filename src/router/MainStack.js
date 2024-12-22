@@ -2,12 +2,9 @@ import React from "react";
 import { createSharedElementStackNavigator } from "react-navigation-shared-element";
 import { HomeTabs } from "./Tabs";
 import MultiStepForm from "../screens/Applicant/MultiStepForm";
-import UserList from "../components/Chat/UserList";
-import Chat from "../components/Chat/Chat";
 import ScholarshipByMajor from "../screens/Scholarship/ScholarshipByMajor";
 import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
 import ServiceDetail from "../screens/Service/ServiceDetail";
-import ServiceForm from "../components/Service/ServiceForm";
 import ProviderProfileScreen from "../screens/Provider/ProviderProfileScreen";
 import ApplicationHistoryScreen from "../screens/Profile/ApplicationHistoryScreen";
 import ServiceHistoryScreen from "../screens/Profile/ServiceHistoryScreen";
@@ -18,6 +15,10 @@ import PaymentFailScreen from "../screens/Payment/PaymentFailScreen";
 import WalletScreen from "../screens/Profile/WalletScreen";
 import ScholarshipList from "../screens/Scholarship/ScholarshipList";
 import BankScreen from "../screens/Profile/BankScreen";
+import ChatBoxScreen from "../screens/Chat/ChatBoxScreen";
+import ChatScreen from "../screens/Chat/ChatScreen";
+import UserGuideScreen from "../screens/Support/UserGuideScreen";
+import AboutUsScreen from "../screens/Support/AboutUsScreen";
 
 const Stack = createSharedElementStackNavigator();
 
@@ -26,8 +27,8 @@ export function MainStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeTabs} />
 
-      <Stack.Screen name="UserListScreen" component={UserList} />
-      <Stack.Screen name="ChatScreen" component={Chat} options={{ headerShown: true }} />
+      <Stack.Screen name="ChatBoxScreen" component={ChatBoxScreen} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
       <Stack.Screen name="ScholarshipList" component={ScholarshipList} />
       <Stack.Screen name="ScholarshipByMajor" component={ScholarshipByMajor} />
@@ -35,7 +36,6 @@ export function MainStack() {
       <Stack.Screen name="MultiStep" component={MultiStepForm} />
 
       <Stack.Screen name="ServiceDetailScreen" component={ServiceDetail} />
-      <Stack.Screen name="ServiceForm" component={ServiceForm} />
       <Stack.Screen name="ProviderProfileScreen" component={ProviderProfileScreen} />
 
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
@@ -47,6 +47,9 @@ export function MainStack() {
 
       <Stack.Screen name="PaymentSuccessScreen" component={PaymentSuccessScreen} />
       <Stack.Screen name="PaymentFailScreen" component={PaymentFailScreen} />
+
+      <Stack.Screen name="UserGuideScreen" component={UserGuideScreen} />
+      <Stack.Screen name="AboutUsScreen" component={AboutUsScreen} />
     </Stack.Navigator>
   );
 }

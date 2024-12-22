@@ -76,7 +76,7 @@ const HomeScreen = () => {
       <View
         style={{
           flexDirection: 'row',
-          marginTop: 40,
+          marginTop: 30,
           marginBottom: 10,
           paddingHorizontal: SIZES.padding,
           alignItems: 'center'
@@ -101,15 +101,13 @@ const HomeScreen = () => {
             {currentDate}
           </Text>
         </View>
-
         <IconButton
           icon={icons.chat}
           iconStyle={{
             tintColor: COLORS.black
           }}
-          onPress={() => navigation.navigate("UserListScreen")}
+          onPress={() => navigation.navigate("ChatBoxScreen")}
         />
-
       </View>
     )
   }
@@ -155,7 +153,6 @@ const HomeScreen = () => {
             By ScholarFinder
           </Text>
         </View>
-
         <Image
           source={images.start_learning}
           style={{
@@ -166,7 +163,7 @@ const HomeScreen = () => {
         />
 
         <TextButton
-          label="Start Learning"
+          label="View Guide"
           contentContainerStyle={{
             height: 40,
             paddingHorizontal: SIZES.padding,
@@ -176,6 +173,7 @@ const HomeScreen = () => {
           labelStyle={{
             color: COLORS.black
           }}
+          onPress={() => navigation.navigate("UserGuideScreen")}
         />
       </ImageBackground>
     )
@@ -209,6 +207,7 @@ const HomeScreen = () => {
     return (
       <Section
         title="Categories"
+        onPress={() => navigation.navigate("Search")}
       >
         <FlatList
           horizontal
@@ -316,7 +315,7 @@ const HomeScreen = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.white }}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
@@ -330,7 +329,7 @@ const HomeScreen = () => {
             <LineDivider lineStyle={{ marginVertical: SIZES.padding }} />
             {renderCategories()}
             {renderPopularCourses()}
-            {renderUniversities()}
+            {/* {renderUniversities()} */}
           </ScrollView>
         </View>
       )}

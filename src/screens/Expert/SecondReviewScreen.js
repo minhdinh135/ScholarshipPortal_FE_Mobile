@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES } from '../../constants';
 import { reviewResultApplication, updateApplication } from '../../api/applicationApi';
 import { getScholarProgramById } from '../../api/scholarshipProgramApi';
 
-const DetailsScreen = ({ route }) => {
+const SecondReviewScreen = ({ route }) => {
   const { application: initialApplication } = route.params;
   const [application, setApplication] = useState(initialApplication);
   const [scholarship, setScholarship] = useState(null);
@@ -224,7 +224,7 @@ const DetailsScreen = ({ route }) => {
   );
 };
 
-export default DetailsScreen;
+export default SecondReviewScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { useFonts } from "expo-font";
 import { AuthStack } from "./src/router/AuthStack";
 import { MainStack } from "./src/router/MainStack";
 import { ExpertStack } from "./src/router/ExpertStack";
+import { StatusBar } from "react-native";
 
 function AppContent() {
   const { userInfo, isLoggedIn } = useAuth();
@@ -31,6 +32,7 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
+        <StatusBar hidden={true} />
         <AppContent />
       </NavigationContainer>
     </AuthProvider>

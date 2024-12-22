@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, TextInput, Image, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONTS, SIZES } from '../../constants';
-import { reviewResultApplication, updateApplication } from '../../api/applicationApi';
+import { COLORS, FONTS, icons, SIZES } from '../../constants';
+import { reviewResultApplication } from '../../api/applicationApi';
 import { getScholarProgramById } from '../../api/scholarshipProgramApi';
+import moment from 'moment';
+import { IconButton } from '../../components/Card';
 
-const DetailsScreen = ({ route }) => {
-  const { application: initialApplication } = route.params;
+const DetailsScreen = ({ route, navigation }) => {
+  const { application: initialApplication, applicationType } = route.params;
   const [application, setApplication] = useState(initialApplication);
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewScore, setReviewScore] = useState('');
-  const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [isReviewed, setIsReviewed] = useState(false);
 
   useEffect(() => {
@@ -31,6 +32,19 @@ const DetailsScreen = ({ route }) => {
     fetchScholarship();
   }, [application.scholarshipProgramId]);
 
+  useEffect(() => {
+    const checkIfReviewed = () => {
+      const reviewIndex = applicationType === 1 ? 0 : 1;
+      const review = application.applicationReviews[reviewIndex];
+
+      if (review && review.comment && review.score) {
+        setIsReviewed(true);
+      }
+    };
+
+    checkIfReviewed();
+  }, [application.applicationReviews, applicationType]);
+
   const renderStatusIcon = (status) => {
     switch (status) {
       case 'Approved':
@@ -45,10 +59,6 @@ const DetailsScreen = ({ route }) => {
   };
 
   const handleReviewSubmit = async () => {
-    if (!selectedReviewId) {
-      Alert.alert('No Review Selected', 'Please select a review to update.');
-      return;
-    }
     if (reviewText.trim().length === 0 || reviewScore.trim().length === 0) {
       Alert.alert('Review Required', 'Please provide both a review and a score before proceeding.');
       return;
@@ -57,6 +67,14 @@ const DetailsScreen = ({ route }) => {
     const score = parseFloat(reviewScore);
     if (isNaN(score) || score < 1 || score > 100) {
       Alert.alert('Invalid Score', 'Please enter a valid score between 1 and 100.');
+      return;
+    }
+
+    const reviewIndex = applicationType === 1 ? 0 : 1;
+    const selectedReviewId = application.applicationReviews[reviewIndex]?.id;
+
+    if (!selectedReviewId) {
+      Alert.alert('No Review Available', 'The selected application does not have a review to update.');
       return;
     }
 
@@ -70,13 +88,11 @@ const DetailsScreen = ({ route }) => {
     try {
       setLoading(true);
       await reviewResultApplication(updatedReview);
-
-      const updatedReviews = application.applicationReviews.map((review) =>
-        review.id === selectedReviewId
+      const updatedReviews = application.applicationReviews.map((review, index) =>
+        index === reviewIndex
           ? { ...review, comment: reviewText, score, reviewDate: new Date().toISOString() }
           : review
       );
-
       setApplication((prev) => ({
         ...prev,
         applicationReviews: updatedReviews,
@@ -84,30 +100,10 @@ const DetailsScreen = ({ route }) => {
       setReviewText('');
       setReviewScore('');
       setIsReviewed(true);
-
       Alert.alert('Review Submitted', 'Your review has been submitted. You can now approve or reject the application.');
     } catch (error) {
       console.log(error);
       Alert.alert('Error', 'There was an error submitting the review.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateStatus = async (newStatus) => {
-    if (!isReviewed) {
-      Alert.alert('Action Blocked', 'You must submit your review before approving or rejecting the application.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await updateApplication(application.id, newStatus);
-      setApplication((prev) => ({ ...prev, status: newStatus }));
-      Alert.alert('Status Updated', `The application status has been changed to ${newStatus}.`);
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Update Failed', 'There was an error while updating the application status.');
     } finally {
       setLoading(false);
     }
@@ -122,40 +118,67 @@ const DetailsScreen = ({ route }) => {
       )}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.title}>{application.applicant.username}</Text>
+          <View
+            style={{
+              margin: 12,
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            <IconButton
+              icon={icons.back}
+              iconStyle={{
+                width: 25,
+                height: 25,
+                tintColor: COLORS.black
+              }}
+              containerStyle={{
+                width: 40,
+                height: 40,
+                justifyContent: 'center',
+                borderRadius: 20,
+                backgroundColor: COLORS.white
+              }}
+              onPress={() => navigation.goBack()}
+            />
+            <Text style={styles.screenTitle}>Application Details</Text>
+          </View>
+          <Text style={styles.title}>{application.applicantName}</Text>
           <View style={styles.statusContainer}>
             {renderStatusIcon(application.status)}
             <Text
               style={[
                 styles.statusText,
-                application.status === 'Approved'
-                  ? styles.statusApprovedText
-                  : application.status === 'Reviewing'
-                    ? styles.statusPendingText
-                    : styles.statusDisapprovedText,
+                application.status === 'Approved' ? styles.statusApprovedText :
+                  application.status === 'Reviewing' ? styles.statusPendingText :
+                    styles.statusDisapprovedText
               ]}
             >
               {application.status}
             </Text>
           </View>
-          <Text style={styles.infoText}>Email: {application.applicant.email}</Text>
-          <Text style={styles.infoText}>Phone: {application.applicant.phoneNumber}</Text>
-          <Text style={styles.infoText}>Address: {application.applicant.address}</Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Application Details</Text>
-          <Text style={styles.infoText}>Applied Date: {new Date(application.appliedDate).toLocaleDateString()}</Text>
           <Text style={styles.infoText}>Scholarship Program: {scholarship?.name}</Text>
           <Text style={styles.infoText}>University: {scholarship?.university?.name}</Text>
+          <Text style={styles.infoText}>Applied on: {moment(application.appliedDate).format("MMM DD, YYYY")}</Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Documents</Text>
           {application.applicationDocuments.length > 0 ? (
             application.applicationDocuments.map((doc, index) => (
-              <View key={doc.id} style={styles.documentContainer}>
+              <TouchableOpacity
+                key={doc.id}
+                onPress={() => {
+                  Linking.openURL(doc.fileUrl).catch((err) =>
+                    Alert.alert('Error', 'Unable to open document.')
+                  );
+                }}
+                style={styles.documentContainer}
+              >
                 <Ionicons name="document-text" size={20} color={COLORS.primary} />
-                <Text style={styles.documentText}>{doc.name}</Text>
-              </View>
+                <Text style={styles.documentLinkText}>{doc.name}</Text>
+              </TouchableOpacity>
             ))
           ) : (
             <Text style={styles.infoText}>No documents submitted.</Text>
@@ -164,64 +187,46 @@ const DetailsScreen = ({ route }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Reviews</Text>
           {application.applicationReviews.length > 0 ? (
-            application.applicationReviews.map((review) => (
-              <TouchableOpacity
-                key={review.id}
-                style={[
-                  styles.reviewContainer,
-                  selectedReviewId === review.id && styles.selectedReview,
-                ]}
-                onPress={() => setSelectedReviewId(review.id)}
-              >
+            application.applicationReviews.map((review, index) => (
+              <View key={review.id} style={styles.reviewContainer}>
                 <Text style={styles.reviewDescription}>
                   {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
                 </Text>
                 <Text style={styles.infoText}>
                   {`Score: ${review.score || 'N/A'} | Date: ${review.reviewDate ? new Date(review.reviewDate).toLocaleDateString() : 'N/A'}`}
                 </Text>
-              </TouchableOpacity>
+              </View>
             ))
           ) : (
             <Text style={styles.infoText}>No reviews available.</Text>
           )}
         </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Review</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Write your review here..."
-            value={reviewText}
-            onChangeText={setReviewText}
-            editable={!isReviewed}
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Enter a score (0-100)"
-            value={reviewScore}
-            onChangeText={setReviewScore}
-            keyboardType="numeric"
-            editable={!isReviewed}
-          />
-          <TouchableOpacity style={styles.submitButton} onPress={handleReviewSubmit} disabled={isReviewed}>
-            <Text style={styles.submitButtonText}>{isReviewed ? 'Review Submitted' : 'Submit Review'}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.actionsContainer}>
-        {application.status === 'Reviewing' ? (
-          <>
-            <TouchableOpacity style={styles.actionButton} onPress={() => updateStatus('Approved')} disabled={loading || !isReviewed}>
-              <Text style={styles.actionButtonText}>Approve</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.rejectButton} onPress={() => updateStatus('Failed')} disabled={loading || !isReviewed}>
-              <Text style={styles.actionButtonText}>Fail</Text>
-            </TouchableOpacity>
-          </>
+        {isReviewed ? (
+          <View style={styles.section}>
+            <Text style={styles.infoText}>This application has been handled. Review has already been submitted.</Text>
+          </View>
         ) : (
-          <Text style={styles.handledMessage}>You already handled this application.</Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Your Review</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Write your review here..."
+              value={reviewText}
+              onChangeText={setReviewText}
+            />
+            <TextInput
+              style={styles.textInput}
+              placeholder="Enter a score (0-100)"
+              value={reviewScore}
+              onChangeText={setReviewScore}
+              keyboardType="numeric"
+            />
+            <TouchableOpacity style={styles.submitButton} onPress={handleReviewSubmit}>
+              <Text style={styles.submitButtonText}>Submit Review</Text>
+            </TouchableOpacity>
+          </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -246,6 +251,11 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: SIZES.base * 3,
+  },
+  screenTitle: {
+    ...FONTS.h1,
+    color: COLORS.black,
+    marginLeft: 20,
   },
   title: {
     ...FONTS.h1,
@@ -277,6 +287,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SIZES.base,
+  },
+  documentLinkText: {
+    ...FONTS.body3,
+    color: COLORS.primary,
+    textDecorationLine: 'underline',
+    marginLeft: SIZES.base,
   },
   documentText: {
     ...FONTS.body3,

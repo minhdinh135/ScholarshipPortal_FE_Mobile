@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { FONTS, COLORS, SIZES } from '../../constants';
 import { getProviderById } from '../../api/providerApi';
+import moment from 'moment';
 
 const ServiceDescription = ({ selectedService, navigation }) => {
   const [provider, setProvider] = useState(null);
@@ -35,6 +36,7 @@ const ServiceDescription = ({ selectedService, navigation }) => {
         <>
           <View style={styles.header}>
             <Text style={styles.title}>{selectedService?.name}</Text>
+            <Text style={styles.date}>{moment(selectedService.createdAt).format("MMMM DD, YYYY - HH:mm")}</Text>
           </View>
           <View style={styles.priceContainer}>
             <Text style={styles.sectionTitle}>Price:</Text>
@@ -84,6 +86,11 @@ const styles = StyleSheet.create({
     ...FONTS.h2,
     color: COLORS.black,
   },
+  date: {
+    ...FONTS.body3,
+    color: COLORS.gray40,
+    marginTop: 5,
+  },
   providerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -94,10 +101,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2
   },
   providerAvatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 100,
     marginRight: 10,
+    marginVertical: 10
   },
   providerInfo: {
     flex: 1,
