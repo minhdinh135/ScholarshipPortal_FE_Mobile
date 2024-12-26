@@ -18,7 +18,7 @@ export const requestNotify = async (id) => {
         {projectId: "3cbc4f04-0c5c-424d-8b7b-4a8f1aceb361"}
       )).data;*/
       const token = await messaging().getToken();
-      console.error('FCM Token:', token);
+      console.log('FCM Token:', token);
       
       // Optionally send this token to your server
       //console.error("Expo Push Token:", token);

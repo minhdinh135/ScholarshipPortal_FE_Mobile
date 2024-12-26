@@ -30,7 +30,6 @@ const ServiceHistoryScreen = ({ navigation }) => {
         setLoading(false);
       }
     };
-
     fetchServiceRequest();
   }, []);
 

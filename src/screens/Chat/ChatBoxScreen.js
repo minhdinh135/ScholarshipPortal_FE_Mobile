@@ -16,10 +16,12 @@ const ChatBoxScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchUsers = React.useCallback(async () => {
+  const fetchProviders = React.useCallback(async () => {
     setLoading(true);
     try {
-      await getAccounts().then((res) => setUsers(res));
+      const accounts = await getAccounts();
+      const filteredAccounts = accounts.filter(account => account.roleId === 4);
+      setUsers(filteredAccounts);
     } catch (error) {
       console.log('Error fetching users: ', error);
     } finally {
@@ -28,8 +30,8 @@ const ChatBoxScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchProviders();
+  }, [fetchProviders]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
