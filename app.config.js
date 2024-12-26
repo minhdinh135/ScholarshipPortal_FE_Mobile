@@ -24,7 +24,8 @@ export default {
       "adaptiveIcon": {
         "foregroundImage": "./public/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./public/favicon.png"

@@ -17,6 +17,24 @@ export const getNotification = async (id) => {
   }
 };
 
+export async function subscribeToTopic(data) {
+  const res = await fetch(
+    `${BASE_URL}/subscribe-to-topic`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const result = await res.json();
+    return result;
+}
+
 export const markAsRead = async (id) => {
   try {
     const res = await fetch(`${BASE_URL}/read/${id}`, {
