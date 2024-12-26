@@ -5,6 +5,7 @@ import { signUp as apiSignUp, signIn as apiSignIn } from "../api/authenticationA
 
 import { jwtDecode } from "jwt-decode";
 import { decode } from "base-64";
+import { requestNotify } from "../config/requestNotify";
 global.atob = decode;
 
 const AuthContext = createContext();
@@ -15,6 +16,20 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const [fcmToken, setFcmToken] = useState(null);
+
+  /*useEffect(() => {
+    const setupNotificationChannel = async () => {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Default Channel',
+        importance: Notifications.AndroidImportance.HIGH,
+        sound: true,
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+    setupNotificationChannel();
+  }, []);*/
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -24,6 +39,17 @@ export const AuthProvider = ({ children }) => {
           setUserToken(token);
           setUserInfo(decodedUserInfo);
           setIsLoggedIn(true);
+
+          const fcm = await AsyncStorage.getItem("fcmToken");
+            if(!fcm){
+                //console.error(decodedUserInfo)
+              const token = await requestNotify(decodedUserInfo.id);
+              if (token != null) {
+                  setFcmToken(token);
+                  await AsyncStorage.setItem("fcmToken", token);
+              }
+              //if (sendNotification) await NotifyNewUser(parseInt(user.id));
+            }
         }
       } catch (error) {
         console.log("Failed to load token from storage:", error);
@@ -42,13 +68,12 @@ export const AuthProvider = ({ children }) => {
         if (url.startsWith("com.scholarship://login-google")) {
           const responseParams = new URLSearchParams(url.split("?")[1]);
           const jwt = responseParams.get("jwt");
-
           if (jwt) {
             const decodedUserInfo = jwtDecode(jwt);
             setUserToken(jwt);
             setUserInfo(decodedUserInfo);
             setIsLoggedIn(true);
-            await AsyncStorage.setItem("userToken", jwt);
+            
             Alert.alert("Login successful");
           }
         }
@@ -118,7 +143,9 @@ export const AuthProvider = ({ children }) => {
     setUserToken(null);
     setUserInfo(null);
     setIsLoggedIn(false);
+    setFcmToken(null);
     await AsyncStorage.removeItem("userToken");
+    await AsyncStorage.removeItem("fcmToken");
   };
 
   if (loading) {

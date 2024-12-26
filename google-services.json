@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "678443652152",
+    "project_id": "ssap-e191d",
+    "storage_bucket": "ssap-e191d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678443652152:android:b9423ae9c3db931f0f82cd",
+        "android_client_info": {
+          "package_name": "com.scholarship"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs8SReCNteFO_W2hESumxMwrqXzTfyluc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
