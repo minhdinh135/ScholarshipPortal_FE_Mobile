@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
             setIsLoggedIn(true);
             
             Alert.alert("Login successful");
+            await AsyncStorage.setItem("userToken", jwt);
           }
         }
       } catch (error) {

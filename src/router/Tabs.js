@@ -11,7 +11,6 @@ import NotificationScreen from "../screens/Profile/NotificationScreen";
 import ApplicationManagementScreen from "../screens/Expert/ApplicationManagementScreen";
 import { useAuth } from "../context/AuthContext";
 import ServiceList from "../screens/Service/ServiceList";
-import CalendarScreen from "../screens/Expert/CalendarScreen";
 
 const Tab = createBottomTabNavigator();
 

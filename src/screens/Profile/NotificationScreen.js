@@ -22,6 +22,7 @@ const NotificationScreen = () => {
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
     loadNotifications();
 
