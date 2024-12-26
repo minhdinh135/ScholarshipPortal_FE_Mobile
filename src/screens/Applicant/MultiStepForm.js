@@ -105,7 +105,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
 
   return (
     <View style={styles.cardContent}>
-      <Text style={styles.title}>Upload Document</Text>
+      <Text style={styles.title}>Required Document</Text>
       <TextInput
         style={styles.input}
         placeholder="File Name"
@@ -163,7 +163,7 @@ const StepTwo = ({ formData, setFormData, errors }) => {
 const StepThree = ({ formData }) => {
   return (
     <View style={styles.cardContent}>
-      <Text style={styles.title}>Check Information</Text>
+      <Text style={styles.title}>Optional Document</Text>
       <Text style={styles.summaryText}>Name: {formData.name}</Text>
       <Text style={styles.summaryText}>Email: {formData.email}</Text>
       <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
@@ -187,6 +187,34 @@ const StepThree = ({ formData }) => {
     </View>
   );
 };
+
+const StepFour = ({ formData }) => {
+  return (
+    <View style={styles.cardContent}>
+      <Text style={styles.title}>Check Information</Text>
+      <Text style={styles.summaryText}>Name: {formData.name}</Text>
+      <Text style={styles.summaryText}>Email: {formData.email}</Text>
+      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
+      <Text style={styles.summaryText}>File name: {formData.filename}</Text>
+      <Text style={styles.summaryText}>Type: {formData.type}</Text>
+      {formData.file && (
+        <View style={{ marginVertical: 16 }}>
+          {formData.file.endsWith(".jpg") ||
+            formData.file.endsWith(".png") ||
+            formData.file.endsWith(".jpeg") ||
+            formData.file.endsWith(".pdf") ? (
+            <Image
+              source={{ uri: formData.file }}
+              style={{ width: 200, height: 200, borderRadius: 8 }}
+            />
+          ) : (
+            <Text>Uploaded file: {formData.file}</Text>
+          )}
+        </View>
+      )}
+    </View>
+  );
+}
 
 const MultiStepForm = ({ navigation, route }) => {
   const { userInfo } = useAuth();
@@ -224,7 +252,7 @@ const MultiStepForm = ({ navigation, route }) => {
 
   const validateAndNextStep = () => {
     const isValid = step === 1 ? validateStepOne() : validateStepTwo();
-    if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 3));
+    if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 4));
   };
 
   const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
@@ -271,7 +299,7 @@ const MultiStepForm = ({ navigation, route }) => {
 
   const renderProgressBar = () => (
     <View style={styles.progressContainer}>
-      {[1, 2, 3].map((s, index) => (
+      {[1, 2, 3, 4].map((s, index) => (
         <React.Fragment key={s}>
           <View
             style={[
@@ -287,7 +315,7 @@ const MultiStepForm = ({ navigation, route }) => {
               {s}
             </Text>
           </View>
-          {index < 2 && (
+          {index < 3 && (
             <View
               style={[styles.stepLine, step > s && styles.activeStepLine]}
             />
@@ -320,6 +348,9 @@ const MultiStepForm = ({ navigation, route }) => {
         {step === 3 && (
           <StepThree formData={formData} setFormData={setFormData} />
         )}
+        {step === 4 && (
+          <StepFour formData={formData} setFormData={setFormData} />
+        )}
 
         <View style={styles.buttonContainer}>
           {step > 1 && (
@@ -330,7 +361,7 @@ const MultiStepForm = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.nextButton}
             onPress={
-              step === 3 ? handleSubmitConfirmation : validateAndNextStep
+              step === 4 ? handleSubmitConfirmation : validateAndNextStep
             }
           >
             <Text style={styles.buttonText}>
@@ -339,7 +370,7 @@ const MultiStepForm = ({ navigation, route }) => {
                   <ActivityIndicator size="small" color={COLORS.white} />
                 </View>
               ) : (
-                step === 3 ? "Submit" : "Next"
+                step === 4 ? "Submit" : "Next"
               )}
             </Text>
           </TouchableOpacity>

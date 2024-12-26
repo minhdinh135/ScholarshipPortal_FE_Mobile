@@ -1,3 +1,5 @@
+import messaging from '@react-native-firebase/messaging';
+
 const BASE_URL = `${process.env.BASE_URL}/api/notifications`;
 
 export const getNotification = async (id) => {
@@ -74,3 +76,30 @@ export const sendNotificationProvider = async (applicantId, serviceId) => {
     console.log("Error sending notification for provider: ", error);
   }
 };
+
+export const subscribeToNotifications = async (userId) => {
+  try {
+    await messaging().requestPermission();
+    const token = await messaging().getToken();
+    console.log('FCM Token:', token);
+    const res = await fetch(`${BASE_URL}/subscribe-to-topic`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        token: token,
+        topic: userId,
+      })
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error subscribing to notifications: ", error);
+  }
+}

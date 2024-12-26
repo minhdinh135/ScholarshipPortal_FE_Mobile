@@ -5,9 +5,11 @@ import { COLORS, FONTS, icons, images } from '../../constants'
 import { Entypo } from '@expo/vector-icons'
 import { Pressable } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useAuth } from '../../context/AuthContext'
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
+  const { signInWithGoogle } = useAuth();
   return (
     <>
       <ImageBackground
@@ -39,13 +41,14 @@ const WelcomeScreen = () => {
                   <Entypo name='mail' size={20} />
                   <Text style={styles.btnTxt}>Login with Email</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={signInWithGoogle}>
                   <Image
                     source={icons.google}
                     style={{
                       width: 18,
                       height: 18
-                    }} />
+                    }}
+                  />
                   <Text style={styles.btnTxt}>Login with Google</Text>
                 </TouchableOpacity>
               </View>

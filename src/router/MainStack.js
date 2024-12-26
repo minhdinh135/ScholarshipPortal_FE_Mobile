@@ -24,7 +24,43 @@ const Stack = createSharedElementStackNavigator();
 
 export function MainStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        transitionSpec: {
+          open: {
+            animation: 'timing',
+            config: { duration: 200 },
+          },
+          close: {
+            animation: 'timing',
+            config: { duration: 200 },
+          },
+        },
+        cardStyleInterpolator: ({ current, next, layouts }) => {
+          return {
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+                {
+                  translateX: next
+                    ? next.progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -100],
+                    })
+                    : 0,
+                },
+              ],
+            },
+          };
+        },
+      }}
+    >
       <Stack.Screen name="Home" component={HomeTabs} />
 
       <Stack.Screen name="ChatBoxScreen" component={ChatBoxScreen} />
