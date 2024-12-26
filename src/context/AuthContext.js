@@ -6,6 +6,7 @@ import { signUp as apiSignUp, signIn as apiSignIn } from "../api/authenticationA
 import { jwtDecode } from "jwt-decode";
 import { decode } from "base-64";
 import { requestNotify } from "../config/requestNotify";
+import messaging from '@react-native-firebase/messaging';
 global.atob = decode;
 
 const AuthContext = createContext();
@@ -145,6 +146,8 @@ export const AuthProvider = ({ children }) => {
     setUserInfo(null);
     setIsLoggedIn(false);
     setFcmToken(null);
+    await messaging().deleteToken();
+    console.log('FCM token deleted successfully');
     await AsyncStorage.removeItem("userToken");
     await AsyncStorage.removeItem("fcmToken");
   };
