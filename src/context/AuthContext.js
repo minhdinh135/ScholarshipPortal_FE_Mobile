@@ -31,6 +31,19 @@ export const AuthProvider = ({ children }) => {
     setupNotificationChannel();
   }, []);*/
 
+  const requestNotification = async (decodedUserInfo) => {
+    const fcm = await AsyncStorage.getItem("fcmToken");
+    if(!fcm){
+        //console.error(decodedUserInfo)
+      const token = await requestNotify(decodedUserInfo.id);
+      if (token != null) {
+          setFcmToken(token);
+          await AsyncStorage.setItem("fcmToken", token);
+      }
+      //if (sendNotification) await NotifyNewUser(parseInt(user.id));
+    }
+  }
+
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -40,17 +53,7 @@ export const AuthProvider = ({ children }) => {
           setUserToken(token);
           setUserInfo(decodedUserInfo);
           setIsLoggedIn(true);
-
-          const fcm = await AsyncStorage.getItem("fcmToken");
-            if(!fcm){
-                //console.error(decodedUserInfo)
-              const token = await requestNotify(decodedUserInfo.id);
-              if (token != null) {
-                  setFcmToken(token);
-                  await AsyncStorage.setItem("fcmToken", token);
-              }
-              //if (sendNotification) await NotifyNewUser(parseInt(user.id));
-            }
+          await requestNotification(decodedUserInfo);
         }
       } catch (error) {
         console.log("Failed to load token from storage:", error);
@@ -74,6 +77,7 @@ export const AuthProvider = ({ children }) => {
             setUserToken(jwt);
             setUserInfo(decodedUserInfo);
             setIsLoggedIn(true);
+            await requestNotification(decodedUserInfo);
             
             Alert.alert("Login successful");
             await AsyncStorage.setItem("userToken", jwt);
@@ -103,6 +107,7 @@ export const AuthProvider = ({ children }) => {
         setUserInfo(decodedUserInfo);
         setIsLoggedIn(true);
         await AsyncStorage.setItem("userToken", token);
+        await requestNotification(decodedUserInfo);
       }
     } catch (error) {
       Alert.alert("Sign up failed", error.message);
@@ -124,6 +129,7 @@ export const AuthProvider = ({ children }) => {
         setUserInfo(decodedUserInfo);
         setIsLoggedIn(true);
         await AsyncStorage.setItem("userToken", token);
+        await requestNotification(decodedUserInfo);
       }
     } catch (error) {
       Alert.alert("Sign in failed", error.message);
