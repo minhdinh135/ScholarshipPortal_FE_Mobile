@@ -28,7 +28,7 @@ const NotificationScreen = () => {
 
     const unsubscribeForeground = messaging().onMessage((remoteMessage) => {
       const { notification, data } = remoteMessage;
-      
+
       if (notification && data?.topic == userInfo.id) {
         //console.error("Received message");
         //console.error(remoteMessage);

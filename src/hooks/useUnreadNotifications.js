@@ -22,7 +22,7 @@ const useUnreadNotifications = (userId) => {
 
     const unsubscribeForeground = messaging().onMessage(async (remoteMessage) => {
       const { notification, data } = remoteMessage;
-      
+
       if (notification && data?.topic == userId) {
         //console.error("Received message");
         //console.error(remoteMessage);

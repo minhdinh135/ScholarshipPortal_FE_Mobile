@@ -4,19 +4,12 @@ import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 const ScholarshipBlogPost = () => {
   return (
     <ScrollView style={styles.container}>
-      {/* Blog Image */}
       <Image
-        source={{ uri: 'https://example.com/scholarship-image.jpg' }} // Replace with your image URL
+        source={{ uri: 'https://example.com/scholarship-image.jpg' }}
         style={styles.image}
       />
-
-      {/* Blog Title */}
       <Text style={styles.title}>Scholarship Opportunities for 2024</Text>
-
-      {/* Blog Date */}
       <Text style={styles.date}>December 19, 2024</Text>
-
-      {/* Blog Content */}
       <View style={styles.contentContainer}>
         <Text style={styles.paragraph}>
           Scholarships are an excellent way for students to fund their education.
@@ -30,17 +23,16 @@ const ScholarshipBlogPost = () => {
   );
 };
 
-// Styles for the blog post UI
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Light background color
+    backgroundColor: '#f5f5f5',
     paddingHorizontal: 15,
     paddingTop: 20,
   },
   image: {
     width: '100%',
-    height: 250, // Adjust the height based on your needs
+    height: 250,
     borderRadius: 10,
     marginBottom: 15,
   },
@@ -62,7 +54,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     lineHeight: 24,
-    textAlign: 'justify', // Ensures the text is aligned well
+    textAlign: 'justify',
   },
 });
 

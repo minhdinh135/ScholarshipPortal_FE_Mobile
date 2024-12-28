@@ -21,6 +21,10 @@ const empty_file = require("../assets/images/empty_file.jpg")
 const nothing_here = require("../assets/images/void.png")
 const check_mark = require("../assets/images/check_mark.png")
 const ex_mark = require("../assets/images/ex_mark.png")
+const pdf_icon = require("../assets/images/pdf_icon.png")
+const docx_icon = require("../assets/images/docx_icon.png")
+const image_icon = require("../assets/images/image_icon.png")
+const zip_icon = require("../assets/images/zip_icon.png")
 
 export default {
   bg,
@@ -28,28 +32,26 @@ export default {
   doc,
   bg_1,
   work,
-
   featured_bg_image,
   mobile_image,
   pdf,
   profile,
   sketch,
   start_learning,
-
   student_1,
   student_2,
   student_3,
-
   thumbnail_1,
   thumbnail_2,
   thumbnail_3,
   thumbnail_4,
-
   welcome,
-
   empty_file,
   nothing_here,
-
   check_mark,
   ex_mark,
+  pdf_icon,
+  docx_icon,
+  image_icon,
+  zip_icon,
 }

@@ -6,21 +6,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Image,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from "react-native";
-import { COLORS, SIZES, FONTS } from "../../constants";
+import { COLORS, SIZES, FONTS, images } from "../../constants";
 import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import { useAuth } from "../../context/AuthContext";
 import { postApplication } from "../../api/applicationApi";
 import { Ionicons } from "@expo/vector-icons";
 import { sendNotificationFunder } from "../../api/notificationApi";
+import CircularProgress from "react-native-circular-progress-indicator";
 
 const StepOne = ({ formData, setFormData, errors }) => {
   return (
     <View style={styles.cardContent}>
-      <Text style={styles.title}>Personal Information</Text>
+      <Text style={styles.headerText}>Please fill out your personal information below to apply scholarship.</Text>
+      <Text style={styles.inputLabel}>Full Name</Text>
       <TextInput
         style={styles.input}
         placeholder="Full Name"
@@ -29,6 +31,8 @@ const StepOne = ({ formData, setFormData, errors }) => {
         onChangeText={(text) => setFormData({ ...formData, name: text })}
       />
       {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+
+      <Text style={styles.inputLabel}>Email Address</Text>
       <TextInput
         style={styles.input}
         placeholder="Email Address"
@@ -38,6 +42,8 @@ const StepOne = ({ formData, setFormData, errors }) => {
         keyboardType="email-address"
       />
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+      <Text style={styles.inputLabel}>Phone Number</Text>
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
@@ -51,9 +57,80 @@ const StepOne = ({ formData, setFormData, errors }) => {
   );
 };
 
-const StepTwo = ({ formData, setFormData, errors }) => {
+const StepFour = ({ formData }) => {
+  const formatFileSize = (size) => {
+    if (size < 1024) return `${size} B`;
+    else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+    else return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  };
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split(".").pop().toLowerCase();
+    switch (extension) {
+      case "pdf":
+        return <Image source={images.pdf_icon} style={{ width: 40, height: 40 }} />;
+      case "jpg":
+      case "jpeg":
+      case "png":
+        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+      case "doc":
+      case "docx":
+        return <Image source={images.docx_icon} style={{ width: 40, height: 40 }} />;
+      case "zip":
+      case "rar":
+        return <Image source={images.zip_icon} style={{ width: 40, height: 40 }} />;
+      default:
+        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+    }
+  };
+
+  return (
+    <View style={styles.cardContent}>
+      <Text style={styles.headerText}>Please check your information before submitting application form.</Text>
+      <Text style={styles.summaryText}>Name: {formData.name}</Text>
+      <Text style={styles.summaryText}>Email: {formData.email}</Text>
+      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
+      <Text style={styles.summaryText}>File:</Text>
+      {formData.documents.length > 0 && (
+        <View style={styles.fileListContainer}>
+          {formData.documents.map((doc, index) => (
+            <View key={index} style={styles.fileListItem}>
+              <View style={styles.fileIconContainer}>
+                {getFileIcon(doc.fileName)}
+              </View>
+              <View style={styles.fileInfoContainer}>
+                <Text style={styles.fileNameText}>{doc.type}</Text>
+                <Text style={styles.fileSizeText}>
+                  {formatFileSize(doc.fileSize)}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+const FileUploadSection = ({
+  title,
+  types,
+  formData,
+  setFormData,
+  errors,
+  setTypes,
+}) => {
+  const [selectedType, setSelectedType] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const uploadFile = async () => {
+    if (!selectedType) {
+      Alert.alert("Error", "Please select a type before uploading a file.");
+      return;
+    }
+
     try {
+      setLoading(true);
       const result = await DocumentPicker.getDocumentAsync({
         type: "*/*",
       });
@@ -76,145 +153,122 @@ const StepTwo = ({ formData, setFormData, errors }) => {
           },
         });
 
-        const responseText = await response.text();
+        const responseJson = await response.json();
 
-        try {
-          const responseJson = JSON.parse(responseText);
+        if (response.ok) {
+          setFormData({
+            ...formData,
+            documents: [
+              ...formData.documents,
+              {
+                name: selectedType,
+                type: selectedType,
+                fileUrl: responseJson.data[0],
+                fileName: name,
+                fileSize: size,
+              },
+            ],
+          });
 
-          if (response.ok) {
-            Alert.alert("Upload Success", "File uploaded successfully.");
-            setFormData({ ...formData, file: responseJson.data[0] });
-          } else {
-            Alert.alert("Upload Error", "Failed to upload file.");
-          }
-        } catch (error) {
-          Alert.alert("Response Error", "The response is not valid JSON.");
+          setTypes((prev) => prev.filter((type) => type !== selectedType));
+          setSelectedType("");
+        } else {
+          Alert.alert("Upload Error", "Failed to upload file.");
         }
       }
     } catch (error) {
-      Alert.alert(
-        "Error",
-        "There was a problem selecting or uploading the file.",
-      );
+      Alert.alert("Error", "There was a problem selecting or uploading the file.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const removeFile = () => {
-    setFormData({ ...formData, file: null });
+  const removeFile = (index) => {
+    const updatedDocuments = [...formData.documents];
+    const removedType = updatedDocuments[index].type;
+    updatedDocuments.splice(index, 1);
+    setFormData({ ...formData, documents: updatedDocuments });
+    setTypes((prev) => [...prev, removedType]);
+  };
+
+  const formatFileSize = (size) => {
+    if (size < 1024) return `${size} B`;
+    else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+    else return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  };
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split(".").pop().toLowerCase();
+    switch (extension) {
+      case "pdf":
+        return <Image source={images.pdf_icon} style={{ width: 40, height: 40 }} />;
+      case "jpg":
+      case "jpeg":
+      case "png":
+        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+      case "doc":
+      case "docx":
+        return <Image source={images.docx_icon} style={{ width: 40, height: 40 }} />;
+      case "zip":
+      case "rar":
+        return <Image source={images.zip_icon} style={{ width: 40, height: 40 }} />;
+      default:
+        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+    }
   };
 
   return (
     <View style={styles.cardContent}>
-      <Text style={styles.title}>Required Document</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="File Name"
-        placeholderTextColor={COLORS.gray50}
-        value={formData.filename}
-        onChangeText={(text) => setFormData({ ...formData, filename: text })}
-      />
-      {errors.filename && <Text style={styles.errorText}>{errors.filename}</Text>}
+      <Text style={styles.headerText}>{title}</Text>
       <View style={styles.pickerContainer}>
         <Picker
-          selectedValue={formData.type}
-          onValueChange={(itemValue) => setFormData({ ...formData, type: itemValue })}
+          selectedValue={selectedType}
+          onValueChange={(itemValue) => setSelectedType(itemValue)}
         >
           <Picker.Item label="Select type..." value="" />
-          <Picker.Item label="Academic Transcript" value="Academic Transcript" />
-          <Picker.Item label="Recommendation Letter" value="Recommendation Letter" />
-          <Picker.Item label="Personal Statement" value="Personal Statement" />
-          <Picker.Item label="CV/Resume" value="CV/Resume" />
-          <Picker.Item label="Research Proposal" value="Research Proposal" />
-          <Picker.Item label="Portfolio" value="Portfolio" />
-          <Picker.Item label="Certification" value="Certification" />
-          <Picker.Item label="Exam Scores" value="Exam Scores" />
-          <Picker.Item label="Financial Report" value="Financial Report" />
+          {types.map((type, index) => (
+            <Picker.Item key={index} label={type} value={type} />
+          ))}
         </Picker>
       </View>
-      {errors.type && <Text style={styles.errorText}>{errors.type}</Text>}
-      {formData.file && (
-        <View style={styles.filePreviewContainer}>
-          {formData.file.match(/\.(jpg|jpeg|png)$/i) ? (
-            <Image
-              source={{ uri: formData.file }}
-              style={styles.imagePreview}
-            />
-          ) : (
-            <Text>Uploaded File: {formData.file}</Text>
-          )}
-          <TouchableOpacity style={styles.removeButton} onPress={removeFile}>
-            <Ionicons name="close-circle" size={24} color={COLORS.gray80} />
-          </TouchableOpacity>
-        </View>
-      )}
-      {formData.file ? (
-        <></>
-      ) : (
-        <>
-          <TouchableOpacity style={styles.uploadButton} onPress={uploadFile}>
-            <Text style={styles.buttonText}>Upload File</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
-  );
-};
+      {errors.documents && <Text style={styles.errorText}>{errors.documents}</Text>}
 
-const StepThree = ({ formData }) => {
-  return (
-    <View style={styles.cardContent}>
-      <Text style={styles.title}>Optional Document</Text>
-      <Text style={styles.summaryText}>Name: {formData.name}</Text>
-      <Text style={styles.summaryText}>Email: {formData.email}</Text>
-      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
-      <Text style={styles.summaryText}>File name: {formData.filename}</Text>
-      <Text style={styles.summaryText}>Type: {formData.type}</Text>
-      {formData.file && (
-        <View style={{ marginVertical: 16 }}>
-          {formData.file.endsWith(".jpg") ||
-            formData.file.endsWith(".png") ||
-            formData.file.endsWith(".jpeg") ||
-            formData.file.endsWith(".pdf") ? (
-            <Image
-              source={{ uri: formData.file }}
-              style={{ width: 200, height: 200, borderRadius: 8 }}
-            />
+      <TouchableOpacity style={styles.uploadButton} onPress={uploadFile} disabled={loading}>
+        <Text style={styles.buttonText}>
+          {loading ? (
+            <ActivityIndicator size="small" color={COLORS.white} />
           ) : (
-            <Text>Uploaded file: {formData.file}</Text>
+            "Upload File"
           )}
+        </Text>
+      </TouchableOpacity>
+
+      {formData.documents.length > 0 && (
+        <View style={styles.fileListContainer}>
+          {formData.documents.map((doc, index) => (
+            <View key={index} style={styles.fileListItem}>
+              <View style={styles.fileIconContainer}>
+                {getFileIcon(doc.fileName)}
+              </View>
+              <View style={styles.fileInfoContainer}>
+                <Text style={styles.fileNameText}>{doc.type}</Text>
+                <Text style={styles.fileSizeText}>
+                  {formatFileSize(doc.fileSize)}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => removeFile(index)}
+              >
+                <Ionicons name="close-circle" size={24} color={COLORS.gray80} />
+              </TouchableOpacity>
+            </View>
+          ))}
         </View>
       )}
     </View>
   );
 };
-
-const StepFour = ({ formData }) => {
-  return (
-    <View style={styles.cardContent}>
-      <Text style={styles.title}>Check Information</Text>
-      <Text style={styles.summaryText}>Name: {formData.name}</Text>
-      <Text style={styles.summaryText}>Email: {formData.email}</Text>
-      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
-      <Text style={styles.summaryText}>File name: {formData.filename}</Text>
-      <Text style={styles.summaryText}>Type: {formData.type}</Text>
-      {formData.file && (
-        <View style={{ marginVertical: 16 }}>
-          {formData.file.endsWith(".jpg") ||
-            formData.file.endsWith(".png") ||
-            formData.file.endsWith(".jpeg") ||
-            formData.file.endsWith(".pdf") ? (
-            <Image
-              source={{ uri: formData.file }}
-              style={{ width: 200, height: 200, borderRadius: 8 }}
-            />
-          ) : (
-            <Text>Uploaded file: {formData.file}</Text>
-          )}
-        </View>
-      )}
-    </View>
-  );
-}
 
 const MultiStepForm = ({ navigation, route }) => {
   const { userInfo } = useAuth();
@@ -226,10 +280,11 @@ const MultiStepForm = ({ navigation, route }) => {
     name: userInfo.username,
     email: userInfo.email,
     phone: "0931239847",
-    filename: "",
-    type: "",
-    file: null,
+    documents: [],
   });
+
+  const [requiredTypes, setRequiredTypes] = useState(selectedScholarship.documents.filter(doc => doc.isRequired).map(doc => doc.type));
+  const [optionalTypes, setOptionalTypes] = useState(selectedScholarship.documents.filter(doc => !doc.isRequired).map(doc => doc.type));
 
   const validateStepOne = () => {
     const newErrors = {};
@@ -243,9 +298,7 @@ const MultiStepForm = ({ navigation, route }) => {
 
   const validateStepTwo = () => {
     const newErrors = {};
-    if (!formData.filename) newErrors.filename = "File name is required";
-    if (!formData.type) newErrors.type = "Type is required";
-    if (!formData.file) newErrors.file = "Document is required";
+    if (formData.documents.length === 0) newErrors.documents = "Document is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -255,7 +308,13 @@ const MultiStepForm = ({ navigation, route }) => {
     if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 4));
   };
 
-  const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, 1));
+  const prevStep = () => {
+    if (step > 1) {
+      setStep((prevStep) => Math.max(prevStep - 1, 1))
+    } else {
+      navigation.goBack();
+    }
+  };
 
   const submitForm = async () => {
     setLoading(true);
@@ -265,13 +324,7 @@ const MultiStepForm = ({ navigation, route }) => {
         scholarshipProgramId: selectedScholarship.id,
         appliedDate: new Date().toISOString(),
         status: "Submitted",
-        documents: [
-          {
-            name: formData.filename,
-            type: formData.type,
-            fileUrl: formData.file,
-          },
-        ],
+        documents: formData.documents,
       };
       await Promise.all([
         await postApplication(applicationData),
@@ -297,33 +350,52 @@ const MultiStepForm = ({ navigation, route }) => {
     ]);
   };
 
-  const renderProgressBar = () => (
-    <View style={styles.progressContainer}>
-      {[1, 2, 3, 4].map((s, index) => (
-        <React.Fragment key={s}>
-          <View
-            style={[
-              styles.stepDot,
-              (step > s || s === step) && styles.activeStepDot,
-            ]}
-          >
-            <Text
-              style={
-                s === step || step > s ? styles.activeStepText : styles.stepText
-              }
-            >
-              {s}
-            </Text>
-          </View>
-          {index < 3 && (
-            <View
-              style={[styles.stepLine, step > s && styles.activeStepLine]}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </View>
-  );
+  const renderProgressBar = () => {
+    let stepTitle = "";
+    let nextDescription = "";
+
+    switch (step) {
+      case 1:
+        stepTitle = "Personal Info";
+        nextDescription = "Next - Required Document";
+        break;
+      case 2:
+        stepTitle = "Required Document";
+        nextDescription = "Next - Optional Document";
+        break;
+      case 3:
+        stepTitle = "Optional Document";
+        nextDescription = "Next - Confirm Information";
+        break;
+      case 4:
+        stepTitle = "Confirmation";
+        nextDescription = "You're ready to submit!";
+        break;
+    }
+
+    return (
+      <View style={styles.headerContainer}>
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.title}>{stepTitle}</Text>
+          <Text style={styles.descriptionText}>{nextDescription}</Text>
+        </View>
+        <View style={styles.circularProgressContainer}>
+          <CircularProgress
+            value={(step / 4) * 100}
+            maxValue={100}
+            radius={30}
+            activeStrokeWidth={6}
+            inActiveStrokeWidth={6}
+            activeStrokeColor={COLORS.primary}
+            inActiveStrokeColor={COLORS.gray30}
+            inActiveStrokeOpacity={0.5}
+            showProgressValue={false}
+          />
+          <Text style={styles.stepText}>{`${step} of ${4}`}</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -339,21 +411,31 @@ const MultiStepForm = ({ navigation, route }) => {
           />
         )}
         {step === 2 && (
-          <StepTwo
+          <FileUploadSection
+            title="Please ensure you have the following documents to apply for this scholarship."
+            types={requiredTypes}
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setTypes={setRequiredTypes}
           />
         )}
         {step === 3 && (
-          <StepThree formData={formData} setFormData={setFormData} />
+          <FileUploadSection
+            title="You can submit other files to support your application."
+            types={optionalTypes}
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            setTypes={setOptionalTypes}
+          />
         )}
         {step === 4 && (
-          <StepFour formData={formData} setFormData={setFormData} />
+          <StepFour formData={formData} />
         )}
 
         <View style={styles.buttonContainer}>
-          {step > 1 && (
+          {step > 0 && (
             <TouchableOpacity style={styles.backButton} onPress={prevStep}>
               <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
@@ -363,12 +445,11 @@ const MultiStepForm = ({ navigation, route }) => {
             onPress={
               step === 4 ? handleSubmitConfirmation : validateAndNextStep
             }
+            disabled={loading}
           >
             <Text style={styles.buttonText}>
               {loading ? (
-                <View style={styles.loadingOverlay}>
-                  <ActivityIndicator size="small" color={COLORS.white} />
-                </View>
+                <ActivityIndicator size="small" color={COLORS.white} />
               ) : (
                 step === 4 ? "Submit" : "Next"
               )}
@@ -383,53 +464,33 @@ const MultiStepForm = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.white,
   },
-  progressContainer: {
+  headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: SIZES.base * 2,
+    justifyContent: "space-between",
     padding: SIZES.padding,
+    marginBottom: -20
   },
-  stepDot: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
-    backgroundColor: COLORS.gray20,
+  circularProgressContainer: {
+    marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  activeStepDot: {
-    backgroundColor: COLORS.primary,
+  descriptionText: {
+    ...FONTS.body4,
+    color: COLORS.gray50,
   },
   stepText: {
-    color: COLORS.gray50,
-    ...FONTS.h3,
-  },
-  activeStepText: {
-    color: COLORS.white,
-    ...FONTS.h3,
-  },
-  stepLine: {
-    height: 2,
-    flex: 1,
-    backgroundColor: COLORS.gray20,
-  },
-  activeStepLine: {
-    backgroundColor: COLORS.primary,
+    position: "absolute",
+    ...FONTS.body4,
+    color: COLORS.black,
   },
   card: {
     flex: 1,
     backgroundColor: COLORS.white,
-    borderTopLeftRadius: SIZES.radius * 3,
-    borderTopRightRadius: SIZES.radius * 3,
-    padding: SIZES.padding * 2,
-    shadowColor: COLORS.black,
-    shadowOpacity: 0.1,
-    shadowRadius: SIZES.radius,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    padding: SIZES.padding,
     justifyContent: "space-between",
   },
   cardContent: {
@@ -437,14 +498,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...FONTS.h1,
-    color: COLORS.black,
+    color: COLORS.primary,
     textAlign: "center",
-    marginBottom: SIZES.padding,
   },
   input: {
     borderWidth: 1,
     borderColor: COLORS.gray40,
-    borderRadius: SIZES.radius,
+    borderRadius: SIZES.base,
     padding: SIZES.base,
     marginBottom: SIZES.padding,
     color: COLORS.black,
@@ -456,10 +516,15 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     marginBottom: SIZES.padding,
   },
+  headerText: {
+    ...FONTS.h3,
+    color: COLORS.primary3,
+    marginBottom: SIZES.padding,
+  },
   inputLabel: {
     marginBottom: 4,
-    color: COLORS.black,
-    ...FONTS.body3,
+    color: COLORS.gray50,
+    ...FONTS.body4,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -502,25 +567,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: SIZES.base,
   },
-  filePreviewContainer: {
-    position: "relative",
-    marginVertical: 16,
-    alignItems: "center",
+  fileListContainer: {
+    marginTop: SIZES.padding,
   },
-  imagePreview: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
-    resizeMode: "contain",
+  fileListItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: SIZES.base,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray30,
+  },
+  fileIconContainer: {
+    marginRight: SIZES.base,
+  },
+  fileInfoContainer: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  fileNameText: {
+    ...FONTS.body3,
+    color: COLORS.black,
+  },
+  fileSizeText: {
+    ...FONTS.body5,
+    color: COLORS.gray50,
   },
   removeButton: {
-    position: "absolute",
-    top: -10,
-    right: 0,
+    padding: SIZES.base,
     backgroundColor: COLORS.red,
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
   },

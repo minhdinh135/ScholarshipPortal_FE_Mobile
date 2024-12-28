@@ -42,15 +42,15 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
 
           const fcm = await AsyncStorage.getItem("fcmToken");
-            if(!fcm){
-                //console.error(decodedUserInfo)
-              const token = await requestNotify(decodedUserInfo.id);
-              if (token != null) {
-                  setFcmToken(token);
-                  await AsyncStorage.setItem("fcmToken", token);
-              }
-              //if (sendNotification) await NotifyNewUser(parseInt(user.id));
+          if (!fcm) {
+            //console.error(decodedUserInfo)
+            const token = await requestNotify(decodedUserInfo.id);
+            if (token != null) {
+              setFcmToken(token);
+              await AsyncStorage.setItem("fcmToken", token);
             }
+            //if (sendNotification) await NotifyNewUser(parseInt(user.id));
+          }
         }
       } catch (error) {
         console.log("Failed to load token from storage:", error);
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
             setUserToken(jwt);
             setUserInfo(decodedUserInfo);
             setIsLoggedIn(true);
-            
+
             Alert.alert("Login successful");
             await AsyncStorage.setItem("userToken", jwt);
           }
