@@ -5,7 +5,7 @@ export const COLORS = {
   primary: "#42C6A5",
   primary2: "#FBB344",
   primary3: "#33354E",
-  secondary: "#FC2626", 
+  secondary: "#FC2626",
   gray10: "#E5E5E5",
   gray20: "#CCCCCC",
   gray30: "#A1A1A1",
@@ -16,6 +16,13 @@ export const COLORS = {
   gray80: "#333333",
   gray85: "#242526",
   gray90: "#191919",
+
+  success: '#4CAF50',
+  successLight: '#E8F5E9',
+  warning: '#FF9800',
+  warningLight: '#FFF3E0',
+  info: '#2196F3',
+  infoLight: '#E3F2FD',
 
   additionalColor4: "#C3C3C3",
   additionalColor9: "#F3F3F3",

@@ -38,14 +38,12 @@ const ApplicationHistoryScreen = ({ navigation }) => {
                 scholarshipCache[scholarshipId] = { name: 'Unknown' };
               }
             }
-
             return {
               ...applicant,
               scholarshipProgram: scholarshipCache[scholarshipId],
             };
           })
         );
-
         const groupedApplications = groupApplicationsByDate(applicantsWithScholarship.reverse());
         setSections(groupedApplications);
       } catch (error) {
@@ -76,24 +74,43 @@ const ApplicationHistoryScreen = ({ navigation }) => {
       }));
   };
 
-  const renderApplicationItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() =>
-        navigation.navigate('ScholarshipDetail', { selectedScholarship: item.scholarshipProgram })
+  const renderApplicationItem = ({ item }) => {
+    const getStatusStyle = (status) => {
+      switch (status) {
+        case 'Approved':
+          return { color: COLORS.success, backgroundColor: COLORS.successLight };
+        case 'NeedExtend':
+          return { color: COLORS.warning, backgroundColor: COLORS.warningLight };
+        case 'Submitted':
+          return { color: COLORS.info, backgroundColor: COLORS.infoLight };
+        default:
+          return { color: COLORS.gray80, backgroundColor: COLORS.gray20 };
       }
-    >
-      <View>
-        <Text style={[styles.programName, FONTS.h3]}>
-          {item.scholarshipProgram?.name || 'Unknown'}
-        </Text>
-        <Text style={[styles.detail, FONTS.body4]}>
-          Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}
-        </Text>
-        <Text style={[styles.status, FONTS.body4]}>Status: {item.status}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+    };
+
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() =>
+          navigation.navigate('ScholarshipDetail', { selectedScholarship: item.scholarshipProgram })
+        }
+      >
+        <View>
+          <Text style={[styles.programName, FONTS.h3]}>
+            {item.scholarshipProgram?.name || 'Unknown'}
+          </Text>
+          <Text style={[styles.detail, FONTS.body4]}>
+            Applied on: {moment(item.appliedDate).format('MMM DD, YYYY')}
+          </Text>
+          <View style={[styles.statusContainer, getStatusStyle(item.status)]}>
+            <Text style={[styles.statusText, { color: getStatusStyle(item.status).color }]}>
+              {item.status}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const renderSectionHeader = ({ section: { title } }) => (
     <Text style={styles.sectionHeader}>{title}</Text>
@@ -161,7 +178,7 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingVertical: SIZES.base,
-    marginTop: SIZES.padding,
+    marginTop: SIZES.base,
   },
   sectionHeader: {
     color: COLORS.black,
@@ -188,9 +205,17 @@ const styles = StyleSheet.create({
   detail: {
     color: COLORS.gray80,
   },
-  status: {
+  statusContainer: {
     marginTop: SIZES.base / 2,
-    color: COLORS.primary3,
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: COLORS.gray20,
+  },
+  statusText: {
+    ...FONTS.body4,
+    fontWeight: 'bold',
   },
 });
 

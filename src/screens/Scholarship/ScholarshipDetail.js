@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { IconButton } from '../../components/Card';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import Description from '../../components/ScholarshipProgram/Description';
 import { useAuth } from '../../context/AuthContext';
 import { getApplicantById } from '../../api/applicantApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ScholarshipDetail = ({ navigation, route }) => {
   const { userInfo } = useAuth();
   const { selectedScholarship } = route.params;
   const [hasApplied, setHasApplied] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState('');
+  const [isCountdownReady, setIsCountdownReady] = useState(false);
 
-  const fetchApplicationByApplicantId = React.useCallback(async () => {
-    setLoading(true);
+  const fetchApplicationByApplicantId = useCallback(async () => {
     try {
       const response = await getApplicantById(userInfo.id);
       const applied = response.data.some(
@@ -22,14 +24,57 @@ const ScholarshipDetail = ({ navigation, route }) => {
       setHasApplied(applied);
     } catch (error) {
       console.error('Error fetching applicant data:', error);
-    } finally {
-      setLoading(false);
     }
   }, [userInfo.id, selectedScholarship.id]);
 
+  const calculateCountdown = useCallback(() => {
+    const deadline = new Date(selectedScholarship?.deadline).getTime();
+    const now = new Date().getTime();
+    const difference = deadline - now;
+
+    if (difference <= 0) {
+      setCountdown('Closed');
+    } else {
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+      setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    }
+    setIsCountdownReady(true);
+  }, [selectedScholarship?.deadline]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        setLoading(true);
+        await fetchApplicationByApplicantId();
+        calculateCountdown();
+        setLoading(false);
+      };
+      loadData();
+    }, [fetchApplicationByApplicantId, calculateCountdown])
+  );
+
   useEffect(() => {
-    fetchApplicationByApplicantId();
-  }, [fetchApplicationByApplicantId]);
+    const interval = setInterval(calculateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [calculateCountdown]);
+
+  if (loading || !isCountdownReady) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: COLORS.white,
+        }}
+      >
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   function renderHeaderComponent() {
     return (
@@ -79,6 +124,8 @@ const ScholarshipDetail = ({ navigation, route }) => {
   }
 
   function renderScholarshipInfo() {
+    const isDeadlinePassed = countdown === 'Closed';
+
     return (
       <View
         style={{
@@ -94,7 +141,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
             ...FONTS.body3,
           }}
         >
-          Ho Chi Minh City, Vietnam
+          Deadline: {countdown}
         </Text>
         <View
           style={{
@@ -102,7 +149,26 @@ const ScholarshipDetail = ({ navigation, route }) => {
             marginTop: 10,
           }}
         >
-          {hasApplied ? (
+          {userInfo.role === 'Expert' ? (
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                height: 50,
+                backgroundColor: COLORS.primary3,
+                borderRadius: SIZES.radius,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10,
+              }}
+              onPress={() =>
+                navigation.navigate('ApplicationManagementScreen', {
+                  selectedScholarship: selectedScholarship,
+                })
+              }
+            >
+              <Text style={{ color: COLORS.white, ...FONTS.h3 }}>View Applications</Text>
+            </TouchableOpacity>
+          ) : hasApplied ? (
             <View
               style={{
                 flex: 1,
@@ -116,6 +182,19 @@ const ScholarshipDetail = ({ navigation, route }) => {
               <Text style={{ color: COLORS.gray80, ...FONTS.h3 }}>
                 Already Applied
               </Text>
+            </View>
+          ) : isDeadlinePassed ? (
+            <View
+              style={{
+                flex: 1,
+                height: 50,
+                backgroundColor: COLORS.gray20,
+                borderRadius: SIZES.radius,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ color: COLORS.gray80, ...FONTS.h3 }}>Closed</Text>
             </View>
           ) : (
             <TouchableOpacity
@@ -175,21 +254,6 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <Description item={selectedScholarship} />
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: COLORS.white,
-        }}
-      >
-        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
   }

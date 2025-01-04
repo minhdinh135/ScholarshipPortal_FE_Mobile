@@ -15,8 +15,9 @@ import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { useFocusEffect } from "@react-navigation/native";
 
-const ApplicationManagementScreen = ({ navigation }) => {
+const ApplicationManagementScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
+  const { selectedScholarship } = route.params;
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
@@ -30,17 +31,19 @@ const ApplicationManagementScreen = ({ navigation }) => {
         try {
           const res = await getApplicationByExpertId(userInfo.id);
           const applicationsData = res.data || [];
-          setApplications(applicationsData);
-          setFilteredApplications(applicationsData);
-          setLoading(false);
+          const filteredByScholarship = applicationsData.filter(
+            (application) => application.scholarshipProgramId === selectedScholarship.id
+          );
+          setApplications(filteredByScholarship);
+          setFilteredApplications(filteredByScholarship);
         } catch (err) {
           console.log(err);
+        } finally {
           setLoading(false);
         }
       };
-
       fetchApplications();
-    }, [userInfo.id]),
+    }, [userInfo.id, selectedScholarship.id]),
   );
 
   const getStatusStyle = (status) => {
@@ -51,7 +54,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
         return { backgroundColor: "yellow" };
       case "Reviewing":
         return { backgroundColor: COLORS.gray20 };
-      case "Failed":
+      case "Rejected":
         return { backgroundColor: COLORS.secondary };
       default:
         return { backgroundColor: COLORS.gray10 };
@@ -111,7 +114,7 @@ const ApplicationManagementScreen = ({ navigation }) => {
           justifyContent: "center",
         }}
       >
-        <Text style={{ ...FONTS.h2, marginBottom: 20 }}>Approval List</Text>
+        <Text style={{ ...FONTS.h2, marginBottom: 20 }}>Application List</Text>
       </View>
       <View style={styles.searchContainer}>
         <TextInput
@@ -259,12 +262,7 @@ const styles = StyleSheet.create({
     padding: SIZES.padding * 0.8,
     borderRadius: SIZES.radius,
     borderWidth: 1,
-    borderColor: COLORS.gray20,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    borderColor: COLORS.gray40,
     marginVertical: 10,
   },
   applicationInfo: {
@@ -322,4 +320,3 @@ const styles = StyleSheet.create({
 });
 
 export default ApplicationManagementScreen;
-

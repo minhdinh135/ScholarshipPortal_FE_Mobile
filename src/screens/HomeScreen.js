@@ -234,7 +234,7 @@ const HomeScreen = () => {
     )
   }
 
-  function renderPopularCourses() {
+  function renderScholarshipPrograms() {
     return (
       <Section
         title="Popular Scholarship"
@@ -245,9 +245,9 @@ const HomeScreen = () => {
       >
         <FlatList
           data={scholarPrograms}
-          listKey="Popular Courses"
+          listKey="Popular Scholarship"
           scrollEnabled={false}
-          keyExtractor={item => `Popular Courses-${item.id}`}
+          keyExtractor={item => `Popular Scholarship-${item.id}`}
           contentContainerStyle={{
             marginTop: SIZES.radius,
             paddingHorizontal: SIZES.padding
@@ -328,7 +328,7 @@ const HomeScreen = () => {
             {renderCourses()}
             <LineDivider lineStyle={{ marginVertical: SIZES.padding }} />
             {renderCategories()}
-            {renderPopularCourses()}
+            {renderScholarshipPrograms()}
             {/* {renderUniversities()} */}
           </ScrollView>
         </View>

@@ -187,13 +187,13 @@ const DetailsScreen = ({ route, navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Reviews</Text>
           {application.applicationReviews.length > 0 ? (
-            application.applicationReviews.map((review, index) => (
+            application.applicationReviews.map((review) => (
               <View key={review.id} style={styles.reviewContainer}>
                 <Text style={styles.reviewDescription}>
                   {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
                 </Text>
                 <Text style={styles.infoText}>
-                  {`Score: ${review.score || 'N/A'} | Date: ${review.reviewDate ? new Date(review.reviewDate).toLocaleDateString() : 'N/A'}`}
+                  {`Score: ${review.score || 'N/A'} | Date: ${moment(review.reviewDate).format("MMM DD, YYYY") ? new Date(review.reviewDate).toLocaleDateString() : 'N/A'}`}
                 </Text>
               </View>
             ))

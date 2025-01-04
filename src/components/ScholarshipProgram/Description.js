@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { FONTS, COLORS, SIZES } from '../../constants';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -15,8 +15,8 @@ const Description = ({ item }) => {
         </View>
         <View style={styles.keyInfoItem}>
           <Icon name="book-outline" size={24} color={COLORS.primary} />
-          <Text style={styles.keyInfoTitle}>Qualification</Text>
-          <Text style={styles.keyInfoText}>Undergraduate</Text>
+          <Text style={styles.keyInfoTitle}>Education Level</Text>
+          <Text style={styles.keyInfoText}>{item.educationLevel}</Text>
         </View>
       </View>
       <View style={styles.keyInfoRow}>
@@ -28,13 +28,13 @@ const Description = ({ item }) => {
         <View style={styles.keyInfoItem}>
           <Icon name="trophy-outline" size={24} color={COLORS.primary} />
           <Text style={styles.keyInfoTitle}>Award</Text>
-          <Text style={styles.keyInfoText}>{item.scholarshipAmount.toLocaleString()}$</Text>
+          <Text style={styles.keyInfoText}>${item.scholarshipAmount.toLocaleString()}</Text>
         </View>
       </View>
     </View>
   );
 
-  const listData = [
+  const listData = useMemo(() => [
     {
       title: 'About this Scholarship',
       content: item.description,
@@ -52,7 +52,12 @@ const Description = ({ item }) => {
       content: item.major.skills,
       isSkillsSection: true,
     },
-  ];
+    {
+      title: 'Criteria',
+      content: item.criteria,
+      isCriteriaSection: true,
+    },
+  ], [item]);
 
   return (
     <FlatList
@@ -78,6 +83,24 @@ const Description = ({ item }) => {
           );
         }
 
+        if (item.isCriteriaSection) {
+          return (
+            <View style={styles.section}>
+              <Text style={styles.title}>{item.title}</Text>
+              {item.content.map((criterion, index) => (
+                <View key={index} style={styles.criterionItem}>
+                  <View style={styles.bulletIcon}>
+                    <Text>•</Text>
+                  </View>
+                  <View style={styles.criterionTextContainer}>
+                    <Text style={styles.criterionDescription}>{criterion.description}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          );
+        }
+
         return (
           <View style={styles.section}>
             <Text style={styles.title}>{item.title}</Text>
@@ -85,7 +108,7 @@ const Description = ({ item }) => {
           </View>
         );
       }}
-      ListHeaderComponent={renderKeyInfoRow} // Add the key info section at the top
+      ListHeaderComponent={renderKeyInfoRow}
     />
   );
 };
@@ -135,7 +158,6 @@ const styles = StyleSheet.create({
   skillItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.base,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.gray40,
@@ -153,13 +175,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   skillName: {
-    ...FONTS.h4,
+    ...FONTS.h3,
     color: COLORS.primary,
   },
   skillDescription: {
     ...FONTS.body4,
     color: COLORS.gray60,
     marginTop: 4,
+  },
+  criterionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bulletIcon: {
+    width: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  criterionTextContainer: {
+    marginLeft: SIZES.base,
+    flex: 1,
+  },
+  criterionName: {
+    ...FONTS.h4,
+    color: COLORS.primary,
+  },
+  criterionDescription: {
+    ...FONTS.body4,
+    color: COLORS.gray60,
   },
 });
 

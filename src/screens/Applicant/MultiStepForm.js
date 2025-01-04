@@ -68,41 +68,59 @@ const StepFour = ({ formData }) => {
     const extension = fileName.split(".").pop().toLowerCase();
     switch (extension) {
       case "pdf":
-        return <Image source={images.pdf_icon} style={{ width: 40, height: 40 }} />;
+        return <Image source={images.pdf_icon} style={styles.fileIcon} />;
       case "jpg":
       case "jpeg":
       case "png":
-        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+        return <Image source={images.image_icon} style={styles.fileIcon} />;
       case "doc":
       case "docx":
-        return <Image source={images.docx_icon} style={{ width: 40, height: 40 }} />;
+        return <Image source={images.docx_icon} style={styles.fileIcon} />;
       case "zip":
       case "rar":
-        return <Image source={images.zip_icon} style={{ width: 40, height: 40 }} />;
+        return <Image source={images.zip_icon} style={styles.fileIcon} />;
       default:
-        return <Image source={images.image_icon} style={{ width: 40, height: 40 }} />;
+        return <Image source={images.image_icon} style={styles.fileIcon} />;
     }
   };
 
   return (
     <View style={styles.cardContent}>
-      <Text style={styles.headerText}>Please check your information before submitting application form.</Text>
-      <Text style={styles.summaryText}>Name: {formData.name}</Text>
-      <Text style={styles.summaryText}>Email: {formData.email}</Text>
-      <Text style={styles.summaryText}>Phone: {formData.phone}</Text>
-      <Text style={styles.summaryText}>File:</Text>
+      <Text style={styles.headerText}>
+        Please review your information before submitting:
+      </Text>
+
+      <View style={styles.infoCard}>
+        <Text style={styles.sectionTitle}>Personal Information</Text>
+        <Text style={styles.infoText}>Name: {formData.name}</Text>
+        <Text style={styles.infoText}>Email: {formData.email}</Text>
+        <Text style={styles.infoText}>Phone: {formData.phone}</Text>
+      </View>
+
       {formData.documents.length > 0 && (
-        <View style={styles.fileListContainer}>
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Required Documents</Text>
           {formData.documents.map((doc, index) => (
-            <View key={index} style={styles.fileListItem}>
-              <View style={styles.fileIconContainer}>
-                {getFileIcon(doc.fileName)}
+            <View key={index} style={styles.fileItem}>
+              {getFileIcon(doc.fileName)}
+              <View style={styles.fileDetails}>
+                <Text style={styles.fileName}>{doc.type}</Text>
+                <Text style={styles.fileSize}>{formatFileSize(doc.fileSize)}</Text>
               </View>
-              <View style={styles.fileInfoContainer}>
-                <Text style={styles.fileNameText}>{doc.type}</Text>
-                <Text style={styles.fileSizeText}>
-                  {formatFileSize(doc.fileSize)}
-                </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {formData.optionalDocuments.length > 0 && (
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Optional Documents</Text>
+          {formData.optionalDocuments.map((doc, index) => (
+            <View key={index} style={styles.fileItem}>
+              {getFileIcon(doc.fileName)}
+              <View style={styles.fileDetails}>
+                <Text style={styles.fileName}>{doc.type}</Text>
+                <Text style={styles.fileSize}>{formatFileSize(doc.fileSize)}</Text>
               </View>
             </View>
           ))}
@@ -110,7 +128,7 @@ const StepFour = ({ formData }) => {
       )}
     </View>
   );
-}
+};
 
 const FileUploadSection = ({
   title,
@@ -281,10 +299,34 @@ const MultiStepForm = ({ navigation, route }) => {
     email: userInfo.email,
     phone: "0931239847",
     documents: [],
+    optionalDocuments: [],
   });
 
-  const [requiredTypes, setRequiredTypes] = useState(selectedScholarship.documents.filter(doc => doc.isRequired).map(doc => doc.type));
-  const [optionalTypes, setOptionalTypes] = useState(selectedScholarship.documents.filter(doc => !doc.isRequired).map(doc => doc.type));
+  const allTypes = [
+    "Academic Transcript",
+    "Recommendation Letter",
+    "Personal Statement",
+    "CV/Resume",
+    "Research Proposal",
+    "Portfolio",
+    "Certification",
+    "Exam Scores",
+    "Financial Report",
+  ];
+
+  const [requiredTypes, setRequiredTypes] = useState(
+    selectedScholarship.documents
+      .filter((doc) => doc.isRequired)
+      .map((doc) => doc.type)
+  );
+  const [optionalTypes, setOptionalTypes] = useState(
+    [
+      ...selectedScholarship.documents
+        .filter((doc) => !doc.isRequired)
+        .map((doc) => doc.type),
+      "Other"
+    ]
+  );
 
   const validateStepOne = () => {
     const newErrors = {};
@@ -297,20 +339,28 @@ const MultiStepForm = ({ navigation, route }) => {
   };
 
   const validateStepTwo = () => {
+    const uploadedRequiredTypes = formData.documents.map((doc) => doc.type);
+    const missingTypes = requiredTypes.filter(
+      (type) => !uploadedRequiredTypes.includes(type)
+    );
+
     const newErrors = {};
-    if (formData.documents.length === 0) newErrors.documents = "Document is required";
+    if (missingTypes.length > 0) {
+      newErrors.documents = `You must upload all required documents`;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateAndNextStep = () => {
-    const isValid = step === 1 ? validateStepOne() : validateStepTwo();
+    const isValid =
+      step === 1 ? validateStepOne() : step === 2 ? validateStepTwo() : true;
     if (isValid) setStep((prevStep) => Math.min(prevStep + 1, 4));
   };
 
   const prevStep = () => {
     if (step > 1) {
-      setStep((prevStep) => Math.max(prevStep - 1, 1))
+      setStep((prevStep) => Math.max(prevStep - 1, 1));
     } else {
       navigation.goBack();
     }
@@ -319,17 +369,24 @@ const MultiStepForm = ({ navigation, route }) => {
   const submitForm = async () => {
     setLoading(true);
     try {
+      const allDocuments = [
+        ...formData.documents,
+        ...formData.optionalDocuments,
+      ];
+
       const applicationData = {
         applicantId: userInfo.id,
         scholarshipProgramId: selectedScholarship.id,
         appliedDate: new Date().toISOString(),
         status: "Submitted",
-        documents: formData.documents,
+        documents: allDocuments,
       };
+
       await Promise.all([
         await postApplication(applicationData),
-        await sendNotificationFunder(userInfo.id, selectedScholarship.id)
+        await sendNotificationFunder(userInfo.id, selectedScholarship.id),
       ]);
+
       Alert.alert("Success", "Form submitted successfully!", [
         {
           text: "OK",
@@ -399,7 +456,6 @@ const MultiStepForm = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-
       {renderProgressBar()}
 
       <View style={styles.card}>
@@ -424,15 +480,21 @@ const MultiStepForm = ({ navigation, route }) => {
           <FileUploadSection
             title="You can submit other files to support your application."
             types={optionalTypes}
-            formData={formData}
-            setFormData={setFormData}
+            formData={{
+              ...formData,
+              documents: formData.optionalDocuments, // Use the temporary list for optional documents
+            }}
+            setFormData={(newFormData) =>
+              setFormData((prev) => ({
+                ...prev,
+                optionalDocuments: newFormData.documents,
+              }))
+            }
             errors={errors}
             setTypes={setOptionalTypes}
           />
         )}
-        {step === 4 && (
-          <StepFour formData={formData} />
-        )}
+        {step === 4 && <StepFour formData={formData} />}
 
         <View style={styles.buttonContainer}>
           {step > 0 && (
@@ -450,8 +512,10 @@ const MultiStepForm = ({ navigation, route }) => {
             <Text style={styles.buttonText}>
               {loading ? (
                 <ActivityIndicator size="small" color={COLORS.white} />
+              ) : step === 4 ? (
+                "Submit"
               ) : (
-                step === 4 ? "Submit" : "Next"
+                "Next"
               )}
             </Text>
           </TouchableOpacity>
@@ -495,6 +559,48 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  infoCard: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: COLORS.lightGray,
+    borderRadius: SIZES.radius,
+    shadowColor: COLORS.black,
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  sectionTitle: {
+    ...FONTS.h4,
+    color: COLORS.primary,
+    marginBottom: 10,
+  },
+  infoText: {
+    ...FONTS.body3,
+    color: COLORS.black,
+    marginBottom: 5,
+  },
+  fileItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  fileIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  fileDetails: {
+    flex: 1,
+  },
+  fileName: {
+    ...FONTS.body3,
+    color: COLORS.black,
+  },
+  fileSize: {
+    ...FONTS.body5,
+    color: COLORS.gray50,
   },
   title: {
     ...FONTS.h1,
@@ -518,8 +624,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     ...FONTS.h3,
-    color: COLORS.primary3,
-    marginBottom: SIZES.padding,
+    color: COLORS.black,
+    marginBottom: 20,
   },
   inputLabel: {
     marginBottom: 4,
@@ -557,7 +663,7 @@ const styles = StyleSheet.create({
   },
   summaryText: {
     color: COLORS.black,
-    fontSize: 16,
+    ...FONTS.body3,
     marginVertical: SIZES.base / 2,
   },
   uploadButton: {
@@ -568,7 +674,7 @@ const styles = StyleSheet.create({
     marginVertical: SIZES.base,
   },
   fileListContainer: {
-    marginTop: SIZES.padding,
+    marginTop: SIZES.base,
   },
   fileListItem: {
     flexDirection: "row",

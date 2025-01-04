@@ -15,6 +15,21 @@ export const getApplicationByExpertId = async (id) => {
   }
 };
 
+export const getScholarProgramByExpertId = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/assigned-programs`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error fetching the assigned scholarship programs: ", error);
+  }
+};
+
 export const reviewApplication = async () => {
   try {
     const res = await fetch(`${BASE_URL}/reviews/result`);
@@ -29,4 +44,3 @@ export const reviewApplication = async () => {
     console.log("Error reviewing the application: ", error);
   }
 };
-

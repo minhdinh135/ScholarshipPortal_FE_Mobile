@@ -8,9 +8,9 @@ import HomeScreen from "../screens/HomeScreen";
 import SearchScreen from "../screens/SearchScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen"
 import NotificationScreen from "../screens/Profile/NotificationScreen";
-import ApplicationManagementScreen from "../screens/Expert/ApplicationManagementScreen";
 import { useAuth } from "../context/AuthContext";
 import ServiceList from "../screens/Service/ServiceList";
+import ScholarshipListScreen from "../screens/Expert/ScholarshipListScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -96,7 +96,7 @@ function ExpertTabs() {
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Applications"
-        component={ApplicationManagementScreen}
+        component={ScholarshipListScreen}
         options={{
           tabBarIcon: ({ focused }) => tabBarIcon(focused, Entypo, { name: "list" }),
           tabBarLabel: ({ focused }) => tabBarLabel(focused, "Applications"),
