@@ -50,8 +50,8 @@ const DetailsScreen = ({ route, navigation }) => {
       case 'Approved':
         return <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />;
       case 'Reviewing':
-        return <Ionicons name="hourglass" size={24} color={COLORS.gray50} />;
-      case 'Failed':
+        return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
+      case 'Rejected':
         return <Ionicons name="close-circle" size={24} color={COLORS.secondary} />;
       default:
         return null;
@@ -203,7 +203,7 @@ const DetailsScreen = ({ route, navigation }) => {
         </View>
         {isReviewed ? (
           <View style={styles.section}>
-            <Text style={styles.infoText}>This application has been handled. Review has already been submitted.</Text>
+            <Text style={styles.infoText}>This application has been reviewed.</Text>
           </View>
         ) : (
           <View style={styles.section}>
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     marginLeft: SIZES.base,
   },
   statusApprovedText: { color: COLORS.primary },
-  statusPendingText: { color: COLORS.gray50 },
+  statusPendingText: { color: COLORS.warning },
   statusDisapprovedText: { color: COLORS.secondary },
   sectionTitle: {
     ...FONTS.h2,

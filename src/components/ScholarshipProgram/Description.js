@@ -65,6 +65,7 @@ const Description = ({ item }) => {
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => {
         if (item.isSkillsSection) {
+          if (!item.content || item.content.length === 0) return null;
           return (
             <View style={styles.section}>
               <Text style={styles.title}>{item.title}</Text>
@@ -84,6 +85,7 @@ const Description = ({ item }) => {
         }
 
         if (item.isCriteriaSection) {
+          if (!item.content || item.content.length === 0) return null;
           return (
             <View style={styles.section}>
               <Text style={styles.title}>{item.title}</Text>

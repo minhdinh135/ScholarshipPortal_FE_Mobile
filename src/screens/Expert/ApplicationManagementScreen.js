@@ -21,8 +21,7 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
-  const [filteredApplications, setFilteredApplications] = useState([]);
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeTab, setActiveTab] = useState("First Review");
 
   useFocusEffect(
     React.useCallback(() => {
@@ -35,145 +34,134 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
             (application) => application.scholarshipProgramId === selectedScholarship.id
           );
           setApplications(filteredByScholarship);
-          setFilteredApplications(filteredByScholarship);
         } catch (err) {
-          console.log(err);
+          console.error(err);
         } finally {
           setLoading(false);
         }
       };
       fetchApplications();
-    }, [userInfo.id, selectedScholarship.id]),
+    }, [userInfo.id, selectedScholarship.id])
   );
 
   const getStatusStyle = (status) => {
     switch (status) {
       case "Approved":
-        return { backgroundColor: COLORS.primary };
+        return {
+          backgroundColor: COLORS.successLight,
+          color: COLORS.success,
+        };
       case "Awarded":
-        return { backgroundColor: "yellow" };
+        return {
+          backgroundColor: COLORS.infoLight,
+          color: COLORS.info,
+        };
       case "Reviewing":
-        return { backgroundColor: COLORS.gray20 };
+        return {
+          backgroundColor: COLORS.warningLight,
+          color: COLORS.warning,
+        };
       case "Rejected":
-        return { backgroundColor: COLORS.secondary };
+        return {
+          backgroundColor: "#ffaeae",
+          color: "#ff0000",
+        };
       default:
-        return { backgroundColor: COLORS.gray10 };
+        return {
+          backgroundColor: COLORS.gray10,
+          color: COLORS.gray,
+        };
     }
   };
 
-  const applyFilter = (status) => {
-    setActiveFilter(status);
-    if (status === "All") {
-      setFilteredApplications(applications);
-    } else {
-      const filtered = applications.filter(
-        (application) => application.status === status,
-      );
-      setFilteredApplications(filtered);
-    }
+  const filterByTab = () => {
+    const typeFilter = activeTab === "First Review" ? 1 : 2;
+    return applications.filter(
+      (app) =>
+        (typeFilter === 1 && app.applicationReviews[1]?.description === undefined) ||
+        (typeFilter === 2 && app.applicationReviews[1]?.description !== undefined)
+    );
   };
 
   const renderApplication = ({ item }) => {
     const statusStyle = getStatusStyle(item.status);
-    const type1 = item.applicationReviews[0]?.description || "N/A";
-    const type2 = item.applicationReviews[1]?.description || "N/A";
-    const displayType = type2 !== "N/A" ? type2 : type1;
 
     return (
       <TouchableOpacity
-        style={styles.applicationCard}
+        style={styles.card}
         onPress={() =>
           navigation.navigate("ApplicationDetailScreen", {
             application: item,
-            type1,
-            type2,
-            applicationType: type2 !== "N/A" ? 2 : 1,
           })
         }
       >
-        <View style={styles.applicationInfo}>
-          <Text style={styles.applicantName}>
-            {item?.applicantName}
-          </Text>
+        <View style={styles.cardContent}>
+          <Text style={styles.applicantName}>{item?.applicantName}</Text>
           <Text style={styles.date}>
             Applied on: {moment(item.appliedDate).format("MMM DD, YYYY")}
           </Text>
-          <Text>Type: {displayType}</Text>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: statusStyle.backgroundColor },
+            ]}
+          >
+            <Text style={[styles.statusLabel, { color: statusStyle.color }]}>
+              {item.status}
+            </Text>
+          </View>
         </View>
-        <View style={[styles.statusBadge, statusStyle]}></View>
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          marginTop: 36,
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={{ ...FONTS.h2, marginBottom: 20 }}>Application List</Text>
-      </View>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search applications..."
-          placeholderTextColor={COLORS.gray}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-      <View>
-        <FlatList
-          horizontal
-          data={["All", "Approved", "Failed", "Reviewing"]}
-          keyExtractor={(item) => item}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            marginBottom: 20,
-          }}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
+      <Text style={styles.title}>Application List</Text>
+      <View style={styles.tabContainer}>
+        {["First Review", "Second Review"].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[
+              styles.tab,
+              activeTab === tab && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab(tab)}
+          >
+            <Text
               style={[
-                styles.filterButton,
-                activeFilter === item && styles.activeFilterButton,
-                {
-                  marginLeft: index === 0 ? 0 : SIZES.radius,
-                  marginRight: index === 3 ? SIZES.padding : 0,
-                },
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
               ]}
-              onPress={() => applyFilter(item)}
             >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  activeFilter === item && styles.activeFilterButtonText,
-                ]}
-              >
-                {item}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search applications..."
+        placeholderTextColor={COLORS.gray60}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
-      ) : filteredApplications.length === 0 ? (
+      ) : filterByTab().length === 0 ? (
         <View style={styles.emptyContainer}>
           <Image
             source={images.empty_file}
             style={styles.emptyImage}
             resizeMode="contain"
           />
-          <Text style={styles.emptyText}>No applications found</Text>
+          <Text style={styles.emptyText}>No applications assigned yet</Text>
         </View>
       ) : (
         <FlatList
-          data={filteredApplications}
+          data={filterByTab()}
           keyExtractor={(item) => item.id}
           renderItem={renderApplication}
           contentContainerStyle={styles.listContainer}
@@ -187,134 +175,97 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.padding,
-    paddingTop: SIZES.large,
+    padding: SIZES.padding,
   },
   title: {
-    ...FONTS.h3,
-    color: COLORS.primary,
+    ...FONTS.h2,
     textAlign: "center",
-    marginBottom: SIZES.base,
+    marginBottom: 20,
   },
-  searchContainer: {
+  tabContainer: {
     flexDirection: "row",
+    marginBottom: 20,
+  },
+  tab: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: COLORS.gray10,
     alignItems: "center",
+    borderRadius: SIZES.radius,
+    marginHorizontal: 5,
+  },
+  activeTab: {
+    backgroundColor: COLORS.primary,
+  },
+  tabText: {
+    color: COLORS.gray50,
+    ...FONTS.body4,
+  },
+  activeTabText: {
+    color: COLORS.white,
+    ...FONTS.body4,
+  },
+  searchInput: {
+    backgroundColor: COLORS.gray10,
+    borderRadius: SIZES.radius,
+    padding: 10,
     marginBottom: 20,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.white,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.padding,
   },
   emptyImage: {
-    width: SIZES.width * 0.7,
-    height: SIZES.height * 0.7,
-    marginVertical: -120,
+    width: 300,
+    height: 300,
   },
   emptyText: {
-    ...FONTS.h1,
+    ...FONTS.h2,
     color: COLORS.primary,
-    textAlign: "center",
-    padding: SIZES.padding,
-  },
-  searchInput: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.gray80,
-    borderWidth: 1,
-    borderRadius: SIZES.radius,
-    paddingHorizontal: SIZES.base,
-    height: 50,
-    paddingLeft: 20,
-    fontFamily: FONTS.regular,
-    color: COLORS.text,
-  },
-  filterButton: {
-    marginLeft: SIZES.base,
-    backgroundColor: COLORS.primary,
-    borderRadius: SIZES.radius,
-    paddingHorizontal: SIZES.padding,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  filterText: {
-    fontFamily: FONTS.bold,
-    fontSize: SIZES.font,
-    color: COLORS.white,
+    marginTop: 10,
   },
   listContainer: {
     paddingBottom: SIZES.padding,
   },
-  applicationCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  card: {
     backgroundColor: COLORS.white,
-    padding: SIZES.padding * 0.8,
+    padding: SIZES.padding,
     borderRadius: SIZES.radius,
-    borderWidth: 1,
-    borderColor: COLORS.gray40,
-    marginVertical: 10,
+    marginBottom: 10,
+    borderColor: COLORS.gray20,
+    borderWidth: 0.5,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  applicationInfo: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  applicationName: {
-    ...FONTS.h3,
-    color: COLORS.text,
-  },
-  position: {
-    fontSize: SIZES.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.gray,
-  },
-  date: {
-    fontSize: SIZES.small,
-    fontFamily: FONTS.regular,
-    color: COLORS.gray,
-    marginTop: 5,
+  cardContent: {
+    alignItems: "flex-start",
   },
   applicantName: {
     ...FONTS.h3,
     color: COLORS.black,
-    marginTop: 5,
+  },
+  date: {
+    ...FONTS.body4,
+    color: COLORS.gray,
+    marginVertical: 5,
   },
   statusBadge: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "transparent",
-    alignSelf: "center",
-  },
-  filterButton: {
-    backgroundColor: COLORS.gray10,
-    paddingVertical: SIZES.radius,
-    paddingHorizontal: SIZES.padding,
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: SIZES.radius,
-    justifyContent: "center",
-    alignItems: "center",
-    height: 40,
+    marginTop: 5,
   },
-  activeFilterButton: {
-    backgroundColor: COLORS.primary,
-  },
-  filterButtonText: {
-    color: COLORS.gray50,
-    ...FONTS.body4,
-    marginBottom: -4,
-  },
-  activeFilterButtonText: {
-    color: COLORS.white,
+  statusLabel: {
     ...FONTS.body4,
   },
 });
