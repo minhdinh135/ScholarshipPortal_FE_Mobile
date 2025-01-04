@@ -16,7 +16,6 @@ import { COLORS, FONTS, SIZES, images } from '../../constants';
 
 const SettingsScreen = ({ navigation }) => {
   const { signOut, userInfo } = useAuth();
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={styles.container}>
@@ -77,79 +76,81 @@ const SettingsScreen = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Extensions</Text>
-            <View style={styles.sectionBody}>
-              <View style={[styles.rowWrapper, styles.rowFirst]}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("ApplicationHistoryScreen")
-                  }}
-                  style={styles.row}
-                >
-                  <Ionicons style={{ marginRight: "8px" }} name="document-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Application History</Text>
-                  <View style={styles.rowSpacer} />
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
-              </View>
+          {/* Conditionally render Extensions section */}
+          {userInfo.role !== 'Expert' && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Extensions</Text>
+              <View style={styles.sectionBody}>
+                <View style={[styles.rowWrapper, styles.rowFirst]}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("ApplicationHistoryScreen")
+                    }}
+                    style={styles.row}
+                  >
+                    <Ionicons style={{ marginRight: "8px" }} name="document-outline" size={20} color={COLORS.primary3} />
+                    <Text style={styles.rowLabel}>Application History</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon
+                      color="#bcbcbc"
+                      name="chevron-right"
+                      size={19} />
+                  </Pressable>
+                </View>
 
-              <View style={styles.rowWrapper}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("ServiceHistoryScreen")
-                  }}
-                  style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="people-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Service History</Text>
-                  <View style={styles.rowSpacer} />
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
-              </View>
+                <View style={styles.rowWrapper}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("ServiceHistoryScreen")
+                    }}
+                    style={styles.row}>
+                    <Ionicons style={{ marginRight: "8px" }} name="people-outline" size={20} color={COLORS.primary3} />
+                    <Text style={styles.rowLabel}>Service History</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon
+                      color="#bcbcbc"
+                      name="chevron-right"
+                      size={19} />
+                  </Pressable>
+                </View>
 
-              <View style={styles.rowWrapper}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("WalletScreen")
-                  }}
-                  style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="wallet-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>My Wallet</Text>
-                  <View style={styles.rowSpacer} />
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
-              </View>
+                <View style={styles.rowWrapper}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("WalletScreen")
+                    }}
+                    style={styles.row}>
+                    <Ionicons style={{ marginRight: "8px" }} name="wallet-outline" size={20} color={COLORS.primary3} />
+                    <Text style={styles.rowLabel}>My Wallet</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon
+                      color="#bcbcbc"
+                      name="chevron-right"
+                      size={19} />
+                  </Pressable>
+                </View>
 
-              <View style={[styles.rowWrapper, styles.rowLast]}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("BankScreen")
-                  }}
-                  style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="card-outline" size={20} color={COLORS.primary3} />
-                  <Text style={styles.rowLabel}>Bank Information</Text>
-                  <View style={styles.rowSpacer} />
-                  <FeatherIcon
-                    color="#bcbcbc"
-                    name="chevron-right"
-                    size={19} />
-                </Pressable>
+                <View style={[styles.rowWrapper, styles.rowLast]}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("BankScreen")
+                    }}
+                    style={styles.row}>
+                    <Ionicons style={{ marginRight: "8px" }} name="card-outline" size={20} color={COLORS.primary3} />
+                    <Text style={styles.rowLabel}>Bank Information</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon
+                      color="#bcbcbc"
+                      name="chevron-right"
+                      size={19} />
+                  </Pressable>
+                </View>
               </View>
             </View>
-          </View>
+          )}
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Support</Text>
-
             <View style={styles.sectionBody}>
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <Pressable

@@ -99,6 +99,7 @@ const ServiceHistoryScreen = ({ navigation }) => {
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>

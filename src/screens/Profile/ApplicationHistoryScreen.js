@@ -24,6 +24,7 @@ const ApplicationHistoryScreen = ({ navigation }) => {
       try {
         const applicantRes = await getApplicantById(userInfo.id);
         const applicantData = applicantRes.data;
+
         const scholarshipCache = {};
 
         const applicantsWithScholarship = await Promise.all(
@@ -83,6 +84,8 @@ const ApplicationHistoryScreen = ({ navigation }) => {
           return { color: COLORS.warning, backgroundColor: COLORS.warningLight };
         case 'Submitted':
           return { color: COLORS.info, backgroundColor: COLORS.infoLight };
+        case 'Rejected':
+          return { color: COLORS.secondary, backgroundColor: "#ffcccc" };
         default:
           return { color: COLORS.gray80, backgroundColor: COLORS.gray20 };
       }
@@ -92,7 +95,7 @@ const ApplicationHistoryScreen = ({ navigation }) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() =>
-          navigation.navigate('ScholarshipDetail', { selectedScholarship: item.scholarshipProgram })
+          navigation.navigate('ApplicationDetailScreen', { application: item })
         }
       >
         <View>
@@ -140,6 +143,7 @@ const ApplicationHistoryScreen = ({ navigation }) => {
           renderItem={renderApplicationItem}
           renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>

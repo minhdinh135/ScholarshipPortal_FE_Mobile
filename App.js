@@ -14,7 +14,7 @@ function AppContent() {
     return <AuthStack />;
   }
 
-  const StackComponent = userInfo.role === "Expert" ? ExpertStack : MainStack;
+  const StackComponent = userInfo?.role === "Expert" ? ExpertStack : MainStack;
   return <StackComponent />;
 }
 

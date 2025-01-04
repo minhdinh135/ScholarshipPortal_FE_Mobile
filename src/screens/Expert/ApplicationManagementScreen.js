@@ -9,11 +9,12 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
-import { COLORS, FONTS, SIZES, images } from "../../constants";
+import { COLORS, FONTS, SIZES, icons, images } from "../../constants";
 import { getApplicationByExpertId } from "../../api/expertApi";
 import { useAuth } from "../../context/AuthContext";
 import moment from "moment";
 import { useFocusEffect } from "@react-navigation/native";
+import { IconButton } from "../../components/Card";
 
 const ApplicationManagementScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
@@ -63,8 +64,8 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
         };
       case "Rejected":
         return {
-          backgroundColor: "#ffaeae",
-          color: "#ff0000",
+          backgroundColor: "#ffcccc",
+          color: COLORS.secondary,
         };
       default:
         return {
@@ -76,11 +77,18 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
 
   const filterByTab = () => {
     const typeFilter = activeTab === "First Review" ? 1 : 2;
-    return applications.filter(
-      (app) =>
-        (typeFilter === 1 && app.applicationReviews[1]?.description === undefined) ||
-        (typeFilter === 2 && app.applicationReviews[1]?.description !== undefined)
-    );
+
+    return applications
+      .filter(
+        (app) =>
+          (typeFilter === 1 && app.applicationReviews[1]?.description === undefined) ||
+          (typeFilter === 2 && app.applicationReviews[1]?.description !== undefined)
+      )
+      .filter(
+        (app) =>
+          app.applicantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          moment(app.appliedDate).format("MMM DD, YYYY").includes(searchQuery)
+      );
   };
 
   const renderApplication = ({ item }) => {
@@ -117,7 +125,17 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Application List</Text>
+      <View style={styles.header}>
+        <IconButton
+          icon={icons.back}
+          iconStyle={{
+            tintColor: COLORS.black,
+          }}
+          containerStyle={styles.iconButton}
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.title}>Application List</Text>
+      </View>
       <View style={styles.tabContainer}>
         {["First Review", "Second Review"].map((tab) => (
           <TouchableOpacity
@@ -177,6 +195,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     padding: SIZES.padding,
   },
+  header: {
+    marginHorizontal: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  iconButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    backgroundColor: COLORS.white,
+  },
   title: {
     ...FONTS.h2,
     textAlign: "center",
@@ -210,6 +243,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     padding: 10,
     marginBottom: 20,
+    paddingLeft: 20
   },
   loadingContainer: {
     flex: 1,

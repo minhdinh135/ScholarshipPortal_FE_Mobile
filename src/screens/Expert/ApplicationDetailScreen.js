@@ -6,15 +6,21 @@ import { reviewResultApplication } from '../../api/applicationApi';
 import { getScholarProgramById } from '../../api/scholarshipProgramApi';
 import moment from 'moment';
 import { IconButton } from '../../components/Card';
+import { useAuth } from '../../context/AuthContext';
 
 const DetailsScreen = ({ route, navigation }) => {
-  const { application: initialApplication, applicationType } = route.params;
+  const { userInfo } = useAuth();
+  const { application: initialApplication } = route.params;
   const [application, setApplication] = useState(initialApplication);
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewScore, setReviewScore] = useState('');
   const [isReviewed, setIsReviewed] = useState(false);
+
+  const review = application.applicationReviews.find(
+    (review) => review.expertId == userInfo.id
+  );
 
   useEffect(() => {
     const fetchScholarship = async () => {
@@ -34,21 +40,17 @@ const DetailsScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const checkIfReviewed = () => {
-      const reviewIndex = applicationType === 1 ? 0 : 1;
-      const review = application.applicationReviews[reviewIndex];
-
       if (review && review.comment && review.score) {
         setIsReviewed(true);
       }
     };
-
     checkIfReviewed();
-  }, [application.applicationReviews, applicationType]);
+  }, [application.applicationReviews]);
 
   const renderStatusIcon = (status) => {
     switch (status) {
       case 'Approved':
-        return <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />;
+        return <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />;
       case 'Reviewing':
         return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
       case 'Rejected':
@@ -70,8 +72,7 @@ const DetailsScreen = ({ route, navigation }) => {
       return;
     }
 
-    const reviewIndex = applicationType === 1 ? 0 : 1;
-    const selectedReviewId = application.applicationReviews[reviewIndex]?.id;
+    const selectedReviewId = review.id;
 
     if (!selectedReviewId) {
       Alert.alert('No Review Available', 'The selected application does not have a review to update.');
@@ -111,6 +112,34 @@ const DetailsScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          marginHorizontal: 20,
+          marginTop: 20,
+          marginBottom: 10,
+          flexDirection: 'row',
+          justifyContent: 'left',
+        }}>
+        <IconButton
+          icon={icons.back}
+          iconStyle={{
+            width: 25,
+            height: 25,
+            tintColor: COLORS.black
+          }}
+          containerStyle={{
+            width: 40,
+            height: 40,
+            top: 0,
+            left: 10,
+            justifyContent: 'center',
+            borderRadius: 20,
+            backgroundColor: COLORS.white
+          }}
+          onPress={() => navigation.goBack()}
+        />
+        <Text style={styles.screenTitle}>Details</Text>
+      </View>
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -118,31 +147,20 @@ const DetailsScreen = ({ route, navigation }) => {
       )}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <View
-            style={{
-              margin: 12,
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}>
-            <IconButton
-              icon={icons.back}
-              iconStyle={{
-                width: 25,
-                height: 25,
-                tintColor: COLORS.black
-              }}
-              containerStyle={{
-                width: 40,
-                height: 40,
-                justifyContent: 'center',
-                borderRadius: 20,
-                backgroundColor: COLORS.white
-              }}
-              onPress={() => navigation.goBack()}
+          <View style={styles.applicantInfoContainer}>
+            <Image
+              source={{ uri: userInfo.role === 'Expert' ? application.applicantProfile.avatar : userInfo.avatar }}
+              style={styles.applicantAvatar}
             />
-            <Text style={styles.screenTitle}>Application Details</Text>
+            <View>
+              <Text style={styles.title}>
+                {userInfo.role === 'Expert' ? application.applicantName : userInfo.username}
+              </Text>
+              <Text style={styles.emailText}>
+                {application.applicantProfile.email || 'Email not available'}
+              </Text>
+            </View>
           </View>
-          <Text style={styles.title}>{application.applicantName}</Text>
           <View style={styles.statusContainer}>
             {renderStatusIcon(application.status)}
             <Text
@@ -159,7 +177,7 @@ const DetailsScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Application Details</Text>
-          <Text style={styles.infoText}>Scholarship Program: {scholarship?.name}</Text>
+          <Text style={styles.infoText}>Scholarship: {scholarship?.name}</Text>
           <Text style={styles.infoText}>University: {scholarship?.university?.name}</Text>
           <Text style={styles.infoText}>Applied on: {moment(application.appliedDate).format("MMM DD, YYYY")}</Text>
         </View>
@@ -185,46 +203,65 @@ const DetailsScreen = ({ route, navigation }) => {
           )}
         </View>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Reviews</Text>
-          {application.applicationReviews.length > 0 ? (
-            application.applicationReviews.map((review) => (
+          <Text style={styles.sectionTitle}>Your reviews</Text>
+          {userInfo.role === "Expert" ? (
+            review ? (
               <View key={review.id} style={styles.reviewContainer}>
+                <Text style={[styles.reviewDescription, { color: COLORS.black, ...FONTS.h2 }]}>
+                  {`Score:`} <Text style={{ fontStyle: 'normal' }}>{review.score || 'N/A'}</Text>
+                </Text>
                 <Text style={styles.reviewDescription}>
                   {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
                 </Text>
-                <Text style={styles.infoText}>
-                  {`Score: ${review.score || 'N/A'} | Date: ${moment(review.reviewDate).format("MMM DD, YYYY") ? new Date(review.reviewDate).toLocaleDateString() : 'N/A'}`}
-                </Text>
               </View>
-            ))
+            ) : (
+              <Text style={styles.infoText}>No reviews available.</Text>
+            )
           ) : (
-            <Text style={styles.infoText}>No reviews available.</Text>
+            application.applicationReviews.length > 0 ? (
+              application.applicationReviews.map((review) => (
+                <View key={review.id} style={styles.reviewContainer}>
+                  <Text style={[styles.reviewDescription, { color: COLORS.black, ...FONTS.h2 }]}>
+                    {`Score:`} <Text style={{ fontStyle: 'normal' }}>{review.score || 'N/A'} points</Text>
+                  </Text>
+                  <Text style={styles.reviewDescription}>
+                    {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.infoText}>No reviews available.</Text>
+            )
           )}
         </View>
-        {isReviewed ? (
-          <View style={styles.section}>
-            <Text style={styles.infoText}>This application has been reviewed.</Text>
-          </View>
-        ) : (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Your Review</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Write your review here..."
-              value={reviewText}
-              onChangeText={setReviewText}
-            />
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter a score (0-100)"
-              value={reviewScore}
-              onChangeText={setReviewScore}
-              keyboardType="numeric"
-            />
-            <TouchableOpacity style={styles.submitButton} onPress={handleReviewSubmit}>
-              <Text style={styles.submitButtonText}>Submit Review</Text>
-            </TouchableOpacity>
-          </View>
+        {userInfo.role === "Expert" && (
+          isReviewed ? (
+            <View style={styles.section}>
+              <Text style={styles.alreadyReviewText}>You already have reviewed this application.</Text>
+            </View>
+          ) : (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Your Review</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter a score (0-100)"
+                value={reviewScore}
+                onChangeText={setReviewScore}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.textInput, { height: 100 }]}
+                placeholder="Write your review here..."
+                value={reviewText}
+                onChangeText={setReviewText}
+                multiline={true}
+                numberOfLines={4}
+              />
+              <TouchableOpacity style={styles.submitButton} onPress={handleReviewSubmit}>
+                <Text style={styles.submitButtonText}>Submit Review</Text>
+              </TouchableOpacity>
+            </View>
+          )
         )}
       </ScrollView>
     </View>
@@ -248,6 +285,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: SIZES.padding,
     paddingBottom: SIZES.base * 4,
+    marginTop: -10
   },
   section: {
     marginBottom: SIZES.base * 3,
@@ -255,19 +293,33 @@ const styles = StyleSheet.create({
   screenTitle: {
     ...FONTS.h1,
     color: COLORS.black,
-    marginLeft: 20,
+    marginLeft: 15,
   },
   title: {
-    ...FONTS.h1,
+    ...FONTS.h2,
     color: COLORS.primary,
-    fontWeight: 'bold',
+    marginBottom: SIZES.base / 2,
+  },
+  applicantInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: SIZES.base,
-    marginTop: 30,
+  },
+  applicantAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 100,
+    marginRight: SIZES.base,
+    backgroundColor: COLORS.white,
+  },
+  emailText: {
+    ...FONTS.body3,
+    color: COLORS.gray70,
   },
   statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.base,
+    marginTop: 15
   },
   statusText: {
     ...FONTS.body2,
@@ -275,7 +327,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     marginLeft: SIZES.base,
   },
-  statusApprovedText: { color: COLORS.primary },
+  statusApprovedText: { color: COLORS.success },
   statusPendingText: { color: COLORS.warning },
   statusDisapprovedText: { color: COLORS.secondary },
   sectionTitle: {
@@ -301,7 +353,7 @@ const styles = StyleSheet.create({
   },
   reviewContainer: {
     backgroundColor: COLORS.white,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: COLORS.gray30,
     padding: SIZES.base,
     borderRadius: SIZES.radius,
@@ -310,7 +362,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 3,
   },
   reviewDescription: {
     ...FONTS.body3,
@@ -321,6 +373,11 @@ const styles = StyleSheet.create({
   infoText: {
     ...FONTS.body3,
     color: COLORS.gray80,
+  },
+  alreadyReviewText: {
+    ...FONTS.h2,
+    color: COLORS.gray50,
+    textAlign: 'center'
   },
   actionsContainer: {
     flexDirection: 'row',

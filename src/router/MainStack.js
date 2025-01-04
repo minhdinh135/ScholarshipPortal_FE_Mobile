@@ -7,6 +7,7 @@ import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
 import ServiceDetail from "../screens/Service/ServiceDetail";
 import ProviderProfileScreen from "../screens/Provider/ProviderProfileScreen";
 import ApplicationHistoryScreen from "../screens/Profile/ApplicationHistoryScreen";
+import ApplicationDetailScreen from "../screens/Expert/ApplicationDetailScreen";
 import ServiceHistoryScreen from "../screens/Profile/ServiceHistoryScreen";
 import EditProfileScreen from "../screens/Profile/EditProfileScreen";
 import ChangePasswordScreen from "../screens/Profile/ChangePasswordScreen";
@@ -77,7 +78,9 @@ export function MainStack() {
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen name="ApplicationHistoryScreen" component={ApplicationHistoryScreen} />
+      <Stack.Screen name="ApplicationDetailScreen" component={ApplicationDetailScreen} />
       <Stack.Screen name="ServiceHistoryScreen" component={ServiceHistoryScreen} />
+
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
       <Stack.Screen name="BankScreen" component={BankScreen} />
 
