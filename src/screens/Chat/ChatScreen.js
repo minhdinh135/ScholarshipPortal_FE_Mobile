@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Text, KeyboardAvoidingView } from 'react-native';
 import { Avatar, Bubble, Day, GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
@@ -13,7 +13,6 @@ const ChatScreen = ({ route, navigation }) => {
   const { otherUserId } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
 
   const chatCollection = useMemo(() =>
     firestore()
@@ -42,41 +41,44 @@ const ChatScreen = ({ route, navigation }) => {
             },
           };
         });
-        setMessages((prev) => GiftedChat.append(prev, fetchedMessages));
+
+        setMessages((prev) => {
+          const existingIds = new Set(prev.map((msg) => msg._id));
+          const newMessages = fetchedMessages.filter((msg) => !existingIds.has(msg._id));
+          return GiftedChat.append(prev, newMessages);
+        });
+
         setLoading(false);
       });
 
     return () => unsubscribe();
   }, [chatCollection]);
 
-  const onSend = useCallback(
-    async (newMessages = []) => {
-      const message = newMessages[0];
-      const messageData = {
-        ...message,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        user: {
-          _id: userInfo.id,
-          name: userInfo.username,
-          avatar: userInfo.avatar,
-        },
-      };
-
-      try {
-        await chatCollection.add(messageData);
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    },
-    [chatCollection, userInfo]
-  );
+  const onSend = useCallback(async (newMessages = []) => {
+    const message = newMessages[0];
+    const messageData = {
+      ...message,
+      _id: chatCollection.doc().id,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+      user: {
+        _id: userInfo.id,
+        name: userInfo.username,
+        avatar: userInfo.avatar,
+      },
+    };
+    try {
+      await chatCollection.add(messageData);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }, [chatCollection, userInfo]);
 
   useEffect(() => {
     const unsubscribeOnMessage = messaging().onMessage(async (remoteMessage) => {
       const { text, senderId, createdAt } = remoteMessage.data;
       if (senderId === otherUserId.id) {
         const incomingMessage = {
-          _id: remoteMessage.messageId,
+          _id: remoteMessage.messageId || `${remoteMessage.messageId}_${Date.now()}`,
           text,
           createdAt: new Date(createdAt),
           user: {
@@ -85,7 +87,14 @@ const ChatScreen = ({ route, navigation }) => {
             avatar: otherUserId.avatarUrl,
           },
         };
-        setMessages((prev) => GiftedChat.append(prev, [incomingMessage]));
+
+        setMessages((prev) => {
+          const existingIds = new Set(prev.map((msg) => msg._id));
+          if (!existingIds.has(incomingMessage._id)) {
+            return GiftedChat.append(prev, [incomingMessage]);
+          }
+          return prev;
+        });
       }
     });
 
@@ -123,17 +132,6 @@ const ChatScreen = ({ route, navigation }) => {
     return null;
   };
 
-  const renderFooter = () => {
-    if (isTyping) {
-      return (
-        <View style={{ padding: 10 }}>
-          <Text style={{ fontStyle: 'italic', color: COLORS.gray }}>Typing...</Text>
-        </View>
-      );
-    }
-    return null;
-  };
-
   const renderInputToolbar = (props) => (
     <InputToolbar
       {...props}
@@ -159,21 +157,12 @@ const ChatScreen = ({ route, navigation }) => {
     />
   );
 
-  const renderChatEmpty = () => {
-    if (messages.length === 0) {
-      return (
-        <View>
-          <Text></Text>
-        </View>
-      );
-    }
-    return null;
-  };
-
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
       ) : (
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
@@ -186,7 +175,6 @@ const ChatScreen = ({ route, navigation }) => {
             <Text style={{ ...FONTS.h2, marginLeft: 15 }}>{otherUserId.username}</Text>
           </View>
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
           >
             <GiftedChat
@@ -198,11 +186,9 @@ const ChatScreen = ({ route, navigation }) => {
               }}
               renderBubble={renderBubble}
               renderAvatar={renderAvatar}
-              renderFooter={renderFooter}
               renderInputToolbar={renderInputToolbar}
               renderDay={renderDay}
               messagesContainerStyle={styles.messagesContainer}
-              renderChatEmpty={renderChatEmpty}
               keyboardShouldPersistTaps="handled"
             />
           </KeyboardAvoidingView>
@@ -218,6 +204,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     backgroundColor: COLORS.white,

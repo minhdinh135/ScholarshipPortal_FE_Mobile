@@ -95,7 +95,7 @@ const Description = ({ item }) => {
                     <Text>•</Text>
                   </View>
                   <View style={styles.criterionTextContainer}>
-                    <Text style={styles.criterionDescription}>{criterion.description}</Text>
+                    <Text style={styles.criterionDescription}>{criterion.description} (25%)</Text>
                   </View>
                 </View>
               ))}
