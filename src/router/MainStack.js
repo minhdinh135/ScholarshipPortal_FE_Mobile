@@ -20,6 +20,8 @@ import ChatBoxScreen from "../screens/Chat/ChatBoxScreen";
 import ChatScreen from "../screens/Chat/ChatScreen";
 import UserGuideScreen from "../screens/Support/UserGuideScreen";
 import AboutUsScreen from "../screens/Support/AboutUsScreen";
+import ProfileSkillScreen from "../screens/Profile/ProfileSkillScreen";
+import UpdateInformationScreen from "../screens/Profile/UpdateInformationScreen";
 
 const Stack = createSharedElementStackNavigator();
 
@@ -76,7 +78,10 @@ export function MainStack() {
       <Stack.Screen name="ProviderProfileScreen" component={ProviderProfileScreen} />
 
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+      <Stack.Screen name="ProfileSkillScreen" component={ProfileSkillScreen} />
+      <Stack.Screen name="UpdateInformationScreen" component={UpdateInformationScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+
       <Stack.Screen name="ApplicationHistoryScreen" component={ApplicationHistoryScreen} />
       <Stack.Screen name="ApplicationDetailScreen" component={ApplicationDetailScreen} />
       <Stack.Screen name="ServiceHistoryScreen" component={ServiceHistoryScreen} />

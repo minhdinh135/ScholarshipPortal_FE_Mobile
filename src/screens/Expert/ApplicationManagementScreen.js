@@ -62,7 +62,7 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
           backgroundColor: COLORS.warningLight,
           color: COLORS.warning,
         };
-      case "Rejected":
+      case "Failed":
         return {
           backgroundColor: "#ffcccc",
           color: COLORS.secondary,
@@ -92,8 +92,7 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
   };
 
   const renderApplication = ({ item }) => {
-    const statusStyle = getStatusStyle(item.status);
-
+    const statusStyle = getStatusStyle(item.applicationReviews.filter((rev) => rev.expertId == userInfo.id).map((rev) => rev.status)[0]);
     return (
       <TouchableOpacity
         style={styles.card}
@@ -115,7 +114,7 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
             ]}
           >
             <Text style={[styles.statusLabel, { color: statusStyle.color }]}>
-              {item.status}
+              {item.applicationReviews.filter((rev) => rev.expertId == userInfo.id).map((rev) => rev.status)[0]}
             </Text>
           </View>
         </View>

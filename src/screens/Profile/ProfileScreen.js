@@ -58,13 +58,32 @@ const SettingsScreen = ({ navigation }) => {
                     size={19} />
                 </Pressable>
               </View>
+
+              {userInfo.role !== 'Expert' && (
+                <View style={styles.rowWrapper}>
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("ProfileSkillScreen")
+                    }}
+                    style={styles.row}>
+                    <Ionicons style={{ marginRight: "8px" }} name="school-outline" size={20} color={COLORS.primary3} />
+                    <Text style={styles.rowLabel}>Update Information</Text>
+                    <View style={styles.rowSpacer} />
+                    <FeatherIcon
+                      color="#bcbcbc"
+                      name="chevron-right"
+                      size={19} />
+                  </Pressable>
+                </View>
+              )}
+
               <View style={[styles.rowWrapper, styles.rowLast]}>
                 <Pressable
                   onPress={() => {
                     navigation.navigate("ChangePasswordScreen")
                   }}
                   style={styles.row}>
-                  <Ionicons style={{ marginRight: "8px" }} name="shield-outline" size={20} color={COLORS.primary3} />
+                  <Ionicons style={{ marginRight: "8px" }} name="key-outline" size={20} color={COLORS.primary3} />
                   <Text style={styles.rowLabel}>Change Password</Text>
                   <View style={styles.rowSpacer} />
                   <FeatherIcon
@@ -76,7 +95,6 @@ const SettingsScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Conditionally render Extensions section */}
           {userInfo.role !== 'Expert' && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Extensions</Text>

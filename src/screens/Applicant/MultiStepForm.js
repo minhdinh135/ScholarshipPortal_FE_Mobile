@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import { COLORS, SIZES, FONTS, images } from "../../constants";
 import { Picker } from "@react-native-picker/picker";
@@ -85,11 +86,13 @@ const StepFour = ({ formData }) => {
   };
 
   return (
-    <View style={styles.cardContent}>
+    <ScrollView
+      style={styles.cardContent}
+      showsVerticalScrollIndicator={false}
+    >
       <Text style={styles.headerText}>
-        Please review your information before submitting:
+        Please check your information before submitting:
       </Text>
-
       <View style={styles.infoCard}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <Text style={styles.infoText}>Name: {formData.name}</Text>
@@ -126,7 +129,7 @@ const StepFour = ({ formData }) => {
           ))}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 

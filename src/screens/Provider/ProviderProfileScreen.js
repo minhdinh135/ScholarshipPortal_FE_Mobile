@@ -62,6 +62,7 @@ const ProviderProfileScreen = ({ navigation, route }) => {
     );
   }
 
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -77,7 +78,9 @@ const ProviderProfileScreen = ({ navigation, route }) => {
           onPress={() => navigation.goBack()}
         />
         <View style={styles.avatarContainer}>
-          <Image source={{ uri: provider?.avatar }} style={styles.profilePicture} />
+          {provider?.avatar && (
+            <Image source={{ uri: provider?.avatar }} style={styles.profilePicture} />
+          )}
         </View>
       </ImageBackground>
       <View style={styles.providerInfo}>

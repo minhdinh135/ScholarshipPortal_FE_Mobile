@@ -18,7 +18,7 @@ const DetailsScreen = ({ route, navigation }) => {
   const [reviewScore, setReviewScore] = useState('');
   const [isReviewed, setIsReviewed] = useState(false);
 
-  const review = application.applicationReviews.find(
+  const review = application.applicationReviews.filter(
     (review) => review.expertId == userInfo.id
   );
 
@@ -40,9 +40,10 @@ const DetailsScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const checkIfReviewed = () => {
-      if (review && review.comment && review.score) {
-        setIsReviewed(true);
-      }
+      const allReviewed = review.every(
+        (reviewItem) => reviewItem.score !== null && reviewItem.comment?.trim().length > 0
+      );
+      setIsReviewed(allReviewed);
     };
     checkIfReviewed();
   }, [application.applicationReviews]);
@@ -53,6 +54,8 @@ const DetailsScreen = ({ route, navigation }) => {
         return <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />;
       case 'Reviewing':
         return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
+      case 'Failed':
+        return <Ionicons name="close-circle" size={24} color={COLORS.secondary} />;
       case 'Rejected':
         return <Ionicons name="close-circle" size={24} color={COLORS.secondary} />;
       default:
@@ -72,7 +75,10 @@ const DetailsScreen = ({ route, navigation }) => {
       return;
     }
 
-    const selectedReviewId = review.id;
+    const selectedReviewId =
+      review
+        .filter(rev => rev.score === 0 && rev.comment === null)
+        .map(rev => rev.id)[0];
 
     if (!selectedReviewId) {
       Alert.alert('No Review Available', 'The selected application does not have a review to update.');
@@ -84,13 +90,14 @@ const DetailsScreen = ({ route, navigation }) => {
       comment: reviewText,
       isPassed: score >= 50 ? true : false,
       score,
+      isFirstReview: review[0].description === "Application Review" ? true : false
     };
 
     try {
       setLoading(true);
       await reviewResultApplication(updatedReview);
-      const updatedReviews = application.applicationReviews.map((review, index) =>
-        index === reviewIndex
+      const updatedReviews = application.applicationReviews.map((review) =>
+        review.id === selectedReviewId
           ? { ...review, comment: reviewText, score, reviewDate: new Date().toISOString() }
           : review
       );
@@ -101,7 +108,7 @@ const DetailsScreen = ({ route, navigation }) => {
       setReviewText('');
       setReviewScore('');
       setIsReviewed(true);
-      Alert.alert('Review Submitted', 'Your review has been submitted. You can now approve or reject the application.');
+      Alert.alert('Review Submitted', 'Your review has been submitted.');
     } catch (error) {
       console.log(error);
       Alert.alert('Error', 'There was an error submitting the review.');
@@ -162,17 +169,35 @@ const DetailsScreen = ({ route, navigation }) => {
             </View>
           </View>
           <View style={styles.statusContainer}>
-            {renderStatusIcon(application.status)}
-            <Text
-              style={[
-                styles.statusText,
-                application.status === 'Approved' ? styles.statusApprovedText :
-                  application.status === 'Reviewing' ? styles.statusPendingText :
-                    styles.statusDisapprovedText
-              ]}
-            >
-              {application.status}
-            </Text>
+            {userInfo.role === 'Expert' ? (
+              <>
+                {renderStatusIcon(review[0].status)}
+                <Text
+                  style={[
+                    styles.statusText,
+                    review[0].status === 'Approved' ? styles.statusApprovedText :
+                      review[0].status === 'Reviewing' ? styles.statusPendingText :
+                        styles.statusDisapprovedText
+                  ]}
+                >
+                  {review[0].status}
+                </Text>
+              </>
+            ) : (
+              <>
+                {renderStatusIcon(application.status)}
+                <Text
+                  style={[
+                    styles.statusText,
+                    application.status === 'Approved' ? styles.statusApprovedText :
+                      application.status === 'Reviewing' ? styles.statusPendingText :
+                        styles.statusDisapprovedText
+                  ]}
+                >
+                  {application.status}
+                </Text>
+              </>
+            )}
           </View>
         </View>
         <View style={styles.section}>
@@ -203,29 +228,37 @@ const DetailsScreen = ({ route, navigation }) => {
           )}
         </View>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your reviews</Text>
+          <Text style={styles.sectionTitle}>Your Reviews</Text>
           {userInfo.role === "Expert" ? (
-            review ? (
-              <View key={review.id} style={styles.reviewContainer}>
-                <Text style={[styles.reviewDescription, { color: COLORS.black, ...FONTS.h2 }]}>
-                  {`Score:`} <Text style={{ fontStyle: 'normal' }}>{review.score || 'N/A'}</Text>
-                </Text>
-                <Text style={styles.reviewDescription}>
-                  {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
-                </Text>
-              </View>
+            review.length > 0 ? (
+              review.map((reviewItem) => (
+                <View key={reviewItem.id} style={styles.reviewContainer}>
+                  <Text style={[styles.sectionTitle, { color: COLORS.primary, ...FONTS.h2 }]}>
+                    {reviewItem.description}
+                  </Text>
+                  <Text style={styles.reviewDescription}>
+                    {`Score:`} <Text style={{ fontStyle: 'normal' }}>{reviewItem.score || 'N/A'}</Text>
+                  </Text>
+                  <Text style={styles.reviewDescription}>
+                    {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{reviewItem.comment || 'No comments provided.'}</Text>
+                  </Text>
+                </View>
+              ))
             ) : (
               <Text style={styles.infoText}>No reviews available.</Text>
             )
           ) : (
             application.applicationReviews.length > 0 ? (
-              application.applicationReviews.map((review) => (
-                <View key={review.id} style={styles.reviewContainer}>
-                  <Text style={[styles.reviewDescription, { color: COLORS.black, ...FONTS.h2 }]}>
-                    {`Score:`} <Text style={{ fontStyle: 'normal' }}>{review.score || 'N/A'} points</Text>
+              application.applicationReviews.map((reviewItem) => (
+                <View key={reviewItem.id} style={styles.reviewContainer}>
+                  <Text style={[styles.sectionTitle, { color: COLORS.primary }]}>
+                    {reviewItem.description}
                   </Text>
                   <Text style={styles.reviewDescription}>
-                    {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{review.comment || 'No comments provided.'}</Text>
+                    {`Score:`} <Text style={{ fontStyle: 'normal' }}>{reviewItem.score || 'N/A'} points</Text>
+                  </Text>
+                  <Text style={styles.reviewDescription}>
+                    {`Comment:`} <Text style={{ fontStyle: 'italic' }}>{reviewItem.comment || 'No comments provided.'}</Text>
                   </Text>
                 </View>
               ))
@@ -327,9 +360,9 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     marginLeft: SIZES.base,
   },
-  statusApprovedText: { color: COLORS.success },
-  statusPendingText: { color: COLORS.warning },
-  statusDisapprovedText: { color: COLORS.secondary },
+  statusApprovedText: { color: COLORS.success, ...FONTS.h2 },
+  statusPendingText: { color: COLORS.warning, ...FONTS.h2 },
+  statusDisapprovedText: { color: COLORS.secondary, ...FONTS.h2 },
   sectionTitle: {
     ...FONTS.h2,
     color: COLORS.gray70,

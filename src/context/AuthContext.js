@@ -33,12 +33,12 @@ export const AuthProvider = ({ children }) => {
 
   const requestNotification = async (decodedUserInfo) => {
     const fcm = await AsyncStorage.getItem("fcmToken");
-    if(!fcm){
-        //console.error(decodedUserInfo)
+    if (!fcm) {
+      //console.error(decodedUserInfo)
       const token = await requestNotify(decodedUserInfo.id);
       if (token != null) {
-          setFcmToken(token);
-          await AsyncStorage.setItem("fcmToken", token);
+        setFcmToken(token);
+        await AsyncStorage.setItem("fcmToken", token);
       }
       //if (sendNotification) await NotifyNewUser(parseInt(user.id));
     }
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
             setUserInfo(decodedUserInfo);
             setIsLoggedIn(true);
             await requestNotification(decodedUserInfo);
-            
+
             Alert.alert("Login successful");
             await AsyncStorage.setItem("userToken", jwt);
           }

@@ -237,7 +237,7 @@ const HomeScreen = () => {
   function renderScholarshipPrograms() {
     return (
       <Section
-        title="Popular Scholarship"
+        title="Recommend Scholarship"
         containerStyle={{
           marginTop: 40
         }}
@@ -329,7 +329,7 @@ const HomeScreen = () => {
             <LineDivider lineStyle={{ marginVertical: SIZES.padding }} />
             {renderCategories()}
             {renderScholarshipPrograms()}
-            {/* {renderUniversities()} */}
+            {renderUniversities()}
           </ScrollView>
         </View>
       )}

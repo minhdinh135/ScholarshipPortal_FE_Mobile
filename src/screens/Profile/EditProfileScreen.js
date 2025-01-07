@@ -1,4 +1,15 @@
-import { View, SafeAreaView, Text, ScrollView, TouchableOpacity, Image, TextInput, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  SafeAreaView,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { COLORS, FONTS, icons } from '../../constants';
 import { IconButton, IconLabel } from '../../components/Card';
@@ -47,216 +58,151 @@ const EditProfileScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: COLORS.white,
-        }}
-      >
+      <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.white,
-        paddingHorizontal: 22,
-      }}
-    >
-      <View
-        style={{
-          marginHorizontal: 12,
-          flexDirection: 'row',
-          justifyContent: 'center',
-        }}
-      >
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
         <IconButton
           icon={icons.back}
-          iconStyle={{
-            tintColor: COLORS.black,
-          }}
-          containerStyle={{
-            position: 'absolute',
-            top: 40,
-            left: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 25,
-            backgroundColor: COLORS.white,
-          }}
+          iconStyle={styles.iconStyle}
+          containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={{ marginTop: 40, ...FONTS.h2 }}>Edit Profile</Text>
+        <Text style={styles.headerText}>Edit Profile</Text>
       </View>
 
       <ScrollView>
-        <View
-          style={{
-            alignItems: 'center',
-            marginVertical: 22,
-          }}
-        >
+        <View style={styles.avatarContainer}>
           <TouchableOpacity onPress={uploadFile}>
             <Image
               src={userInfo.avatar}
-              style={{
-                height: 130,
-                width: 130,
-                borderRadius: 85,
-                borderWidth: 2,
-                borderColor: COLORS.primary,
-              }}
+              style={styles.avatar}
             />
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                zIndex: 9999,
-              }}
-            >
+            <View style={styles.cameraIconContainer}>
               <IconLabel
                 icon={icons.camera}
-                iconStyle={{ tintColor: COLORS.primary3, width: 24, height: 24 }}
+                iconStyle={styles.cameraIconStyle}
               />
             </View>
           </TouchableOpacity>
         </View>
 
-        <View
-          style={{ marginBottom: 20 }}
-        >
-          <View
-            style={{
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ ...FONTS.h3 }}>Username</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.gray80,
-                borderWidth: 1,
-                borderRadius: 10,
-                marginTop: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput
-                value={userProfile.username}
-                onChangeText={(value) => setName(value)}
-                editable={true}
-              />
+        <View style={styles.formContainer}>
+          {['Username', 'Email', 'Phone number', 'Address'].map((field, index) => (
+            <View style={styles.inputGroup} key={index}>
+              <Text style={styles.label}>{field}</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  value={userProfile[field.toLowerCase().replace(' ', '')]}
+                  onChangeText={(value) => setUserProfile({
+                    ...userProfile,
+                    [field.toLowerCase().replace(' ', '')]: value,
+                  })}
+                  editable={true}
+                />
+              </View>
             </View>
-          </View>
-
-          <View
-            style={{
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ ...FONTS.h3 }}>Email</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.gray80,
-                borderWidth: 1,
-                borderRadius: 10,
-                marginTop: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput
-                value={userProfile.email}
-                onChangeText={(value) => setName(value)}
-                editable={true}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ ...FONTS.h3 }}>Phone number</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.gray80,
-                borderWidth: 1,
-                borderRadius: 10,
-                marginTop: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput
-                value={userProfile.phoneNumber}
-                onChangeText={(value) => setName(value)}
-                editable={true}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ ...FONTS.h3 }}>Address</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.gray80,
-                borderWidth: 1,
-                borderRadius: 10,
-                marginTop: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput
-                value={userProfile.address}
-                onChangeText={(value) => setName(value)}
-                editable={true}
-              />
-            </View>
-          </View>
+          ))}
         </View>
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: COLORS.primary,
-            height: 44,
-            borderRadius: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text
-            style={{
-              ...FONTS.body3,
-              color: COLORS.white,
-            }}
-          >
-            Save Changes
-          </Text>
+        <TouchableOpacity style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 22,
+  },
+  header: {
+    marginHorizontal: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  iconStyle: {
+    tintColor: COLORS.black,
+  },
+  iconContainer: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    backgroundColor: COLORS.white,
+  },
+  headerText: {
+    marginTop: 40,
+    ...FONTS.h2,
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginVertical: 22,
+  },
+  avatar: {
+    height: 130,
+    width: 130,
+    borderRadius: 85,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  cameraIconContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    zIndex: 9999,
+  },
+  cameraIconStyle: {
+    tintColor: COLORS.primary3,
+    width: 24,
+    height: 24,
+  },
+  formContainer: {
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    ...FONTS.h3,
+  },
+  inputContainer: {
+    height: 44,
+    width: '100%',
+    borderColor: COLORS.gray80,
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 6,
+    justifyContent: 'center',
+    paddingLeft: 8,
+  },
+  saveButton: {
+    backgroundColor: COLORS.primary,
+    height: 44,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonText: {
+    ...FONTS.body3,
+    color: COLORS.white,
+  },
+});
 
 export default EditProfileScreen;

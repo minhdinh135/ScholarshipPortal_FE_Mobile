@@ -9,6 +9,7 @@ import ChangePasswordScreen from "../screens/Profile/ChangePasswordScreen";
 import WalletScreen from "../screens/Profile/WalletScreen";
 import ScholarshipListScreen from "../screens/Expert/ScholarshipListScreen";
 import ScholarshipDetail from "../screens/Scholarship/ScholarshipDetail";
+import AboutUsScreen from "../screens/Support/AboutUsScreen";
 
 const Stack = createSharedElementStackNavigator();
 
@@ -62,6 +63,7 @@ export function ExpertStack() {
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
+      <Stack.Screen name="AboutUsScreen" component={AboutUsScreen} />
 
     </Stack.Navigator>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   IconButton,
   LineDivider,
 } from "../../components/Card";
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import * as DocumentPicker from "expo-document-picker";
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import ServiceDescription from '../../components/Service/ServiceDescription';
@@ -144,6 +144,10 @@ const ServiceDetail = ({ navigation, route }) => {
     amount: selectedService.price,
     paymentMethod: '',
   });
+
+  const renderBackdrop = useCallback(
+    (props) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, []
+  )
 
   const getWalletInformation = async () => {
     setLoading(true);
@@ -445,6 +449,8 @@ const ServiceDetail = ({ navigation, route }) => {
         index={-1}
         snapPoints={['50%', '80%']}
         enablePanDownToClose={true}
+        handleComponent={null}
+        backdropComponent={renderBackdrop}
       >
         <ScrollView
           contentContainerStyle={{
@@ -564,7 +570,7 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     ...FONTS.h1,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   sectionTitle: {
     ...FONTS.h3,
