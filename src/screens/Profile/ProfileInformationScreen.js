@@ -14,7 +14,7 @@ import { getApplicantProfileById } from "../../api/applicantApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 
-const ProfileSkillScreen = ({ navigation }) => {
+const ProfileInformationScreen = ({ navigation }) => {
   const { userInfo } = useAuth();
   const [applicant, setApplicant] = useState({
     applicantEducations: [],
@@ -64,11 +64,8 @@ const ProfileSkillScreen = ({ navigation }) => {
               <Text style={styles.sectionTitle}>High School Education</Text>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => navigation.navigate('UpdateInformationScreen', {
-                  item: {
-                    ...applicant.applicantEducations[0],
-                    infoType: 'Education',
-                  },
+                onPress={() => navigation.navigate('UpdateEducationScreen', {
+                  item: applicant.applicantEducations[0]
                 })}
               >
                 <Ionicons name="pencil" size={24} color={COLORS.primary} />
@@ -125,11 +122,8 @@ const ProfileSkillScreen = ({ navigation }) => {
               <Text style={styles.sectionTitle}>Certificates</Text>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => navigation.navigate('UpdateInformationScreen', {
-                  item: {
-                    ...applicant.applicantCertificates[0],
-                    infoType: 'Certificate'
-                  }
+                onPress={() => navigation.navigate('UpdateCertificateScreen', {
+                  item: applicant.applicantCertificates[0]
                 })}
               >
                 <Ionicons name="pencil" size={24} color={COLORS.primary} />
@@ -154,11 +148,8 @@ const ProfileSkillScreen = ({ navigation }) => {
               <Text style={styles.sectionTitle}>Skills</Text>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => navigation.navigate('UpdateInformationScreen', {
-                  item: {
-                    ...applicant.applicantSkills[0],
-                    infoType: 'Skill'
-                  }
+                onPress={() => navigation.navigate('UpdateSkillScreen', {
+                  item: applicant.applicantSkills[0]
                 })}
               >
                 <Ionicons name="pencil" size={24} color={COLORS.primary} />
@@ -201,11 +192,8 @@ const ProfileSkillScreen = ({ navigation }) => {
               <Text style={styles.sectionTitle}>Experiences</Text>
               <TouchableOpacity
                 style={styles.editButton}
-                onPress={() => navigation.navigate('UpdateInformationScreen', {
-                  item: {
-                    ...applicant.applicantExperience[0],
-                    infoType: 'Experience'
-                  }
+                onPress={() => navigation.navigate('UpdateExperienceScreen', {
+                  item: applicant.applicantExperience[0]
                 })}
               >
                 <Ionicons name="pencil" size={24} color={COLORS.primary} />
@@ -242,7 +230,7 @@ const ProfileSkillScreen = ({ navigation }) => {
   );
 };
 
-export default ProfileSkillScreen;
+export default ProfileInformationScreen;
 
 const styles = StyleSheet.create({
   container: {

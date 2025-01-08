@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Modal,
   Platform,
+  TextInput,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -13,72 +14,68 @@ import { COLORS, FONTS, icons } from '../../constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { IconButton } from '../../components/Card';
-import { getSkills } from '../../api/skillsApi';
+import { getCertificates } from '../../api/skillsApi';
 import { useAuth } from '../../context/AuthContext';
-import { updateApplicantSkill } from '../../api/applicantApi';
+import { updateApplicantCertificate } from '../../api/applicantApi';
 
-const ProfileSkillScreen = ({ navigation, route }) => {
+const UpdateCertificateScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
   const { item } = route.params;
   const bottomSheetRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const [skills, setSkills] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState(item.name || 'Select Skill');
-  const [selectedType, setSelectedType] = useState(item.type || 'Select Type');
-  const [selectedStartDate, setSelectedStartDate] = useState(item.fromYear || 'Select Year');
-  const [selectedEndDate, setSelectedEndDate] = useState(item.toYear || 'Select Year');
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCertificate, setSelectedCertificate] = useState(item.name || 'Select Skill');
+  const [url, setUrl] = useState(null);
+  const [selectedAchievedYear, setAchievedYear] = useState(item.achievedYear || 'Select Year');
   const [sheetType, setSheetType] = useState(null);
   const [datePickerVisible, setDatePickerVisible] = useState({ visible: false, field: null });
 
   const snapPoints = React.useMemo(() => ['25%', '50%'], []);
 
-  const fetchSkill = useCallback(async () => {
+  const fetchCertificate = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getSkills();
-      setSkills(res.data);
+      const res = await getCertificates();
+      setCertificates(res.data);
     } catch (error) {
-      console.log('Error fetching skills', error);
+      console.log('Error fetching certificates', error);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSkill();
-  }, [fetchSkill]);
+    fetchCertificate();
+  }, [fetchCertificate]);
 
   const renderBackdrop = useCallback(
     (props) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />,
     []
   );
 
-  const handleDateChange = (event, selectedDate) => {
+  const handleDateChange = (selectedDate) => {
     if (selectedDate) {
       const year = selectedDate.getFullYear();
       setDatePickerVisible({ visible: false, field: null });
-
       if (datePickerVisible.field === 'start') {
-        setSelectedStartDate(year.toString());
-      } else if (datePickerVisible.field === 'end') {
-        setSelectedEndDate(year.toString());
+        setAchievedYear(year.toString());
       }
     }
   };
 
   const renderBottomSheetContent = () => {
     switch (sheetType) {
-      case 'skill':
+      case 'certificate':
         return (
           <View style={styles.contentContainer}>
-            <Text style={styles.sheetTitle}>What skill do you have?</Text>
+            <Text style={styles.sheetTitle}>What certificate do you have?</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {skills.map((option, index) => (
+              {certificates.map((option, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.optionButton}
                   onPress={() => {
-                    setSelectedSkill(option.name);
+                    setSelectedCertificate(option.name);
                     bottomSheetRef.current?.close();
                   }}
                 >
@@ -88,24 +85,6 @@ const ProfileSkillScreen = ({ navigation, route }) => {
             </ScrollView>
           </View>
         );
-      case 'type':
-        return (
-          <View style={styles.contentContainer}>
-            <Text style={styles.sheetTitle}>What is the type of your skill?</Text>
-            {['Technical', 'Soft'].map((type, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.optionButton}
-                onPress={() => {
-                  setSelectedType(type);
-                  bottomSheetRef.current?.close();
-                }}
-              >
-                <Text style={styles.optionText}>{type}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        );
       default:
         return null;
     }
@@ -113,16 +92,15 @@ const ProfileSkillScreen = ({ navigation, route }) => {
 
   const handleSaveChanges = async () => {
     const formData = {
-      name: selectedSkill,
-      type: selectedType,
+      name: selectedCertificate,
       description: item.description,
-      fromYear: selectedStartDate,
-      toYear: selectedEndDate,
+      url: url,
+      achievedYear: selectedAchievedYear,
     };
 
     try {
       setLoading(true);
-      await updateApplicantSkill(userInfo.id, item.id, formData);
+      await updateApplicantCertificate(userInfo.id, item.id, formData);
       navigation.goBack();
     } catch (error) {
       console.error('Error saving data:', error);
@@ -140,7 +118,7 @@ const ProfileSkillScreen = ({ navigation, route }) => {
           containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerText}>Edit {item.infoType}</Text>
+        <Text style={styles.headerText}>Edit Certificate</Text>
         <TouchableOpacity style={styles.saveButtonHeader} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonHeaderText}>Save</Text>
         </TouchableOpacity>
@@ -153,42 +131,32 @@ const ProfileSkillScreen = ({ navigation, route }) => {
         </Modal>
       ) : (
         <>
-          <Text style={styles.mainTitle}>What skill do you have?</Text>
+          <Text style={styles.mainTitle}>What certificate do you have?</Text>
           <TouchableOpacity
             style={styles.selectButton}
             onPress={() => {
-              setSheetType('skill');
+              setSheetType('certificate');
               bottomSheetRef.current?.expand();
             }}
           >
-            <Text style={styles.selectButtonText}>{selectedSkill}</Text>
+            <Text style={styles.selectButtonText}>{selectedCertificate}</Text>
           </TouchableOpacity>
 
-          <Text style={styles.mainTitle}>What is the type of your skill?</Text>
-          <TouchableOpacity
+          <Text style={styles.mainTitle}>What is the reference to your certificate?</Text>
+          <TextInput
             style={styles.selectButton}
-            onPress={() => {
-              setSheetType('type');
-              bottomSheetRef.current?.expand();
-            }}
-          >
-            <Text style={styles.selectButtonText}>{selectedType}</Text>
-          </TouchableOpacity>
+            placeholder={item.url || 'Provide reference/link to your certificate'}
+            placeholderTextColor={COLORS.gray60}
+            value={url}
+            onChangeText={(text) => setUrl(text)}
+          />
 
-          <Text style={styles.mainTitle}>Start Date</Text>
+          <Text style={styles.mainTitle}>Achieved Date</Text>
           <TouchableOpacity
             style={styles.selectButton}
             onPress={() => setDatePickerVisible({ visible: true, field: 'start' })}
           >
-            <Text style={styles.selectButtonText}>{selectedStartDate}</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.mainTitle}>End Date</Text>
-          <TouchableOpacity
-            style={styles.selectButton}
-            onPress={() => setDatePickerVisible({ visible: true, field: 'end' })}
-          >
-            <Text style={styles.selectButtonText}>{selectedEndDate}</Text>
+            <Text style={styles.selectButtonText}>{selectedAchievedYear}</Text>
           </TouchableOpacity>
 
           <BottomSheet
@@ -218,7 +186,7 @@ const ProfileSkillScreen = ({ navigation, route }) => {
   );
 };
 
-export default ProfileSkillScreen;
+export default UpdateCertificateScreen;
 
 const styles = StyleSheet.create({
   container: {

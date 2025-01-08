@@ -63,7 +63,7 @@ const SettingsScreen = ({ navigation }) => {
                 <View style={styles.rowWrapper}>
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("ProfileSkillScreen")
+                      navigation.navigate("ProfileInformationScreen")
                     }}
                     style={styles.row}>
                     <Ionicons style={{ marginRight: "8px" }} name="school-outline" size={20} color={COLORS.primary3} />
