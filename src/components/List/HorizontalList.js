@@ -22,7 +22,6 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
     >
       <ImageBackground
         source={{ uri: course.imageUrl }}
-        // source={{ uri: "https://t3.ftcdn.net/jpg/04/91/76/62/360_F_491766294_h4j7LbW2YgfbNHhq7F8GboIc1XyBSEY5.jpg" }}
         resizeMode="cover"
         style={{
           width: 150,

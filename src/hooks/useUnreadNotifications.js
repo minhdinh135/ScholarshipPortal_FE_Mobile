@@ -24,25 +24,16 @@ const useUnreadNotifications = (userId) => {
       const { notification, data } = remoteMessage;
 
       if (notification && data?.topic == userId) {
-        //console.error("Received message");
-        //console.error(remoteMessage);
         await fetchNotifications();
       }
     });
 
-    // Ensure background handler is set once in the app's lifecycle
     messaging().setBackgroundMessageHandler(async (remoteMessage) => {
       const { notification, data } = remoteMessage;
-
       if (notification && data?.topic == userId) {
-        //console.error("Background Received message");
-        //console.error(remoteMessage);
         await fetchNotifications();
       }
     });
-
-
-    // Clean up the listeners when the component unmounts
     return () => {
       unsubscribeForeground();
     };

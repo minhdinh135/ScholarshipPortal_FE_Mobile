@@ -30,25 +30,16 @@ const NotificationScreen = () => {
       const { notification, data } = remoteMessage;
 
       if (notification && data?.topic == userInfo.id) {
-        //console.error("Received message");
-        //console.error(remoteMessage);
         loadNotifications();
       }
     });
 
-    // Ensure background handler is set once in the app's lifecycle
     messaging().setBackgroundMessageHandler((remoteMessage) => {
       const { notification, data } = remoteMessage;
-
       if (notification && data?.topic == userInfo.id) {
-        //console.error("Background Received message");
-        //console.error(remoteMessage);
         loadNotifications();
       }
     });
-
-
-    // Clean up the listeners when the component unmounts
     return () => {
       unsubscribeForeground();
     };

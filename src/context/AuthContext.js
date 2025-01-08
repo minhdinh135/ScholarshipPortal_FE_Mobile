@@ -34,13 +34,11 @@ export const AuthProvider = ({ children }) => {
   const requestNotification = async (decodedUserInfo) => {
     const fcm = await AsyncStorage.getItem("fcmToken");
     if (!fcm) {
-      //console.error(decodedUserInfo)
       const token = await requestNotify(decodedUserInfo.id);
       if (token != null) {
         setFcmToken(token);
         await AsyncStorage.setItem("fcmToken", token);
       }
-      //if (sendNotification) await NotifyNewUser(parseInt(user.id));
     }
   }
 

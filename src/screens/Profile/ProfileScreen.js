@@ -173,7 +173,7 @@ const SettingsScreen = ({ navigation }) => {
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    navigation.navigate("AboutUsScreen")
                   }}
                   style={styles.row}>
                   <Ionicons style={{ marginRight: "8px" }} name="help-buoy-outline" size={24} color={COLORS.primary3} />
@@ -205,7 +205,7 @@ const SettingsScreen = ({ navigation }) => {
               <View style={[styles.rowWrapper, styles.rowLast]}>
                 <Pressable
                   onPress={() => {
-                    // handle onPress
+                    navigation.navigate("AboutUsScreen")
                   }}
                   style={styles.row}>
                   <Ionicons style={{ marginRight: "8px" }} name="shield-checkmark-outline" size={20} color={COLORS.primary3} />
