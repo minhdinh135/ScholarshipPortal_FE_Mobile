@@ -54,6 +54,8 @@ const DetailsScreen = ({ route, navigation }) => {
         return <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />;
       case 'Reviewing':
         return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
+      case 'Submitted':
+        return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
       case 'NeedExtend':
         return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
       case 'Failed':
@@ -215,7 +217,8 @@ const DetailsScreen = ({ route, navigation }) => {
                     application.status === 'Approved' ? styles.statusApprovedText :
                       application.status === 'Reviewing' ? styles.statusPendingText :
                         application.status === 'NeedExtend' ? styles.statusPendingText :
-                          styles.statusDisapprovedText
+                          application.status === 'Submitted' ? styles.statusPendingText :
+                            styles.statusDisapprovedText
                   ]}
                 >
                   {application.status}
@@ -260,18 +263,18 @@ const DetailsScreen = ({ route, navigation }) => {
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Criteria</Text>
-          {userInfo.role === "Expert" && (
-            criteriaScores.map((criteria) => (
+        {userInfo.role === "Expert" && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Criteria</Text>
+            {(criteriaScores.map((criteria) => (
               <View key={criteria.name}>
                 <Text style={styles.infoText}>
                   <Text style={styles.boldText}>{criteria?.name}:</Text> {criteria?.description} ({criteria?.percentage}%)
                 </Text>
               </View>
-            ))
-          )}
-        </View>
+            )))}
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Reviews</Text>

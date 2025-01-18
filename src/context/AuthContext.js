@@ -16,20 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [fcmToken, setFcmToken] = useState(null);
-
-  /*useEffect(() => {
-    const setupNotificationChannel = async () => {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'Default Channel',
-        importance: Notifications.AndroidImportance.HIGH,
-        sound: true,
-        vibrate: [0, 250, 250, 250],
-      });
-    }
-    setupNotificationChannel();
-  }, []);*/
 
   const requestNotification = async (decodedUserInfo) => {
     const fcm = await AsyncStorage.getItem("fcmToken");

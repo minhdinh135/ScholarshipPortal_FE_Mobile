@@ -11,6 +11,7 @@ import {
   Platform,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { COLORS, FONTS, icons } from '../../constants';
 import { IconButton } from '../../components/Card';
@@ -22,27 +23,50 @@ const ChangePasswordScreen = ({ navigation }) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessages, setErrorMessages] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
   const handleChangePassword = async () => {
+    setErrorMessages({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setErrorMessages({
+        oldPassword: !oldPassword ? 'Old password is required' : '',
+        newPassword: !newPassword ? 'New password is required' : '',
+        confirmPassword: !confirmPassword ? 'Please confirm your password' : '',
+      });
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'New password and confirm password do not match!');
-    } else if (!oldPassword || !newPassword || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields!');
-    } else if (newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters!');
-    } else {
-      try {
-        const response = await changePassword(userInfo.id, userInfo.email, oldPassword, newPassword);
-        if (response.status === 200) {
-          Alert.alert('Success', 'Your password has been changed successfully!');
-        } else if (response.status === 401) {
-          Alert.alert('Error', 'Unauthorized. Old password is incorrect.');
-        } else {
-          Alert.alert('Error', 'Failed to change password. Please try again.');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Failed to change password. Please try again.');
-      }
+      setErrorMessages({
+        ...errorMessages,
+        confirmPassword: 'New password and confirm password do not match!',
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setErrorMessages({
+        ...errorMessages,
+        newPassword: 'Password must be at least 6 characters!',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await changePassword(userInfo.id, userInfo.email, oldPassword, newPassword);
+      Alert.alert('Success', 'Your password has been changed successfully!', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to change password. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,35 +105,53 @@ const ChangePasswordScreen = ({ navigation }) => {
 
           <View style={styles.inputContainer}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, errorMessages.oldPassword && styles.inputError]}
               placeholder="Old Password"
               placeholderTextColor={COLORS.gray}
               secureTextEntry
               value={oldPassword}
               onChangeText={setOldPassword}
             />
+            {errorMessages.oldPassword ? (
+              <Text style={styles.errorText}>{errorMessages.oldPassword}</Text>
+            ) : null}
+
             <TextInput
-              style={styles.input}
+              style={[styles.input, errorMessages.newPassword && styles.inputError]}
               placeholder="New Password"
               placeholderTextColor={COLORS.gray}
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
             />
+            {errorMessages.newPassword ? (
+              <Text style={styles.errorText}>{errorMessages.newPassword}</Text>
+            ) : null}
+
             <TextInput
-              style={styles.input}
+              style={[styles.input, errorMessages.confirmPassword && styles.inputError]}
               placeholder="Confirm Password"
               placeholderTextColor={COLORS.gray}
               secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
             />
+            {errorMessages.confirmPassword ? (
+              <Text style={styles.errorText}>{errorMessages.confirmPassword}</Text>
+            ) : null}
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-            <Text style={styles.buttonText}>Change Password</Text>
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleChangePassword}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color={COLORS.white} />
+            ) : (
+              <Text style={styles.buttonText}>Change Password</Text>
+            )}
           </TouchableOpacity>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -179,6 +221,18 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLORS.white,
     ...FONTS.h3,
+  },
+  inputError: {
+    borderColor: COLORS.error,
+  },
+  errorText: {
+    color: COLORS.error,
+    ...FONTS.body4,
+    marginTop: -15,
+    marginBottom: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: COLORS.gray,
   },
 });
 
