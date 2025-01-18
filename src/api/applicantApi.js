@@ -30,6 +30,27 @@ export const getApplicantProfileById = async (id) => {
   }
 }
 
+export const addApplicantExperience = async (id, formData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/profile-experience`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error adding experience profile: ", error);
+  }
+}
+
 export const updateApplicantExperience = async (id, experienceId, formData) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}/profile-experience/${experienceId}`, {
@@ -48,6 +69,27 @@ export const updateApplicantExperience = async (id, experienceId, formData) => {
     return data;
   } catch (error) {
     console.log("Error updating experience profile: ", error);
+  }
+}
+
+export const addApplicantEducation = async (id, formData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/profile-education`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error adding education profile: ", error);
   }
 }
 
@@ -72,6 +114,27 @@ export const updateApplicantEducation = async (id, educationId, formData) => {
   }
 }
 
+export const addApplicantSkill = async (id, formData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/profile-skill`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error adding skill profile: ", error);
+  }
+}
+
 export const updateApplicantSkill = async (id, skillId, formData) => {
   try {
     const res = await fetch(`${BASE_URL}/${id}/profile-skill/${skillId}`, {
@@ -90,6 +153,27 @@ export const updateApplicantSkill = async (id, skillId, formData) => {
     return data;
   } catch (error) {
     console.log("Error updating skill profile: ", error);
+  }
+}
+
+export const addApplicantCertificate = async (id, formData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/${id}/profile-certificate`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.log("Error adding certificate profile: ", error);
   }
 }
 

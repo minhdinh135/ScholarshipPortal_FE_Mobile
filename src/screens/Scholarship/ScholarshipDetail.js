@@ -1,29 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { IconButton } from '../../components/Card';
 import { COLORS, FONTS, SIZES, icons } from '../../constants';
 import Description from '../../components/ScholarshipProgram/Description';
 import { useAuth } from '../../context/AuthContext';
-import { getApplicantById } from '../../api/applicantApi';
+import { getApplicantById, getApplicantProfileById } from '../../api/applicantApi';
 import { useFocusEffect } from '@react-navigation/native';
 
 const ScholarshipDetail = ({ navigation, route }) => {
   const { userInfo } = useAuth();
   const { selectedScholarship } = route.params;
+  const [applicant, setApplicant] = useState([]);
   const [hasApplied, setHasApplied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState('');
   const [isCountdownReady, setIsCountdownReady] = useState(false);
 
   const fetchApplicationByApplicantId = useCallback(async () => {
+    if (userInfo.role === 'Expert') {
+      return;
+    }
+
     try {
-      const response = await getApplicantById(userInfo.id);
+      const [response, applicantResponse] = await Promise.all([
+        getApplicantById(userInfo.id),
+        getApplicantProfileById(userInfo.id)
+      ]);
+
       const applied = response.data.some(
         (application) => application.scholarshipProgramId === selectedScholarship.id
       );
+
       setHasApplied(applied);
+      setApplicant(applicantResponse.data);
     } catch (error) {
       console.error('Error fetching applicant data:', error);
+      // Optionally, you can set an error state here to inform the user
+      setError('Failed to fetch applicant data. Please try again later.');
     }
   }, [userInfo.id, selectedScholarship.id]);
 
@@ -60,6 +73,28 @@ const ScholarshipDetail = ({ navigation, route }) => {
     const interval = setInterval(calculateCountdown, 1000);
     return () => clearInterval(interval);
   }, [calculateCountdown]);
+
+  // Function to check if the applicant has all the required skills
+  const checkSkillsMatch = () => {
+    const requiredSkills = selectedScholarship.major.skills.map(skill => skill.name);
+    const applicantSkills = applicant.applicantSkills.map(skill => skill.name);
+
+    // Check if every required skill is in the applicant's skills
+    const skillsMatch = requiredSkills.every(skill => applicantSkills.includes(skill));
+
+    return skillsMatch && requiredSkills.length === applicantSkills.length;
+  };
+
+  // Function to handle Apply Now button click
+  const handleApplyNow = () => {
+    console.log(applicant.applicantSkills[1]);
+
+    if (!checkSkillsMatch()) {
+      Alert.alert('Skills Mismatch', 'You don\'t have the required skills for this scholarship.');
+    } else {
+      navigation.navigate('MultiStep', { selectedScholarship: selectedScholarship });
+    }
+  };
 
   if (loading || !isCountdownReady) {
     return (
@@ -126,6 +161,24 @@ const ScholarshipDetail = ({ navigation, route }) => {
   function renderScholarshipInfo() {
     const isDeadlinePassed = countdown === 'Closed';
 
+    const getStatusBadgeStyle = () => {
+      switch (selectedScholarship.status) {
+        case 'Open':
+          return { backgroundColor: COLORS.successLight, textColor: COLORS.success };
+        case 'Closed':
+          return { backgroundColor: COLORS.gray20, textColor: COLORS.gray80 };
+        case 'Completed':
+          return { backgroundColor: COLORS.infoLight, textColor: COLORS.info };
+        case 'Reviewing':
+        case 'Awarding':
+          return { backgroundColor: COLORS.warningLight, textColor: COLORS.warning };
+        default:
+          return { backgroundColor: COLORS.gray20, textColor: COLORS.gray80 };
+      }
+    };
+
+    const statusBadgeStyle = getStatusBadgeStyle();
+
     return (
       <View
         style={{
@@ -134,15 +187,56 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <Text style={{ ...FONTS.h2 }}>{selectedScholarship?.name}</Text>
-        <Text
+        <View
           style={{
-            color: COLORS.gray60,
+            flexDirection: 'row',
+            alignItems: 'center',
             marginTop: 5,
-            ...FONTS.body3,
           }}
         >
-          Deadline: {countdown}
-        </Text>
+          {isDeadlinePassed ? (
+            <>
+              <View>
+                <Text
+                  style={{
+                    color: COLORS.gray60,
+                    ...FONTS.body3,
+                    marginRight: 10
+                  }}
+                >
+                  Status:
+                </Text>
+              </View>
+              <View
+                style={{
+                  backgroundColor: statusBadgeStyle.backgroundColor,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderRadius: SIZES.radius / 2,
+                }}
+              >
+                <Text
+                  style={{
+                    color: statusBadgeStyle.textColor,
+                    ...FONTS.body4,
+                  }}
+                >
+                  {selectedScholarship.status}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <Text
+              style={{
+                color: COLORS.gray60,
+                ...FONTS.body3,
+                flex: 1,
+              }}
+            >
+              Deadline: {countdown}
+            </Text>
+          )}
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -207,11 +301,8 @@ const ScholarshipDetail = ({ navigation, route }) => {
                 justifyContent: 'center',
                 marginRight: 10,
               }}
-              onPress={() =>
-                navigation.navigate('MultiStep', {
-                  selectedScholarship: selectedScholarship,
-                })
-              }
+              onPress={handleApplyNow}
+            // disabled={!checkSkillsMatch()}
             >
               <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Apply Now</Text>
             </TouchableOpacity>
@@ -232,9 +323,7 @@ const ScholarshipDetail = ({ navigation, route }) => {
         }}
       >
         <ImageBackground
-          source={{
-            uri: 'https://daihoc.fpt.edu.vn/templates/fpt-university/images/header.jpg',
-          }}
+          source={{ uri: selectedScholarship.imageUrl }}
           style={{
             width: '100%',
             height: '100%',

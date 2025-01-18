@@ -13,18 +13,18 @@ import { COLORS, FONTS, icons } from '../../constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { IconButton } from '../../components/Card';
 import { useAuth } from '../../context/AuthContext';
-import { updateApplicantExperience } from '../../api/applicantApi';
+import { updateApplicantExperience, addApplicantExperience } from '../../api/applicantApi';
 
 const UpdateExperienceScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
-  const { item } = route.params;
+  const { item } = route.params || {};
   const [loading, setLoading] = useState(false);
-  const [experience, setExperience] = useState(null);
-  const [selectedStartDate, setSelectedStartDate] = useState(item.fromYear || 'Select Year');
-  const [selectedEndDate, setSelectedEndDate] = useState(item.toYear || 'Select Year');
+  const [experience, setExperience] = useState(item?.name || '');
+  const [selectedStartDate, setSelectedStartDate] = useState(item?.fromYear || 'Select Year');
+  const [selectedEndDate, setSelectedEndDate] = useState(item?.toYear || 'Select Year');
   const [datePickerVisible, setDatePickerVisible] = useState({ visible: false, field: null });
 
-  const handleDateChange = (selectedDate) => {
+  const handleDateChange = (event, selectedDate) => {
     if (selectedDate) {
       const year = selectedDate.getFullYear();
       setDatePickerVisible({ visible: false, field: null });
@@ -40,14 +40,18 @@ const UpdateExperienceScreen = ({ navigation, route }) => {
   const handleSaveChanges = async () => {
     const formData = {
       name: experience,
-      description: item.description,
+      description: item?.description || '',
       fromYear: selectedStartDate,
       toYear: selectedEndDate,
     };
 
     try {
       setLoading(true);
-      await updateApplicantExperience(userInfo.id, item.id, formData);
+      if (item) {
+        await updateApplicantExperience(userInfo.id, item.id, formData);
+      } else {
+        await addApplicantExperience(userInfo.id, formData);
+      }
       navigation.goBack();
     } catch (error) {
       console.error('Error saving data:', error);
@@ -65,7 +69,9 @@ const UpdateExperienceScreen = ({ navigation, route }) => {
           containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerText}>Edit Experience</Text>
+        <Text style={styles.headerText}>
+          {item ? 'Edit Experience' : 'Add Experience'}
+        </Text>
         <TouchableOpacity style={styles.saveButtonHeader} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonHeaderText}>Save</Text>
         </TouchableOpacity>
@@ -81,7 +87,7 @@ const UpdateExperienceScreen = ({ navigation, route }) => {
           <Text style={styles.mainTitle}>What experience do you have?</Text>
           <TextInput
             style={styles.selectButton}
-            placeholder={item.name || 'Enter your experience'}
+            placeholder="Enter your experience"
             placeholderTextColor={COLORS.gray60}
             value={experience}
             onChangeText={(text) => setExperience(text)}
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
-    marginVertical: 30
+    marginVertical: 30,
   },
   iconStyle: {
     tintColor: COLORS.black,
@@ -169,7 +175,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: COLORS.gray80,
-    borderRadius: 10,
     marginBottom: 20,
   },
   selectButtonText: {
@@ -177,39 +182,9 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     ...FONTS.body3,
   },
-  contentContainer: {
-    flex: 1,
-  },
-  sheetTitle: {
-    ...FONTS.h2,
-    color: COLORS.primary3,
-    padding: 20,
-  },
-  optionButton: {
-    paddingVertical: 15,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.gray30,
-  },
-  optionText: {
-    ...FONTS.body3,
-    color: COLORS.black,
-    paddingHorizontal: 20,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  saveButton: {
-    backgroundColor: COLORS.primary,
-    height: 44,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  saveButtonText: {
-    ...FONTS.h3,
-    color: COLORS.white,
   },
 });

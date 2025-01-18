@@ -15,21 +15,21 @@ import { ScrollView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { IconButton } from '../../components/Card';
 import { useAuth } from '../../context/AuthContext';
-import { updateApplicantEducation } from '../../api/applicantApi';
+import { updateApplicantEducation, addApplicantEducation } from '../../api/applicantApi';
 import { getUniversity } from '../../api/universityApi';
 
 const UpdateEducationScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
-  const { item } = route.params;
+  const { item } = route.params || {};
   const bottomSheetRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [universities, setUniversities] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState(item.school || 'Select Skill');
-  const [educationLevel, setEducationLevel] = useState(item.educationLevel || 'Select Type');
-  const [gpa, setGpa] = useState(null);
-  const [major, setMajor] = useState(null);
-  const [selectedStartDate, setSelectedStartDate] = useState(item.fromYear || 'Select Year');
-  const [selectedEndDate, setSelectedEndDate] = useState(item.toYear || 'Select Year');
+  const [selectedSchool, setSelectedSchool] = useState(item?.school || 'Select School');
+  const [educationLevel, setEducationLevel] = useState(item?.educationLevel || 'Select Type');
+  const [gpa, setGpa] = useState(item?.gpa?.toString() || '');
+  const [major, setMajor] = useState(item?.major || '');
+  const [selectedStartDate, setSelectedStartDate] = useState(item?.fromYear || 'Select Year');
+  const [selectedEndDate, setSelectedEndDate] = useState(item?.toYear || 'Select Year');
   const [sheetType, setSheetType] = useState(null);
   const [datePickerVisible, setDatePickerVisible] = useState({ visible: false, field: null });
 
@@ -120,14 +120,18 @@ const UpdateEducationScreen = ({ navigation, route }) => {
       educationLevel: educationLevel,
       gpa: gpa,
       major: major,
-      description: item.description,
+      description: item?.description || '',
       fromYear: selectedStartDate,
       toYear: selectedEndDate,
     };
 
     try {
       setLoading(true);
-      await updateApplicantEducation(userInfo.id, item.id, formData);
+      if (item) {
+        await updateApplicantEducation(userInfo.id, item.id, formData);
+      } else {
+        await addApplicantEducation(userInfo.id, formData);
+      }
       navigation.goBack();
     } catch (error) {
       console.error('Error saving data:', error);
@@ -145,7 +149,7 @@ const UpdateEducationScreen = ({ navigation, route }) => {
           containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerText}>Edit Education</Text>
+        <Text style={styles.headerText}>{item ? 'Edit Education' : 'Add Education'}</Text>
         <TouchableOpacity style={styles.saveButtonHeader} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonHeaderText}>Save</Text>
         </TouchableOpacity>
@@ -182,16 +186,16 @@ const UpdateEducationScreen = ({ navigation, route }) => {
           <Text style={styles.mainTitle}>What major have you studied at school?</Text>
           <TextInput
             style={styles.selectButton}
-            placeholder={item.major || 'Enter your major'}
+            placeholder="Enter your major"
             placeholderTextColor={COLORS.gray60}
             value={major}
             onChangeText={(text) => setMajor(text)}
           />
 
-          <Text style={styles.mainTitle}>What is your GPA after graduated?</Text>
+          <Text style={styles.mainTitle}>What is your GPA after graduating?</Text>
           <TextInput
             style={styles.selectButton}
-            placeholder={(item.gpa?.toFixed(1)).toString() || 'Enter your GPA'}
+            placeholder="Enter your GPA"
             placeholderTextColor={COLORS.gray60}
             value={gpa}
             onChangeText={(text) => setGpa(text)}

@@ -80,7 +80,7 @@ const EditProfileScreen = ({ navigation }) => {
         <View style={styles.avatarContainer}>
           <TouchableOpacity onPress={uploadFile}>
             <Image
-              src={userInfo.avatar}
+              source={{ uri: userProfile.avatarUrl || 'https://png.pngtree.com/png-vector/20191101/ourmid/pngtree-cartoon-color-simple-male-avatar-png-image_1934459.jpg' }}
               style={styles.avatar}
             />
             <View style={styles.cameraIconContainer}>
@@ -93,15 +93,15 @@ const EditProfileScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formContainer}>
-          {['Username', 'Email', 'Phone number', 'Address'].map((field, index) => (
+          {['Username', 'Email', 'Phone Number', 'Address'].map((field, index) => (
             <View style={styles.inputGroup} key={index}>
               <Text style={styles.label}>{field}</Text>
               <View style={styles.inputContainer}>
                 <TextInput
-                  value={userProfile[field.toLowerCase().replace(' ', '')]}
+                  value={userProfile[field === 'Phone Number' ? 'phoneNumber' : field.toLowerCase().replace(' ', '')]}
                   onChangeText={(value) => setUserProfile({
                     ...userProfile,
-                    [field.toLowerCase().replace(' ', '')]: value,
+                    [field === 'Phone Number' ? 'phoneNumber' : field.toLowerCase().replace(' ', '')]: value,
                   })}
                   editable={true}
                 />

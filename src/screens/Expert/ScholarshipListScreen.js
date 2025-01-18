@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { COLORS, FONTS, SIZES } from '../../constants';
 import HorizontalList from '../../components/List/HorizontalList';
 import { getApplicationByExpertId, getScholarProgramByExpertId } from "../../api/expertApi";
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { LineDivider } from '../../components/Card';
 import { useAuth } from '../../context/AuthContext';
 
@@ -17,25 +17,26 @@ const ScholarshipListScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState('Ongoing');
 
-  const fetchScholarshipPrograms = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const [scholar, application] = await Promise.all([
-        getScholarProgramByExpertId(userInfo.id),
-        getApplicationByExpertId(userInfo.id),
-      ]);
-      setScholarPrograms(scholar.data.items);
-      setApplications(application.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [userInfo.id]);
-
-  useEffect(() => {
-    fetchScholarshipPrograms();
-  }, [fetchScholarshipPrograms]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchScholarshipPrograms = async () => {
+        setLoading(true);
+        try {
+          const [scholar, application] = await Promise.all([
+            getScholarProgramByExpertId(userInfo.id),
+            getApplicationByExpertId(userInfo.id),
+          ]);
+          setScholarPrograms(scholar.data.items);
+          setApplications(application.data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchScholarshipPrograms();
+    }, [userInfo.id])
+  );
 
   const filteredApplications = applications.filter(app =>
     app.applicationReviews.some(review =>

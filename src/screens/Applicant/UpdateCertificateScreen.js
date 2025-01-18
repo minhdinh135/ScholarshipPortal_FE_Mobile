@@ -16,16 +16,18 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { IconButton } from '../../components/Card';
 import { getCertificates } from '../../api/skillsApi';
 import { useAuth } from '../../context/AuthContext';
-import { updateApplicantCertificate } from '../../api/applicantApi';
+import { updateApplicantCertificate, addApplicantCertificate } from '../../api/applicantApi';
 
 const UpdateCertificateScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
-  const { item } = route.params;
+  const { item = {} } = route.params || {};
+  const isEditMode = !!item.id;
+
   const bottomSheetRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [certificates, setCertificates] = useState([]);
   const [selectedCertificate, setSelectedCertificate] = useState(item.name || 'Select Skill');
-  const [url, setUrl] = useState(null);
+  const [url, setUrl] = useState(item.url || '');
   const [selectedAchievedYear, setAchievedYear] = useState(item.achievedYear || 'Select Year');
   const [sheetType, setSheetType] = useState(null);
   const [datePickerVisible, setDatePickerVisible] = useState({ visible: false, field: null });
@@ -53,7 +55,7 @@ const UpdateCertificateScreen = ({ navigation, route }) => {
     []
   );
 
-  const handleDateChange = (selectedDate) => {
+  const handleDateChange = (event, selectedDate) => {
     if (selectedDate) {
       const year = selectedDate.getFullYear();
       setDatePickerVisible({ visible: false, field: null });
@@ -93,14 +95,18 @@ const UpdateCertificateScreen = ({ navigation, route }) => {
   const handleSaveChanges = async () => {
     const formData = {
       name: selectedCertificate,
-      description: item.description,
+      description: item.description || '',
       url: url,
       achievedYear: selectedAchievedYear,
     };
 
     try {
       setLoading(true);
-      await updateApplicantCertificate(userInfo.id, item.id, formData);
+      if (isEditMode) {
+        await updateApplicantCertificate(userInfo.id, item.id, formData);
+      } else {
+        await addApplicantCertificate(userInfo.id, formData);
+      }
       navigation.goBack();
     } catch (error) {
       console.error('Error saving data:', error);
@@ -118,7 +124,9 @@ const UpdateCertificateScreen = ({ navigation, route }) => {
           containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerText}>Edit Certificate</Text>
+        <Text style={styles.headerText}>
+          {isEditMode ? 'Edit Certificate' : 'Add Certificate'}
+        </Text>
         <TouchableOpacity style={styles.saveButtonHeader} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonHeaderText}>Save</Text>
         </TouchableOpacity>
@@ -145,7 +153,7 @@ const UpdateCertificateScreen = ({ navigation, route }) => {
           <Text style={styles.mainTitle}>What is the reference to your certificate?</Text>
           <TextInput
             style={styles.selectButton}
-            placeholder={item.url || 'Provide reference/link to your certificate'}
+            placeholder="Provide reference/link to your certificate"
             placeholderTextColor={COLORS.gray60}
             value={url}
             onChangeText={(text) => setUrl(text)}

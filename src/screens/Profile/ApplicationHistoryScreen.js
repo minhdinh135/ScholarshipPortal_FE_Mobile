@@ -82,6 +82,8 @@ const ApplicationHistoryScreen = ({ navigation }) => {
           return { color: COLORS.success, backgroundColor: COLORS.successLight };
         case 'NeedExtend':
           return { color: COLORS.warning, backgroundColor: COLORS.warningLight };
+        case 'Reviewing':
+          return { color: COLORS.warning, backgroundColor: COLORS.warningLight };
         case 'Submitted':
           return { color: COLORS.info, backgroundColor: COLORS.infoLight };
         case 'Rejected':

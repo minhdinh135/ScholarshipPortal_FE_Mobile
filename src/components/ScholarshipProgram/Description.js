@@ -53,7 +53,7 @@ const Description = ({ item }) => {
       isSkillsSection: true,
     },
     {
-      title: 'Criteria',
+      title: 'Requirement',
       content: item.criteria,
       isCriteriaSection: true,
     },
@@ -95,7 +95,7 @@ const Description = ({ item }) => {
                     <Text>•</Text>
                   </View>
                   <View style={styles.criterionTextContainer}>
-                    <Text style={styles.criterionDescription}>{criterion.description} (25%)</Text>
+                    <Text style={styles.criterionDescription}>{criterion.description} - {criterion.percentage}%</Text>
                   </View>
                 </View>
               ))}

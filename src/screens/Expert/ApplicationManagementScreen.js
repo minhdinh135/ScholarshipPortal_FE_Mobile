@@ -52,6 +52,11 @@ const ApplicationManagementScreen = ({ navigation, route }) => {
           backgroundColor: COLORS.successLight,
           color: COLORS.success,
         };
+      case "Passed":
+        return {
+          backgroundColor: COLORS.successLight,
+          color: COLORS.success,
+        }
       case "Awarded":
         return {
           backgroundColor: COLORS.infoLight,

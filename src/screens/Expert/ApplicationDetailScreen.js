@@ -14,8 +14,8 @@ const DetailsScreen = ({ route, navigation }) => {
   const [application, setApplication] = useState(initialApplication);
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [criteriaScores, setCriteriaScores] = useState([]);
   const [reviewText, setReviewText] = useState('');
-  const [reviewScore, setReviewScore] = useState('');
   const [isReviewed, setIsReviewed] = useState(false);
 
   const review = application.applicationReviews.filter(
@@ -54,6 +54,8 @@ const DetailsScreen = ({ route, navigation }) => {
         return <Ionicons name="checkmark-circle" size={24} color={COLORS.success} />;
       case 'Reviewing':
         return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
+      case 'NeedExtend':
+        return <Ionicons name="hourglass" size={24} color={COLORS.warning} />;
       case 'Failed':
         return <Ionicons name="close-circle" size={24} color={COLORS.secondary} />;
       case 'Rejected':
@@ -64,12 +66,8 @@ const DetailsScreen = ({ route, navigation }) => {
   };
 
   const handleReviewSubmit = async () => {
-    if (reviewText.trim().length === 0 || reviewScore.trim().length === 0) {
-      Alert.alert('Review Required', 'Please provide both a review and a score before proceeding.');
-      return;
-    }
+    const score = parseFloat(calculateTotalScore());
 
-    const score = parseFloat(reviewScore);
     if (isNaN(score) || score < 1 || score > 100) {
       Alert.alert('Invalid Score', 'Please enter a valid score between 1 and 100.');
       return;
@@ -106,7 +104,6 @@ const DetailsScreen = ({ route, navigation }) => {
         applicationReviews: updatedReviews,
       }));
       setReviewText('');
-      setReviewScore('');
       setIsReviewed(true);
       Alert.alert('Review Submitted', 'Your review has been submitted.');
     } catch (error) {
@@ -115,6 +112,32 @@ const DetailsScreen = ({ route, navigation }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (scholarship) {
+      setCriteriaScores(
+        scholarship.criteria.map((criterion) => ({
+          ...criterion,
+          score: "",
+        }))
+      );
+    }
+  }, [scholarship]);
+
+  const calculateTotalScore = () => {
+    return criteriaScores.reduce((total, criterion) => {
+      const score = parseFloat(criterion.score);
+      return total + (isNaN(score) ? 0 : (score * criterion.percentage) / 100);
+    }, 0).toFixed(2);
+  };
+
+  const handleScoreChange = (id, value) => {
+    setCriteriaScores((prevScores) =>
+      prevScores.map((criterion) =>
+        criterion.id === id ? { ...criterion, score: value } : criterion
+      )
+    );
   };
 
   return (
@@ -191,7 +214,8 @@ const DetailsScreen = ({ route, navigation }) => {
                     styles.statusText,
                     application.status === 'Approved' ? styles.statusApprovedText :
                       application.status === 'Reviewing' ? styles.statusPendingText :
-                        styles.statusDisapprovedText
+                        application.status === 'NeedExtend' ? styles.statusPendingText :
+                          styles.statusDisapprovedText
                   ]}
                 >
                   {application.status}
@@ -200,12 +224,20 @@ const DetailsScreen = ({ route, navigation }) => {
             )}
           </View>
         </View>
+
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Application Details</Text>
-          <Text style={styles.infoText}>Scholarship: {scholarship?.name}</Text>
-          <Text style={styles.infoText}>University: {scholarship?.university?.name}</Text>
-          <Text style={styles.infoText}>Applied on: {moment(application.appliedDate).format("MMM DD, YYYY")}</Text>
+          <Text style={styles.sectionTitle}>Application Information</Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.boldText}>Scholarship:</Text> {scholarship?.name}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.boldText}>University:</Text> {scholarship?.university?.name}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.boldText}>Applied on:</Text> {moment(application.appliedDate).format("MMM DD, YYYY")}
+          </Text>
         </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Documents</Text>
           {application.applicationDocuments.length > 0 ? (
@@ -227,6 +259,20 @@ const DetailsScreen = ({ route, navigation }) => {
             <Text style={styles.infoText}>No documents submitted.</Text>
           )}
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Criteria</Text>
+          {userInfo.role === "Expert" && (
+            criteriaScores.map((criteria) => (
+              <View key={criteria.name}>
+                <Text style={styles.infoText}>
+                  <Text style={styles.boldText}>{criteria?.name}:</Text> {criteria?.description} ({criteria?.percentage}%)
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Your Reviews</Text>
           {userInfo.role === "Expert" ? (
@@ -274,17 +320,28 @@ const DetailsScreen = ({ route, navigation }) => {
             </View>
           ) : (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Your Review</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter a score (0-100)"
-                value={reviewScore}
-                onChangeText={setReviewScore}
-                keyboardType="numeric"
-              />
+              <Text style={styles.sectionTitle}>Scoring Criteria</Text>
+              {criteriaScores.map((criterion) => (
+                <View style={styles.criteriaContainer}>
+                  <Text style={styles.criteriaText}>
+                    {criterion.name} ({criterion.percentage}%)
+                  </Text>
+                  <TextInput
+                    style={[styles.textInput, styles.criteriaInput]}
+                    placeholder="1-100"
+                    value={criterion.score}
+                    onChangeText={(value) => handleScoreChange(criterion.id, value)}
+                    keyboardType="numeric"
+                  />
+                </View>
+              ))}
+              <View style={styles.totalScoreContainer}>
+                <Text style={styles.totalScoreText}>Total Score: {calculateTotalScore()}</Text>
+              </View>
+              <Text style={styles.sectionTitle}>Comment</Text>
               <TextInput
                 style={[styles.textInput, { height: 100 }]}
-                placeholder="Write your review here..."
+                placeholder="Write your comment here..."
                 value={reviewText}
                 onChangeText={setReviewText}
                 multiline={true}
@@ -405,48 +462,17 @@ const styles = StyleSheet.create({
   },
   infoText: {
     ...FONTS.body3,
-    color: COLORS.gray80,
+    color: COLORS.primary3,
+  },
+  boldText: {
+    ...FONTS.body3,
+    fontWeight: 'bold',
+    color: COLORS.gray60,
   },
   alreadyReviewText: {
     ...FONTS.h2,
     color: COLORS.gray50,
     textAlign: 'center'
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: SIZES.padding,
-    paddingVertical: SIZES.base,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray30,
-    backgroundColor: COLORS.white,
-  },
-  actionButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: SIZES.base,
-    paddingHorizontal: SIZES.padding,
-    borderRadius: SIZES.radius,
-    flex: 0.45,
-    alignItems: 'center',
-  },
-  rejectButton: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: SIZES.base,
-    paddingHorizontal: SIZES.padding,
-    borderRadius: SIZES.radius,
-    flex: 0.45,
-    alignItems: 'center',
-  },
-  actionButtonText: {
-    color: COLORS.white,
-    ...FONTS.body2,
-    fontWeight: 'bold',
-  },
-  handledMessage: {
-    color: COLORS.gray50,
-    ...FONTS.body3,
-    textAlign: 'center',
   },
   textInput: {
     borderWidth: 1,
@@ -468,8 +494,27 @@ const styles = StyleSheet.create({
     ...FONTS.body2,
     fontWeight: 'bold',
   },
-  selectedReview: {
-    borderColor: COLORS.primary,
-    borderWidth: 2,
+  criteriaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SIZES.base,
+  },
+  criteriaText: {
+    ...FONTS.body3,
+    color: COLORS.gray70,
+    flex: 0.7,
+  },
+  criteriaInput: {
+    flex: 0.2,
+    textAlign: "center",
+  },
+  totalScoreContainer: {
+    marginVertical: SIZES.base,
+    alignItems: "center",
+  },
+  totalScoreText: {
+    ...FONTS.h2,
+    color: COLORS.primary,
   },
 });

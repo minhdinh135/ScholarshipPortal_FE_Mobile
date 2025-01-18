@@ -5,17 +5,11 @@ import { SIZES, FONTS, COLORS } from "../../constants";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const HorizontalList = ({ containerStyle, course, onPress }) => {
-  const shortenDescription = (description) => {
-    if (description && description.length > 30) {
-      return description.substring(0, 30) + "...";
-    }
-    return description;
-  };
-
   return (
     <TouchableOpacity
       style={{
         flexDirection: "row",
+        alignItems: "flex-start",
         ...containerStyle,
       }}
       onPress={onPress}
@@ -24,9 +18,10 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
         source={{ uri: course.imageUrl }}
         resizeMode="cover"
         style={{
-          width: 150,
-          height: 150,
-          marginBottom: SIZES.radius,
+          width: 160,
+          height: 100,
+          borderRadius: SIZES.radius,
+          marginRight: 10
         }}
         imageStyle={{
           borderRadius: SIZES.radius,
@@ -42,24 +37,16 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
           style={{
             ...FONTS.h3,
             fontSize: 18,
+            flexWrap: "wrap",
           }}
         >
           {course.name}
-        </Text>
-        <Text
-          style={{
-            ...FONTS.body4,
-            color: COLORS.gray60,
-            marginTop: SIZES.base,
-          }}
-        >
-          {shortenDescription(course.description)}
         </Text>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginTop: SIZES.base,
+            marginTop: SIZES.base / 2,
           }}
         >
           <Icon name="time-outline" size={18} color={COLORS.gray60} />
@@ -77,7 +64,7 @@ const HorizontalList = ({ containerStyle, course, onPress }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginTop: SIZES.base,
+            marginTop: SIZES.base / 2,
           }}
         >
           <Icon name="cash-outline" size={18} color={COLORS.primary} />

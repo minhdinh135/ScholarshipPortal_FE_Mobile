@@ -76,8 +76,6 @@ export const AuthProvider = ({ children }) => {
             setUserInfo(decodedUserInfo);
             setIsLoggedIn(true);
             await requestNotification(decodedUserInfo);
-
-            Alert.alert("Login successful");
             await AsyncStorage.setItem("userToken", jwt);
           }
         }
@@ -151,7 +149,6 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setFcmToken(null);
     await messaging().deleteToken();
-    console.log('FCM token deleted successfully');
     await AsyncStorage.removeItem("userToken");
     await AsyncStorage.removeItem("fcmToken");
   };

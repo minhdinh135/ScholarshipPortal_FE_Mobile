@@ -20,7 +20,7 @@ const WelcomeScreen = () => {
         <View style={styles.container}>
           <LinearGradient
             style={styles.background}
-            colors={["transparent", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.8)"]}
+            colors={["transparent", "rgba(255,255,255,1)", "rgba(255,255,255,1)"]}
           >
             <View style={styles.wrapper}>
               <View style={styles.logoContainer}>

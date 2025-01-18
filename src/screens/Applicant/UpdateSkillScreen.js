@@ -15,11 +15,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { IconButton } from '../../components/Card';
 import { getSkills } from '../../api/skillsApi';
 import { useAuth } from '../../context/AuthContext';
-import { updateApplicantSkill } from '../../api/applicantApi';
+import { updateApplicantSkill, addApplicantSkill } from '../../api/applicantApi';
 
 const UpdateSkillScreen = ({ navigation, route }) => {
   const { userInfo } = useAuth();
-  const { item } = route.params;
+  const item = route.params?.item || {};
   const bottomSheetRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [skills, setSkills] = useState([]);
@@ -115,14 +115,18 @@ const UpdateSkillScreen = ({ navigation, route }) => {
     const formData = {
       name: selectedSkill,
       type: selectedType,
-      description: item.description,
+      description: item.description || '',
       fromYear: selectedStartDate,
       toYear: selectedEndDate,
     };
 
     try {
       setLoading(true);
-      await updateApplicantSkill(userInfo.id, item.id, formData);
+      if (item.id) {
+        await updateApplicantSkill(userInfo.id, item.id, formData);
+      } else {
+        await addApplicantSkill(userInfo.id, formData);
+      }
       navigation.goBack();
     } catch (error) {
       console.error('Error saving data:', error);
@@ -140,7 +144,7 @@ const UpdateSkillScreen = ({ navigation, route }) => {
           containerStyle={styles.iconContainer}
           onPress={() => navigation.goBack()}
         />
-        <Text style={styles.headerText}>Edit Skill</Text>
+        <Text style={styles.headerText}>{item.id ? 'Edit Skill' : 'Add Skill'}</Text>
         <TouchableOpacity style={styles.saveButtonHeader} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonHeaderText}>Save</Text>
         </TouchableOpacity>
